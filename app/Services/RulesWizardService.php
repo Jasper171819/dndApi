@@ -1695,6 +1695,7 @@ class RulesWizardService
         }
 
         $character = $state['character'];
+        $starter = $this->combinedRoleplayStarter($character);
         $lines = [
             'You do not need a novel. A beginner-safe roleplay core is just four short lines:',
             '- Personality Trait: how the character feels in the first five minutes',
@@ -1703,26 +1704,43 @@ class RulesWizardService
             '- Flaw: the weakness that sometimes complicates good choices',
         ];
 
-        if ($character['alignment']) {
+        if (($starter['summary'] ?? '') !== '') {
             $lines[] = '';
-            $lines[] = $this->alignmentGuidance((string) $character['alignment']);
+            $lines[] = $starter['title'] ?? 'Roleplay starter';
+            $lines[] = 'Build read: '.$starter['summary'];
         }
 
-        if ($character['class']) {
-            $lines[] = '';
-            $lines[] = 'Class lens: '.$this->classGuidance((string) $character['class']);
+        if (($starter['sources'] ?? []) !== []) {
+            $lines[] = 'This starter blends '.$this->naturalJoin($starter['sources']).'.';
         }
 
-        if ($character['background']) {
-            $lines[] = 'Background lens: '.$this->backgroundGuidance((string) $character['background']);
+        if (($starter['watch_out'] ?? '') !== '') {
+            $lines[] = 'Watch out: '.$starter['watch_out'];
         }
 
         $starterPrompts = $this->roleplayStarterPrompts($character);
         if ($starterPrompts !== []) {
             $lines[] = '';
             $lines[] = 'Starter prompts:';
-            foreach ($starterPrompts as $prompt) {
-                $lines[] = '- '.$prompt;
+            $labels = ['Trait', 'Ideal', 'Bond', 'Flaw'];
+            foreach ($starterPrompts as $index => $prompt) {
+                $label = $labels[$index] ?? 'Prompt';
+                $lines[] = sprintf('- %s: %s', $label, $prompt);
+            }
+        }
+
+        $currentRoleplay = array_filter([
+            $character['personality_traits'] ? 'Trait: '.$character['personality_traits'] : null,
+            $character['ideals'] ? 'Ideal: '.$character['ideals'] : null,
+            $character['bonds'] ? 'Bond: '.$character['bonds'] : null,
+            $character['flaws'] ? 'Flaw: '.$character['flaws'] : null,
+        ]);
+
+        if ($currentRoleplay !== []) {
+            $lines[] = '';
+            $lines[] = 'Already on the sheet:';
+            foreach ($currentRoleplay as $entry) {
+                $lines[] = '- '.$entry;
             }
         }
 
@@ -2315,25 +2333,15 @@ class RulesWizardService
     private function roleplayFieldGuidance(string $field, array $character): string
     {
         $help = config("dnd.roleplay_field_help.{$field}") ?: 'A short line is enough.';
-        $starterPrompts = $this->roleplayStarterPrompts($character);
+        $starter = $this->combinedRoleplayStarter($character);
 
-        if ($field === 'personality_traits' && isset($starterPrompts[0])) {
-            return $help.' Example: '.$starterPrompts[0];
-        }
-
-        if ($field === 'ideals' && isset($starterPrompts[1])) {
-            return $help.' Example: '.$starterPrompts[1];
-        }
-
-        if ($field === 'bonds' && isset($starterPrompts[2])) {
-            return $help.' Example: '.$starterPrompts[2];
-        }
-
-        if ($field === 'flaws' && isset($starterPrompts[3])) {
-            return $help.' Example: '.$starterPrompts[3];
-        }
-
-        return $help;
+        return match ($field) {
+            'personality_traits' => ($starter['trait'] ?? '') !== '' ? $help.' Example: '.$starter['trait'] : $help,
+            'ideals' => ($starter['ideal'] ?? '') !== '' ? $help.' Example: '.$starter['ideal'] : $help,
+            'bonds' => ($starter['bond'] ?? '') !== '' ? $help.' Example: '.$starter['bond'] : $help,
+            'flaws' => ($starter['flaw'] ?? '') !== '' ? $help.' Example: '.$starter['flaw'] : $help,
+            default => $help,
+        };
     }
 
     private function appearanceFieldGuidance(string $field, array $character): string
@@ -2348,23 +2356,229 @@ class RulesWizardService
 
     private function roleplayStarterPrompts(array $character): array
     {
-        $alignment = $character['alignment'] ?? null;
-
-        if (! is_string($alignment) || $alignment === '') {
-            return [];
-        }
+        $starter = $this->combinedRoleplayStarter($character);
 
         $prompts = [
-            config("dnd.alignment_roleplay.{$alignment}.starter_trait"),
-            config("dnd.alignment_roleplay.{$alignment}.starter_ideal"),
-            config("dnd.alignment_roleplay.{$alignment}.starter_bond"),
-            config("dnd.alignment_roleplay.{$alignment}.starter_flaw"),
+            $starter['trait'] ?? null,
+            $starter['ideal'] ?? null,
+            $starter['bond'] ?? null,
+            $starter['flaw'] ?? null,
         ];
 
         return array_values(array_filter(array_map(
             static fn ($entry): ?string => is_string($entry) && $entry !== '' ? $entry : null,
             $prompts,
         )));
+    }
+
+    private function combinedRoleplayStarter(array $character): array
+    {
+        $class = is_string($character['class'] ?? null) ? $character['class'] : '';
+        $species = is_string($character['species'] ?? null) ? $character['species'] : '';
+        $background = is_string($character['background'] ?? null) ? $character['background'] : '';
+        $alignment = is_string($character['alignment'] ?? null) ? $character['alignment'] : '';
+        $originFeat = is_string($character['origin_feat'] ?? null) ? $character['origin_feat'] : '';
+        $languageValues = array_values(array_filter(
+            is_array($character['languages'] ?? null) ? $character['languages'] : [],
+            static fn ($entry): bool => is_string($entry) && trim($entry) !== '',
+        ));
+        $skillValues = array_values(array_filter(
+            is_array($character['skill_proficiencies'] ?? null) ? $character['skill_proficiencies'] : [],
+            static fn ($entry): bool => is_string($entry) && trim($entry) !== '',
+        ));
+
+        $classDetail = is_array(config("dnd.class_details.{$class}")) ? config("dnd.class_details.{$class}") : [];
+        $speciesDetail = is_array(config("dnd.species_details.{$species}")) ? config("dnd.species_details.{$species}") : [];
+        $backgroundDetail = is_array(config("dnd.background_details.{$background}")) ? config("dnd.background_details.{$background}") : [];
+        $alignmentDetail = is_string(config("dnd.alignment_details.{$alignment}")) ? config("dnd.alignment_details.{$alignment}") : '';
+        $alignmentRoleplay = is_array(config("dnd.alignment_roleplay.{$alignment}")) ? config("dnd.alignment_roleplay.{$alignment}") : [];
+        $originFeatDetail = is_string(config("dnd.origin_feat_details.{$originFeat}")) ? config("dnd.origin_feat_details.{$originFeat}") : '';
+
+        $focusAbilities = is_array($classDetail['primary_focus'] ?? null) ? $classDetail['primary_focus'] : [];
+        $speciesTraits = is_array($speciesDetail['traits'] ?? null) ? array_slice($speciesDetail['traits'], 0, 2) : [];
+        $backgroundTheme = is_string($backgroundDetail['theme'] ?? null) ? Str::lower($backgroundDetail['theme']) : '';
+        $speciesTraitText = $speciesTraits !== []
+            ? Str::lower($this->naturalJoin($speciesTraits))
+            : '';
+        $trainedSkillText = $skillValues !== []
+            ? Str::lower($this->naturalJoin(array_slice($skillValues, 0, 2)))
+            : '';
+        $extremes = $this->abilityExtremes($character);
+        $highestLabel = $extremes['highest'];
+        $lowestLabel = $extremes['lowest'];
+
+        $titleParts = array_values(array_filter([$alignment, $species, $background, $class]));
+        $sourceParts = array_values(array_filter([
+            $alignment !== '' ? "alignment ({$alignment})" : '',
+            $species !== '' ? "species ({$species})" : '',
+            $background !== '' ? "background ({$background})" : '',
+            $class !== '' ? "class ({$class})" : '',
+            $originFeat !== '' ? "origin feat ({$originFeat})" : '',
+            $highestLabel !== null ? Str::lower($highestLabel).' as the strongest score' : '',
+        ]));
+
+        $focusText = $focusAbilities !== []
+            ? $this->naturalJoin(array_map(static fn (string $ability): string => Str::lower($ability), $focusAbilities))
+            : '';
+        $languageText = $languageValues !== []
+            ? $this->naturalJoin(array_map(static fn (string $language): string => Str::lower($language), $languageValues))
+            : '';
+
+        return [
+            'title' => $titleParts !== []
+                ? implode(' ', $titleParts).' roleplay starter'
+                : 'Beginner roleplay help',
+            'summary' => $this->joinSentences([
+                $titleParts !== [] ? 'This build reads like a '.implode(' ', $titleParts).'.' : '',
+                is_string($alignmentRoleplay['play_well'] ?? null) && $alignmentRoleplay['play_well'] !== ''
+                    ? $alignmentRoleplay['play_well']
+                    : ($alignmentDetail !== '' ? 'At heart, the character '.$this->lowerFirst($alignmentDetail).'.' : ''),
+                $backgroundTheme !== '' ? "{$background} gives their choices a {$backgroundTheme} pull." : '',
+                $class !== '' && $focusText !== '' ? "{$class} nudges them toward {$focusText} when things get tense." : '',
+                $species !== '' && $speciesTraitText !== '' ? "{$species} leaves a trace in details like {$speciesTraitText}." : '',
+                $originFeat !== '' && $originFeatDetail !== '' ? "{$originFeat} shapes the way they first come across: ".rtrim($this->lowerFirst($originFeatDetail), '.').'.' : '',
+            ]),
+            'trait' => $this->compactRoleplayStarter(
+                is_string($alignmentRoleplay['starter_trait'] ?? null) ? $alignmentRoleplay['starter_trait'] : $this->classDrivenTraitStarter($class),
+                [
+                    $class !== '' && $focusText !== '' ? 'When pressure hits, my '.Str::lower($class)." instincts push me toward {$focusText}." : ($class !== '' ? 'My '.Str::lower($class).' training still shows whenever the room gets tense.' : ''),
+                    $backgroundTheme !== '' ? "Years shaped by {$backgroundTheme} still show in the way I carry myself." : '',
+                    $trainedSkillText !== '' ? "People quickly notice that I approach problems through {$trainedSkillText}." : '',
+                    $highestLabel !== null ? Str::title(Str::lower($highestLabel)).' is usually the first part of me people notice.' : '',
+                    $species !== '' ? ($speciesTraitText !== '' ? 'You can still hear my '.Str::lower($species)." roots in the {$speciesTraitText} side of me." : 'Being '.Str::lower($species).' still shapes how I come across to other people.') : '',
+                ],
+                'Short first-impression notes like calm, curious, or dry humor.',
+            ),
+            'ideal' => $this->compactRoleplayStarter(
+                is_string($alignmentRoleplay['starter_ideal'] ?? null) ? $alignmentRoleplay['starter_ideal'] : ($backgroundTheme !== '' ? "{$backgroundTheme} matters more than comfort." : 'I want to live by a principle that actually means something.'),
+                [
+                    $class !== '' ? 'Being a '.Str::lower($class).' keeps asking what my gifts are actually for.' : '',
+                    $backgroundTheme !== '' ? "To me, {$backgroundTheme} only matters if it means something in the real world." : '',
+                    $originFeat !== '' ? "{$originFeat} feels like something I should use with purpose, not vanity." : '',
+                ],
+                'Pick a principle that feels worth protecting.',
+            ),
+            'bond' => $this->compactRoleplayStarter(
+                is_string($alignmentRoleplay['starter_bond'] ?? null) ? $alignmentRoleplay['starter_bond'] : $this->backgroundDrivenBondStarter($backgroundTheme),
+                [
+                    $background !== '' ? "{$background} roots still tie me to the people and places that made me." : '',
+                    $languageText !== '' ? "Speaking {$languageText} keeps me connected to more than one corner of the world." : '',
+                    $species !== '' ? 'Part of me still feels answerable to what it means to be '.Str::lower($species).'.' : '',
+                    $originFeat !== '' ? "I still remember who first helped me turn {$originFeat} into something useful." : '',
+                ],
+                'Who or what matters enough to change their decisions?',
+            ),
+            'flaw' => $this->compactRoleplayStarter(
+                is_string($alignmentRoleplay['starter_flaw'] ?? null) ? $alignmentRoleplay['starter_flaw'] : ($class !== '' ? 'The harder I lean into being a '.Str::lower($class).', the easier it is for one bad habit to take over.' : 'Under pressure, one bad habit can steer the moment.'),
+                [
+                    $lowestLabel !== null ? 'Under strain, my lower '.Str::lower($lowestLabel).' is usually the first crack to show.' : '',
+                    $class !== '' ? 'When I lean too hard on my '.Str::lower($class).' instincts, I can miss gentler answers.' : '',
+                    $backgroundTheme !== '' ? "Old habits from a life shaped by {$backgroundTheme} can make me dig in too hard." : '',
+                ],
+                'Pick a weakness that creates believable trouble without breaking the party.',
+            ),
+            'watch_out' => is_string($alignmentRoleplay['watch_out'] ?? null) ? $alignmentRoleplay['watch_out'] : '',
+            'sources' => $sourceParts,
+        ];
+    }
+
+    private function classDrivenTraitStarter(string $class): string
+    {
+        return match ($class) {
+            'Barbarian' => 'Blunt, intense, protective, and hard to intimidate.',
+            'Bard' => 'Warm, theatrical, teasing, and always half a story ahead.',
+            'Cleric' => 'Steady, observant, compassionate, and quietly certain.',
+            'Druid' => 'Grounded, patient, weather-wise, and hard to rush.',
+            'Fighter' => 'Disciplined, practical, alert, and built for pressure.',
+            'Monk' => 'Calm, focused, restrained, and always measuring the room.',
+            'Paladin' => 'Earnest, resolute, inspiring, and impossible to ignore.',
+            'Ranger' => 'Watchful, dry-humored, capable, and always tracking something.',
+            'Rogue' => 'Quick-eyed, guarded, clever, and never fully off-balance.',
+            'Sorcerer' => 'Intense, instinctive, magnetic, and never far from the spark.',
+            'Warlock' => 'Measured, uncanny, confident, and carrying a private edge.',
+            'Wizard' => 'Curious, precise, distracted, and always connecting patterns.',
+            default => 'Short first-impression notes like calm, curious, or dry humor.',
+        };
+    }
+
+    private function backgroundDrivenBondStarter(string $backgroundTheme): string
+    {
+        return $backgroundTheme !== ''
+            ? "A person, place, or promise tied to {$backgroundTheme} still shapes my choices."
+            : 'Who or what matters enough to change their decisions?';
+    }
+
+    private function compactRoleplayStarter(?string $base, array $extras, string $fallback = ''): string
+    {
+        $parts = array_values(array_filter(array_map(
+            static fn ($entry): ?string => is_string($entry) && trim($entry) !== '' ? trim($entry) : null,
+            array_merge([$base], $extras),
+        )));
+
+        if ($parts === [] && $fallback !== '') {
+            $parts[] = $fallback;
+        }
+
+        return $this->joinSentences($parts, 3);
+    }
+
+    private function joinSentences(array $parts, ?int $limit = null): string
+    {
+        $cleanParts = array_values(array_filter(array_map(
+            static fn ($entry): ?string => is_string($entry) && trim($entry) !== '' ? trim($entry) : null,
+            $parts,
+        )));
+
+        if ($limit !== null) {
+            $cleanParts = array_slice($cleanParts, 0, $limit);
+        }
+
+        return implode(' ', $cleanParts);
+    }
+
+    private function naturalJoin(array $items): string
+    {
+        $cleanItems = array_values(array_filter(array_map(
+            static fn ($entry): ?string => is_string($entry) && trim($entry) !== '' ? trim($entry) : null,
+            $items,
+        )));
+
+        return match (count($cleanItems)) {
+            0 => '',
+            1 => $cleanItems[0],
+            2 => $cleanItems[0].' and '.$cleanItems[1],
+            default => implode(', ', array_slice($cleanItems, 0, -1)).', and '.$cleanItems[array_key_last($cleanItems)],
+        };
+    }
+
+    private function lowerFirst(string $value): string
+    {
+        return Str::lcfirst(trim($value));
+    }
+
+    private function abilityExtremes(array $character): array
+    {
+        $scores = [];
+
+        foreach (self::STAT_FIELDS as $field) {
+            if ($character[$field] !== null) {
+                $scores[$field] = (int) $character[$field];
+            }
+        }
+
+        if ($scores === []) {
+            return ['highest' => null, 'lowest' => null];
+        }
+
+        arsort($scores);
+        $highestField = array_key_first($scores);
+        asort($scores);
+        $lowestField = array_key_first($scores);
+
+        return [
+            'highest' => $highestField !== null ? self::FIELD_LABELS[$highestField] : null,
+            'lowest' => $lowestField !== null ? self::FIELD_LABELS[$lowestField] : null,
+        ];
     }
 
     private function appearanceCueLines(array $character): array

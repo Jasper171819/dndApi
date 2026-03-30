@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Character;
+use App\Models\HomebrewEntry;
 
 test('the homepage loads', function () {
     $this->get('/')
@@ -14,6 +15,13 @@ test('the roster page loads', function () {
         ->assertOk()
         ->assertSee('Keep the whole party in view.', false)
         ->assertSee('Saved Characters', false);
+});
+
+test('the homebrew page loads', function () {
+    $this->get('/homebrew')
+        ->assertOk()
+        ->assertSee('Homebrew Workshop', false)
+        ->assertSee('Keep custom ideas separate from the verified sheet.', false);
 });
 
 test('the configurator api returns the local rules payload', function () {
@@ -34,6 +42,40 @@ test('the compendium section api returns classes', function () {
         ->assertOk()
         ->assertJsonPath('section.title', 'Classes')
         ->assertJsonCount(12, 'section.items');
+});
+
+test('homebrew entries can be saved without changing the official configurator', function () {
+    $this->postJson('/api/homebrew', [
+        'category' => 'class',
+        'status' => 'playtest',
+        'name' => '  <strong>Storm Scholar</strong>  ',
+        'summary' => "A battlefield researcher who stores thunder in etched rods.\nBuilt for tactical casting.",
+        'details' => "<script>nope</script> Keeps a weather log and turns storm patterns into spellwork.",
+        'source_notes' => "Inspired by the wizard chassis,\n but tuned for coastal campaigns.",
+        'tags' => 'arcane, storm, arcane, coastal',
+    ])
+        ->assertCreated()
+        ->assertJsonPath('data.name', 'Storm Scholar')
+        ->assertJsonPath('data.summary', "A battlefield researcher who stores thunder in etched rods.\nBuilt for tactical casting.")
+        ->assertJsonPath('data.details', 'Keeps a weather log and turns storm patterns into spellwork.')
+        ->assertJsonPath('data.source_notes', "Inspired by the wizard chassis,\nbut tuned for coastal campaigns.")
+        ->assertJsonPath('data.tags.0', 'arcane')
+        ->assertJsonPath('data.tags.1', 'storm')
+        ->assertJsonPath('data.tags.2', 'coastal');
+
+    expect(HomebrewEntry::query()->count())->toBe(1);
+
+    $this->getJson('/api/homebrew')
+        ->assertOk()
+        ->assertJsonCount(1, 'entries')
+        ->assertJsonPath('entries.0.category', 'class')
+        ->assertJsonPath('entries.0.status', 'playtest');
+
+    $configurator = $this->getJson('/api/configurator')
+        ->assertOk()
+        ->assertJsonCount(12, 'classes');
+
+    expect($configurator->json('classes'))->not->toContain('Storm Scholar');
 });
 
 test('the dice api rolls a generic expression', function () {
@@ -62,6 +104,38 @@ test('the rules wizard help command responds', function () {
             'snapshot',
         ])
         ->assertJsonPath('quick_actions.0', 'new character');
+});
+
+test('the rules wizard roleplay help blends the build into one starter', function () {
+    $this->postJson('/api/rules-wizard/message', [
+        'message' => 'help me roleplay',
+        'state' => [
+            'character' => [
+                'name' => 'Liora',
+                'species' => 'Elf',
+                'class' => 'Wizard',
+                'subclass' => 'Abjurer',
+                'skill_proficiencies' => ['Arcana', 'History'],
+                'skill_expertise' => [],
+                'background' => 'Sage',
+                'alignment' => 'Lawful Good',
+                'origin_feat' => 'Alert',
+                'languages' => ['Common', 'Elvish'],
+                'level' => 3,
+                'strength' => 8,
+                'dexterity' => 14,
+                'constitution' => 12,
+                'intelligence' => 17,
+                'wisdom' => 13,
+                'charisma' => 10,
+            ],
+        ],
+    ])
+        ->assertOk()
+        ->assertSeeText('Lawful Good Elf Sage Wizard roleplay starter')
+        ->assertSeeText('This starter blends alignment (Lawful Good), species (Elf), background (Sage), class (Wizard), origin feat (Alert), and intelligence as the strongest score.')
+        ->assertSeeText('Trait:')
+        ->assertSeeText('Speaking common and elvish keeps me connected to more than one corner of the world.');
 });
 
 test('the rules wizard starts a new character in handbook order', function () {

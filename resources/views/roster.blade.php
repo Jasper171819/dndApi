@@ -62,6 +62,7 @@
                     <a href="{{ route('home') }}#wizard">Wizard</a>
                     <a href="{{ route('home') }}#library">Library</a>
                     <a href="{{ route('roster') }}">Roster</a>
+                    <a href="{{ route('homebrew') }}">Homebrew</a>
                 </nav>
             </header>
 

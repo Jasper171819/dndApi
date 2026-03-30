@@ -134,6 +134,7 @@
                     <a href="#dice">Dice</a>
                     <a href="#wizard">Wizard</a>
                     <a href="{{ route('roster') }}">Roster</a>
+                    <a href="{{ route('homebrew') }}">Homebrew</a>
                     <a href="#library">Library</a>
                     <a href="/api/compendium">Rules API</a>
                 </nav>
@@ -162,9 +163,11 @@
                         <span class="eyebrow">Character Builder</span>
                         <h1>Build a character and keep the whole sheet in one place.</h1>
                         <p>Create a full character sheet, roll stats, save your roster, and browse the rules without bouncing between tools.</p>
+                        <p class="tiny">The builder, wizard, and library stay on the verified official catalog. Custom material now lives on the separate Homebrew page.</p>
                         <div class="hero-actions">
                             <a class="btn" href="#forge">Open builder</a>
                             <a class="btn-soft" href="{{ route('roster') }}">Open roster</a>
+                            <a class="btn-soft" href="{{ route('homebrew') }}">Homebrew workshop</a>
                         </div>
                     </article>
                 </section>
@@ -842,6 +845,47 @@
                 return Number.isFinite(numericLevel) && numericLevel > 0 ? Math.ceil(numericLevel / 4) + 1 : null;
             }
 
+            function naturalJoin(items) {
+                const values = items.filter(Boolean);
+
+                if (! values.length) return '';
+                if (values.length === 1) return values[0];
+                if (values.length === 2) return `${values[0]} and ${values[1]}`;
+
+                return `${values.slice(0, -1).join(', ')}, and ${values[values.length - 1]}`;
+            }
+
+            function trimTooltipText(value) {
+                return String(value ?? '')
+                    .replace(/\s+/g, ' ')
+                    .trim()
+                    .replace(/[.!?]+$/u, '');
+            }
+
+            function lowerFirst(value) {
+                const normalized = trimTooltipText(value);
+
+                if (! normalized) return '';
+
+                return normalized.charAt(0).toLowerCase() + normalized.slice(1);
+            }
+
+            function tooltipText(...parts) {
+                return parts
+                    .flat()
+                    .map((part) => trimTooltipText(part))
+                    .filter(Boolean)
+                    .map((part) => `${part}.`)
+                    .join(' ');
+            }
+
+            function skillExpertiseDescription(skill) {
+                return tooltipText(
+                    formChoiceDescription('skill', skill),
+                    'Expertise doubles your proficiency bonus for that skill',
+                );
+            }
+
             function classSkillChoiceCount(classValue) {
                 const guidance = configurator.class_sheet_details?.[classValue]?.skill_proficiencies || '';
                 const match = guidance.match(/choose(?: any)?\s+(\d+)/i);
@@ -871,8 +915,7 @@
                     const shouldDisable = ! allowed.has(input.value);
                     input.disabled = shouldDisable;
                     if (shouldDisable) input.checked = false;
-                    const baseDescription = formChoiceDescription('skill', input.value) || 'Skill reference note.';
-                    input.title = `${baseDescription} Expertise doubles the proficiency bonus on this skill.`;
+                    input.removeAttribute('title');
                 });
 
                 const selectedExpertise = skillExpertiseInputs.filter((input) => input.checked).map((input) => input.value);
@@ -921,17 +964,27 @@
                 const selectedNormalSkills = selectedProficientSkills.filter((skill) => ! selectedExpertiseSkills.includes(skill));
                 const isClassFocus = Array.isArray(classDetail?.primary_focus) && classDetail.primary_focus.includes(label);
 
-                return [
-                    score === null ? 'No score is set yet.' : `Score ${score} gives a ${formatModifier(modifier)} modifier.`,
+                return tooltipText(
+                    score === null
+                        ? `${label} has not been set on the sheet yet`
+                        : `${label} is currently ${score}, which gives it a ${formatModifier(modifier)} modifier`,
                     hasSaveProficiency && saveModifier !== null
-                        ? `${label} saves are proficient for ${classValue}, so the current save is ${formatModifier(saveModifier)}.`
-                        : (saveModifier !== null ? `${label} saves are not proficient right now, so the current save is ${formatModifier(saveModifier)}.` : ''),
-                    relatedSkills.length ? `Related skills: ${relatedSkills.join(', ')}.` : 'No standard skills key off this ability.',
-                    selectedNormalSkills.length ? `Selected skill proficiency here: ${selectedNormalSkills.join(', ')}.` : '',
-                    selectedExpertiseSkills.length ? `Selected expertise here: ${selectedExpertiseSkills.join(', ')}.` : '',
-                    isClassFocus ? `${label} is one of ${classValue}'s main abilities.` : '',
-                    relatedSkills.length && ! selectedNormalSkills.length && ! selectedExpertiseSkills.length ? 'No saved skill training on this ability yet.' : '',
-                ].filter(Boolean).join(' ');
+                        ? `${label} saves are proficient for ${classValue}, so the current save bonus is ${formatModifier(saveModifier)}`
+                        : (saveModifier !== null ? `${label} saves are not proficient right now, so the current save bonus is ${formatModifier(saveModifier)}` : ''),
+                    relatedSkills.length
+                        ? `${label} feeds into ${naturalJoin(relatedSkills)}`
+                        : `No standard skills key off ${label}`,
+                    selectedNormalSkills.length
+                        ? `You already have proficiency in ${naturalJoin(selectedNormalSkills)}`
+                        : '',
+                    selectedExpertiseSkills.length
+                        ? `You already have expertise in ${naturalJoin(selectedExpertiseSkills)}`
+                        : '',
+                    isClassFocus ? `${label} is one of ${classValue}'s main focus abilities` : '',
+                    relatedSkills.length && ! selectedNormalSkills.length && ! selectedExpertiseSkills.length
+                        ? `No trained ${label.toLowerCase()} skills are marked on the sheet yet`
+                        : '',
+                );
             }
 
             function syncAbilityPreview() {
@@ -1042,13 +1095,116 @@
                 return suggestions[classValue] || fallback;
             }
 
+            function currentStatExtremes() {
+                const stats = statFields.map((field) => ({
+                    field,
+                    score: Number(document.getElementById(field).value),
+                })).filter((entry) => Number.isFinite(entry.score) && entry.score > 0);
+
+                if (! stats.length) {
+                    return { highest: null, lowest: null };
+                }
+
+                const highest = [...stats].sort((a, b) => b.score - a.score)[0]?.field || null;
+                const lowest = [...stats].sort((a, b) => a.score - b.score)[0]?.field || null;
+
+                return { highest, lowest };
+            }
+
+            function compactStarter(base, extras = []) {
+                return tooltipText(base, ...extras.filter(Boolean).slice(0, 2));
+            }
+
+            function combinedRoleplayStarterPackage() {
+                const classValue = classSelect.value;
+                const speciesValue = speciesSelect.value;
+                const backgroundValue = backgroundSelect.value;
+                const alignmentValue = alignmentSelect.value;
+                const originFeatValue = originFeatSelect.value;
+                const languageValues = languageInputs.filter((input) => input.checked).map((input) => input.value);
+                const skillValues = skillProficiencyInputs.filter((input) => input.checked).map((input) => input.value);
+                const classDetail = configurator.class_details?.[classValue] || null;
+                const speciesDetail = configurator.species_details?.[speciesValue] || null;
+                const backgroundDetail = configurator.background_details?.[backgroundValue] || null;
+                const alignmentDetail = configurator.alignment_details?.[alignmentValue] || '';
+                const alignmentRoleplay = configurator.alignment_roleplay?.[alignmentValue] || null;
+                const originFeatDetail = configurator.origin_feat_details?.[originFeatValue] || '';
+                const focusAbilities = Array.isArray(classDetail?.primary_focus) ? classDetail.primary_focus : [];
+                const speciesTraits = Array.isArray(speciesDetail?.traits) ? speciesDetail.traits.slice(0, 2) : [];
+                const backgroundTheme = backgroundDetail?.theme ? backgroundDetail.theme.toLowerCase() : '';
+                const speciesTraitText = speciesTraits.length ? naturalJoin(speciesTraits).toLowerCase() : '';
+                const trainedSkillText = skillValues.length ? naturalJoin(skillValues.slice(0, 2)).toLowerCase() : '';
+                const { highest, lowest } = currentStatExtremes();
+                const highestLabel = highest ? abilityFieldLabel(highest) : '';
+                const lowestLabel = lowest ? abilityFieldLabel(lowest) : '';
+                const focusText = focusAbilities.length ? naturalJoin(focusAbilities.map((ability) => ability.toLowerCase())) : '';
+                const languageText = languageValues.length ? naturalJoin(languageValues.map((language) => language.toLowerCase())) : '';
+                const titleParts = [alignmentValue, speciesValue, backgroundValue, classValue].filter(Boolean);
+                const sourceParts = [
+                    alignmentValue ? `alignment (${alignmentValue})` : '',
+                    speciesValue ? `species (${speciesValue})` : '',
+                    backgroundValue ? `background (${backgroundValue})` : '',
+                    classValue ? `class (${classValue})` : '',
+                    originFeatValue ? `origin feat (${originFeatValue})` : '',
+                    highestLabel ? `${highestLabel.toLowerCase()} as the strongest score` : '',
+                ].filter(Boolean);
+
+                return {
+                    title: titleParts.length ? `${titleParts.join(' ')} roleplay starter` : 'Beginner roleplay help',
+                    summary: tooltipText(
+                        titleParts.length ? `This build reads like a ${titleParts.join(' ')}` : '',
+                        alignmentRoleplay?.play_well || (alignmentDetail ? `At heart, the character ${lowerFirst(alignmentDetail)}` : ''),
+                        backgroundTheme ? `${backgroundValue} gives their choices a ${backgroundTheme} pull` : '',
+                        classValue && focusText ? `${classValue} nudges them toward ${focusText} when things get tense` : '',
+                        speciesValue && speciesTraitText ? `${speciesValue} leaves a trace in details like ${speciesTraitText}` : '',
+                        originFeatValue ? `${originFeatValue} shapes the way they first come across` : '',
+                    ),
+                    trait: compactStarter(
+                        alignmentRoleplay?.starter_trait || classDrivenTraitPlaceholder(classValue, 'Short first-impression notes like calm, curious, dry humor...'),
+                        [
+                            classValue && focusText ? `When pressure hits, my ${classValue.toLowerCase()} instincts push me toward ${focusText}` : (classValue ? `My ${classValue.toLowerCase()} training still shows whenever the room gets tense` : ''),
+                            backgroundTheme ? `Years shaped by ${backgroundTheme} still show in the way I carry myself` : '',
+                            trainedSkillText ? `People quickly notice that I approach problems through ${trainedSkillText}` : '',
+                            highestLabel ? `${highestLabel} is usually the first part of me people notice` : '',
+                            speciesValue ? (speciesTraitText ? `You can still hear my ${speciesValue.toLowerCase()} roots in the ${speciesTraitText} side of me` : `Being ${speciesValue.toLowerCase()} still shapes how I come across to other people`) : '',
+                        ],
+                    ),
+                    ideal: compactStarter(
+                        alignmentRoleplay?.starter_ideal || (backgroundTheme ? `${backgroundTheme} matters more than comfort` : 'I want to live by a principle that actually means something.'),
+                        [
+                            classValue ? `Being a ${classValue.toLowerCase()} keeps asking what my gifts are actually for` : '',
+                            backgroundTheme ? `To me, ${backgroundTheme} only matters if it means something in the real world` : '',
+                            originFeatValue ? `${originFeatValue} feels like something I should use with purpose, not vanity` : '',
+                        ],
+                    ),
+                    bond: compactStarter(
+                        alignmentRoleplay?.starter_bond || backgroundDrivenBondPlaceholder(backgroundValue, 'Who or what matters enough to change their decisions?'),
+                        [
+                            backgroundValue ? `${backgroundValue} roots still tie me to the people and places that made me` : '',
+                            languageText ? `Speaking ${languageText} keeps me connected to more than one corner of the world` : '',
+                            speciesValue ? `Part of me still feels answerable to what it means to be ${speciesValue.toLowerCase()}` : '',
+                            originFeatValue ? `I still remember who first helped me turn ${originFeatValue} into something useful` : '',
+                        ],
+                    ),
+                    flaw: compactStarter(
+                        alignmentRoleplay?.starter_flaw || (classValue ? `The harder I lean into being a ${classValue.toLowerCase()}, the easier it is for one bad habit to take over` : 'Under pressure, one bad habit can steer the moment'),
+                        [
+                            lowestLabel ? `Under strain, my lower ${lowestLabel.toLowerCase()} is usually the first crack to show` : '',
+                            classValue ? `When I lean too hard on my ${classValue.toLowerCase()} instincts, I can miss gentler answers` : '',
+                            backgroundTheme ? `Old habits from a life shaped by ${backgroundTheme} can make me dig in too hard` : '',
+                        ],
+                    ),
+                    watchOut: alignmentRoleplay?.watch_out || '',
+                    sources: sourceParts,
+                };
+            }
+
             function updateAdaptivePlaceholders() {
                 const profiles = configurator.form_placeholder_profiles || {};
                 const defaultProfile = profiles.default || {};
                 const speciesProfile = profiles.species?.[speciesSelect.value] || {};
-                const alignmentRoleplay = configurator.alignment_roleplay?.[alignmentSelect.value] || {};
-                const backgroundTheme = configurator.background_details?.[backgroundSelect.value]?.theme;
                 const focus = configurator.class_details?.[classSelect.value]?.primary_focus || [];
+                const roleplayStarter = combinedRoleplayStarterPackage();
 
                 const mergedProfile = {
                     ...defaultProfile,
@@ -1063,14 +1219,10 @@
                 hairInput.placeholder = mergedProfile.hair || 'Black braid, copper curls...';
                 skinInput.placeholder = mergedProfile.skin || 'Olive, freckled, scarred...';
 
-                personalityTraitsInput.placeholder = alignmentRoleplay.starter_trait
-                    || classDrivenTraitPlaceholder(classSelect.value, 'Short first-impression notes like calm, curious, dry humor...');
-                idealsInput.placeholder = alignmentRoleplay.starter_ideal
-                    || (backgroundTheme ? `${backgroundTheme} matters more than comfort.` : 'What principle matters most to this character?');
-                bondsInput.placeholder = alignmentRoleplay.starter_bond
-                    || backgroundDrivenBondPlaceholder(backgroundSelect.value, 'Who or what matters enough to change their decisions?');
-                flawsInput.placeholder = alignmentRoleplay.starter_flaw
-                    || (classSelect.value ? `A ${classSelect.value.toLowerCase()} habit that sometimes causes trouble...` : 'What weakness or habit tends to cause trouble?');
+                personalityTraitsInput.placeholder = roleplayStarter.trait || classDrivenTraitPlaceholder(classSelect.value, 'Short first-impression notes like calm, curious, dry humor...');
+                idealsInput.placeholder = roleplayStarter.ideal || 'What principle matters most to this character?';
+                bondsInput.placeholder = roleplayStarter.bond || backgroundDrivenBondPlaceholder(backgroundSelect.value, 'Who or what matters enough to change their decisions?');
+                flawsInput.placeholder = roleplayStarter.flaw || (classSelect.value ? `A ${classSelect.value.toLowerCase()} habit that sometimes causes trouble...` : 'What weakness or habit tends to cause trouble?');
 
                 const notesBits = [
                     classSelect.value ? `${classSelect.value} hooks` : '',
@@ -1089,15 +1241,9 @@
                 }
 
                 if (roleplayPlaceholderNote) {
-                    const sources = [
-                        alignmentSelect.value ? `alignment (${alignmentSelect.value})` : '',
-                        classSelect.value ? `class (${classSelect.value})` : '',
-                        backgroundSelect.value ? `background (${backgroundSelect.value})` : '',
-                    ].filter(Boolean);
-
-                    roleplayPlaceholderNote.textContent = sources.length
-                        ? `Roleplay prompts are borrowing from ${sources.join(', ')}. Treat them as examples, not limits.`
-                        : 'Roleplay prompts adapt to alignment, class, and background. They are examples, not limits.';
+                    roleplayPlaceholderNote.textContent = roleplayStarter.sources.length
+                        ? `Roleplay starters are blending ${roleplayStarter.sources.join(', ')}. Treat them as prompts, not limits.`
+                        : 'Roleplay starters combine your choices once alignment, species, background, class, and the rest of the sheet begin to come together.';
                 }
 
                 if (appearancePlaceholderNote) {
@@ -1156,39 +1302,31 @@
                 const pendingField = wizardState?.pending_field;
 
                 if (! pendingField) return '';
-                if (action === 'skip') return 'Leave this optional field blank for now.';
-                if (action === 'skip all details') return 'Finish the core draft now and come back to optional details later.';
+                if (action === 'skip') return 'Leave this optional detail blank for now. You can always come back to it later.';
+                if (action === 'skip all details') return 'Wrap up the core sheet now and come back to the optional details when you are ready.';
 
                 if (pendingField === 'species') {
-                    return configurator.species_details?.[action]?.summary || '';
+                    return formChoiceDescription('species', action);
                 }
 
                 if (pendingField === 'class') {
-                    const detail = configurator.class_details?.[action];
-                    if (! detail) return '';
-                    return [detail.summary, Array.isArray(detail.primary_focus) && detail.primary_focus.length ? `Focus: ${detail.primary_focus.join(', ')}` : '']
-                        .filter(Boolean)
-                        .join(' ');
+                    return formChoiceDescription('class', action);
                 }
 
                 if (pendingField === 'background') {
-                    const detail = configurator.background_details?.[action];
-                    if (! detail) return '';
-                    return [detail.summary, detail.theme ? `Theme: ${detail.theme}` : ''].filter(Boolean).join(' ');
+                    return formChoiceDescription('background', action);
                 }
 
                 if (pendingField === 'alignment') {
-                    return configurator.alignment_details?.[action] || '';
+                    return formChoiceDescription('alignment', action);
                 }
 
                 if (pendingField === 'origin_feat') {
-                    return configurator.origin_feat_details?.[action] || '';
+                    return formChoiceDescription('origin_feat', action);
                 }
 
                 if (pendingField === 'subclass') {
-                    return wizardState?.character?.class
-                        ? `Subclass option for ${wizardState.character.class}.`
-                        : 'Subclass option for the chosen class.';
+                    return formChoiceDescription('subclass', action);
                 }
 
                 return '';
@@ -1200,54 +1338,74 @@
                 if (field === 'class') {
                     const detail = configurator.class_details?.[value];
                     return detail
-                        ? [detail.summary, Array.isArray(detail.primary_focus) && detail.primary_focus.length ? `Focus: ${detail.primary_focus.join(', ')}` : '']
-                            .filter(Boolean)
-                            .join(' ')
+                        ? tooltipText(
+                            detail.summary,
+                            Array.isArray(detail.primary_focus) && detail.primary_focus.length
+                                ? `${value} usually leans on ${naturalJoin(detail.primary_focus)}`
+                                : '',
+                        )
                         : '';
                 }
 
                 if (field === 'subclass') {
-                    return classSelect.value
-                        ? `${value} is a subclass option for ${classSelect.value}.`
-                        : `${value} is a subclass option.`;
+                    const currentClass = classSelect.value || wizardState?.character?.class || '';
+                    return tooltipText(
+                        currentClass
+                            ? `${value} is a subclass for ${currentClass}`
+                            : `${value} is a subclass option`,
+                        'It narrows the class into a more specific play style',
+                    );
                 }
 
                 if (field === 'species') {
                     const detail = configurator.species_details?.[value];
                     return detail
-                        ? [detail.summary, detail.size ? `Size: ${detail.size}.` : '', detail.speed ? `Speed: ${detail.speed}.` : '']
-                            .filter(Boolean)
-                            .join(' ')
+                        ? tooltipText(
+                            detail.summary,
+                            detail.size ? `${value} characters are usually ${detail.size}` : '',
+                            detail.speed ? `Their speed is ${detail.speed}` : '',
+                        )
                         : '';
                 }
 
                 if (field === 'background') {
                     const detail = configurator.background_details?.[value];
                     return detail
-                        ? [detail.summary, detail.theme ? `Theme: ${detail.theme}.` : '']
-                            .filter(Boolean)
-                            .join(' ')
+                        ? tooltipText(
+                            detail.summary,
+                            detail.theme ? `Its theme centers on ${detail.theme.toLowerCase()}` : '',
+                        )
                         : '';
                 }
 
                 if (field === 'alignment') {
-                    return configurator.alignment_details?.[value] || '';
+                    const detail = configurator.alignment_details?.[value];
+                    return detail
+                        ? tooltipText(`${value} usually means the character ${lowerFirst(detail)}`)
+                        : '';
                 }
 
                 if (field === 'origin_feat') {
-                    return configurator.origin_feat_details?.[value] || '';
+                    const detail = configurator.origin_feat_details?.[value];
+                    return detail
+                        ? tooltipText(`${value} ${lowerFirst(detail)}`)
+                        : '';
                 }
 
                 if (field === 'language') {
-                    return configurator.language_details?.[value] || '';
+                    const detail = configurator.language_details?.[value];
+                    return detail
+                        ? tooltipText(`${value} is ${lowerFirst(detail)}`)
+                        : '';
                 }
 
                 if (field === 'skill') {
                     const detail = configurator.skill_details?.[value];
                     return detail
-                        ? [detail.summary, detail.ability ? `Ability: ${detail.ability}.` : '']
-                            .filter(Boolean)
-                            .join(' ')
+                        ? tooltipText(
+                            `${value} covers ${lowerFirst(detail.summary)}`,
+                            detail.ability ? `It usually uses ${detail.ability}` : '',
+                        )
                         : '';
                 }
 
@@ -1267,7 +1425,7 @@
                     button.dataset.wizardAction = action;
                     const description = wizardActionDescription(action);
                     button.textContent = action;
-                    button.title = description || '';
+                    button.removeAttribute('title');
                     if (description) {
                         button.addEventListener('mouseenter', () => showHoverHelp(button, action, description));
                         button.addEventListener('focus', () => showHoverHelp(button, action, description));
@@ -1278,22 +1436,21 @@
                 });
             }
 
-            function syncSelectTitle(control, field) {
-                const description = formChoiceDescription(field, control.value);
-                control.title = description || '';
+            function syncSelectTitle(control) {
+                control.removeAttribute('title');
             }
 
-            function wireChoiceHelp(control, field, titlePrefix) {
+            function wireChoiceHelp(control, field) {
                 const show = () => {
                     const value = control.value;
                     const description = formChoiceDescription(field, value);
-                    syncSelectTitle(control, field);
+                    syncSelectTitle(control);
                     if (! value || ! description) {
                         hideHoverHelp();
                         return;
                     }
 
-                    showHoverHelp(control, `${titlePrefix}: ${value}`, description);
+                    showHoverHelp(control, value, description);
                 };
 
                 control.addEventListener('mouseenter', show);
@@ -1567,6 +1724,7 @@
                     summary: configurator.language_details?.[language] || '',
                 }));
                 const appearanceCues = currentAppearanceCues();
+                const roleplayStarter = combinedRoleplayStarterPackage();
                 const statScores = statFields.map((field) => ({
                     field,
                     label: abilityFieldLabel(field),
@@ -1685,15 +1843,20 @@
                     ? languageDetails.map((language) => `<li><strong>${language.name}</strong>${language.summary ? `: ${language.summary}` : ''}</li>`).join('')
                     : '<li>Your selected language summaries will appear here.</li>';
 
-                document.getElementById('selected-roleplay-title').textContent = alignmentValue ? `${alignmentValue} roleplay starter` : 'Beginner roleplay help';
-                document.getElementById('selected-roleplay-summary').textContent = alignmentRoleplay?.play_well
-                    || 'Pick one alignment and a few short personality anchors. You do not need to write a novel.';
+                document.getElementById('selected-roleplay-title').textContent = roleplayStarter.title || 'Beginner roleplay help';
+                document.getElementById('selected-roleplay-summary').textContent = roleplayStarter.summary
+                    || 'Use the sheet choices to sketch one trait, one ideal, one bond, and one flaw. You do not need a novel.';
                 document.getElementById('selected-roleplay-list').innerHTML = [
-                    alignmentRoleplay?.watch_out ? `<li><strong>Watch out:</strong> ${alignmentRoleplay.watch_out}</li>` : '',
-                    personalityTraitsValue ? `<li><strong>Current trait:</strong> ${escapeHtml(personalityTraitsValue)}</li>` : `<li><strong>Trait idea:</strong> ${escapeHtml(alignmentRoleplay?.starter_trait || configurator.roleplay_field_help?.personality_traits || '')}</li>`,
-                    idealsValue ? `<li><strong>Current ideal:</strong> ${escapeHtml(idealsValue)}</li>` : `<li><strong>Ideal idea:</strong> ${escapeHtml(alignmentRoleplay?.starter_ideal || configurator.roleplay_field_help?.ideals || '')}</li>`,
-                    bondsValue ? `<li><strong>Current bond:</strong> ${escapeHtml(bondsValue)}</li>` : `<li><strong>Bond idea:</strong> ${escapeHtml(alignmentRoleplay?.starter_bond || configurator.roleplay_field_help?.bonds || '')}</li>`,
-                    flawsValue ? `<li><strong>Current flaw:</strong> ${escapeHtml(flawsValue)}</li>` : `<li><strong>Flaw idea:</strong> ${escapeHtml(alignmentRoleplay?.starter_flaw || configurator.roleplay_field_help?.flaws || '')}</li>`,
+                    roleplayStarter.sources.length ? `<li><strong>Build mix:</strong> ${escapeHtml(roleplayStarter.sources.join(', '))}</li>` : '',
+                    roleplayStarter.watchOut ? `<li><strong>Watch out:</strong> ${escapeHtml(roleplayStarter.watchOut)}</li>` : '',
+                    `<li><strong>Starter trait:</strong> ${escapeHtml(roleplayStarter.trait || configurator.roleplay_field_help?.personality_traits || '')}</li>`,
+                    personalityTraitsValue ? `<li><strong>Current trait:</strong> ${escapeHtml(personalityTraitsValue)}</li>` : '',
+                    `<li><strong>Starter ideal:</strong> ${escapeHtml(roleplayStarter.ideal || configurator.roleplay_field_help?.ideals || '')}</li>`,
+                    idealsValue ? `<li><strong>Current ideal:</strong> ${escapeHtml(idealsValue)}</li>` : '',
+                    `<li><strong>Starter bond:</strong> ${escapeHtml(roleplayStarter.bond || configurator.roleplay_field_help?.bonds || '')}</li>`,
+                    bondsValue ? `<li><strong>Current bond:</strong> ${escapeHtml(bondsValue)}</li>` : '',
+                    `<li><strong>Starter flaw:</strong> ${escapeHtml(roleplayStarter.flaw || configurator.roleplay_field_help?.flaws || '')}</li>`,
+                    flawsValue ? `<li><strong>Current flaw:</strong> ${escapeHtml(flawsValue)}</li>` : '',
                 ].filter(Boolean).join('');
 
                 document.getElementById('selected-appearance-title').textContent = (appearanceValues.eyes || appearanceValues.hair || appearanceValues.skin)
@@ -1710,12 +1873,12 @@
                     ...appearanceCues.map((cue) => `<li><strong>Cue:</strong> ${escapeHtml(cue)}</li>`),
                 ].join('');
 
-                syncSelectTitle(classSelect, 'class');
-                syncSelectTitle(subclassSelect, 'subclass');
-                syncSelectTitle(backgroundSelect, 'background');
-                syncSelectTitle(speciesSelect, 'species');
-                syncSelectTitle(originFeatSelect, 'origin_feat');
-                syncSelectTitle(alignmentSelect, 'alignment');
+                syncSelectTitle(classSelect);
+                syncSelectTitle(subclassSelect);
+                syncSelectTitle(backgroundSelect);
+                syncSelectTitle(speciesSelect);
+                syncSelectTitle(originFeatSelect);
+                syncSelectTitle(alignmentSelect);
             }
 
             function randomInt(min, max) {
@@ -2065,12 +2228,12 @@
                 if (! button) return;
                 rollDiceExpression(button.dataset.diceExpression, button.dataset.diceMode || '');
             });
-            wireChoiceHelp(classSelect, 'class', 'Class');
-            wireChoiceHelp(subclassSelect, 'subclass', 'Subclass');
-            wireChoiceHelp(backgroundSelect, 'background', 'Background');
-            wireChoiceHelp(speciesSelect, 'species', 'Species');
-            wireChoiceHelp(originFeatSelect, 'origin_feat', 'Origin Feat');
-            wireChoiceHelp(alignmentSelect, 'alignment', 'Alignment');
+            wireChoiceHelp(classSelect, 'class');
+            wireChoiceHelp(subclassSelect, 'subclass');
+            wireChoiceHelp(backgroundSelect, 'background');
+            wireChoiceHelp(speciesSelect, 'species');
+            wireChoiceHelp(originFeatSelect, 'origin_feat');
+            wireChoiceHelp(alignmentSelect, 'alignment');
             statFields.forEach(wireAbilityHelp);
 
             previewEl.addEventListener('mouseover', (event) => {
@@ -2106,20 +2269,20 @@
                 const chip = input.closest('.check-chip');
                 const show = () => {
                     const description = formChoiceDescription('language', input.value);
-                    showHoverHelp(chip || input, `Language: ${input.value}`, description || 'Language reference note.');
+                    showHoverHelp(chip || input, input.value, description || 'This language summary has not been filled in yet.');
                 };
 
                 chip?.addEventListener('mouseenter', show);
                 chip?.addEventListener('mouseleave', hideHoverHelp);
                 chip?.addEventListener('focusin', show);
                 chip?.addEventListener('focusout', hideHoverHelp);
-                input.title = formChoiceDescription('language', input.value) || '';
+                input.removeAttribute('title');
             });
             skillProficiencyInputs.forEach((input) => {
                 const chip = input.closest('.check-chip');
                 const show = () => {
                     const description = formChoiceDescription('skill', input.value);
-                    showHoverHelp(chip || input, `Skill: ${input.value}`, description || 'Skill reference note.');
+                    showHoverHelp(chip || input, input.value, description || 'This skill summary has not been filled in yet.');
                 };
 
                 input.addEventListener('change', () => {
@@ -2130,13 +2293,13 @@
                 chip?.addEventListener('mouseleave', hideHoverHelp);
                 chip?.addEventListener('focusin', show);
                 chip?.addEventListener('focusout', hideHoverHelp);
-                input.title = formChoiceDescription('skill', input.value) || '';
+                input.removeAttribute('title');
             });
             skillExpertiseInputs.forEach((input) => {
                 const chip = input.closest('.check-chip');
                 const show = () => {
-                    const description = `${formChoiceDescription('skill', input.value) || 'Skill reference note.'} Expertise doubles the proficiency bonus on this skill.`;
-                    showHoverHelp(chip || input, `Expertise: ${input.value}`, description);
+                    const description = skillExpertiseDescription(input.value) || 'This expertise summary has not been filled in yet.';
+                    showHoverHelp(chip || input, `${input.value} expertise`, description);
                 };
 
                 input.addEventListener('change', renderSelectionReference);
@@ -2144,7 +2307,7 @@
                 chip?.addEventListener('mouseleave', hideHoverHelp);
                 chip?.addEventListener('focusin', show);
                 chip?.addEventListener('focusout', hideHoverHelp);
-                input.title = `${formChoiceDescription('skill', input.value) || 'Skill reference note.'} Expertise doubles the proficiency bonus on this skill.`;
+                input.removeAttribute('title');
             });
             levelInput.addEventListener('input', renderSelectionReference);
             [personalityTraitsInput, idealsInput, bondsInput, flawsInput, ageInput, heightInput, weightInput, eyesInput, hairInput, skinInput].forEach((input) => {

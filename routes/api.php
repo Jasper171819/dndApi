@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\CharacterController;
 use App\Http\Controllers\Api\CompendiumController;
 use App\Http\Controllers\Api\ConfiguratorController;
 use App\Http\Controllers\Api\DiceController;
+use App\Http\Controllers\Api\HomebrewController;
 use App\Http\Controllers\Api\RulesWizardController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,7 @@ Route::delete('/characters/{id}', [CharacterController::class, 'destroy']);
 Route::post('/roll-dice', [DiceController::class, 'roll']);
 Route::post('/roll-stats', [DiceController::class, 'rollStats']);
 Route::post('/rules-wizard/message', [RulesWizardController::class, 'message']);
+
+Route::get('/homebrew', [HomebrewController::class, 'index']);
+Route::post('/homebrew', [HomebrewController::class, 'store']);
+Route::delete('/homebrew/{homebrewEntry}', [HomebrewController::class, 'destroy']);
