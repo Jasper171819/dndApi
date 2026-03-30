@@ -955,10 +955,10 @@
                     const description = abilityHoverDescription(field);
 
                     const input = document.getElementById(field);
-                    if (input) input.title = description;
+                    if (input) input.removeAttribute('title');
 
                     return `
-                        <div class="stat preview-stat" tabindex="0" data-preview-field="${field}" title="${escapeHtml(description)}">
+                        <div class="stat preview-stat" tabindex="0" data-preview-field="${field}">
                             <span class="label">${shortLabels[field]}</span>
                             <span class="value">${scoreText}</span>
                             <span class="preview-mod">Mod ${modifierText}</span>
@@ -1309,14 +1309,14 @@
 
                 const show = () => {
                     const description = abilityHoverDescription(field);
-                    input.title = description;
+                    input.removeAttribute('title');
                     showHoverHelp(input, abilityFieldLabel(field), description);
                 };
 
                 input.addEventListener('mouseenter', show);
                 input.addEventListener('focus', show);
                 input.addEventListener('input', () => {
-                    input.title = abilityHoverDescription(field);
+                    input.removeAttribute('title');
                     if (currentHoverAnchor === input) show();
                 });
                 input.addEventListener('mouseleave', hideHoverHelp);
