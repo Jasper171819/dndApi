@@ -3,223 +3,1762 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-
-        <!-- Styles / Scripts -->
-        @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-            @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @else
-            <style>
-                /*! tailwindcss v4.0.7 | MIT License | https://tailwindcss.com */ @layer properties{@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){*,:before,:after,::backdrop{--tw-translate-x:0;--tw-translate-y:0;--tw-translate-z:0;--tw-rotate-x:initial;--tw-rotate-y:initial;--tw-rotate-z:initial;--tw-skew-x:initial;--tw-skew-y:initial;--tw-space-x-reverse:0;--tw-border-style:solid;--tw-leading:initial;--tw-font-weight:initial;--tw-tracking:initial;--tw-shadow:0 0 #0000;--tw-shadow-color:initial;--tw-shadow-alpha:100%;--tw-inset-shadow:0 0 #0000;--tw-inset-shadow-color:initial;--tw-inset-shadow-alpha:100%;--tw-ring-color:initial;--tw-ring-shadow:0 0 #0000;--tw-inset-ring-color:initial;--tw-inset-ring-shadow:0 0 #0000;--tw-ring-inset:initial;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-offset-shadow:0 0 #0000;--tw-blur:initial;--tw-brightness:initial;--tw-contrast:initial;--tw-grayscale:initial;--tw-hue-rotate:initial;--tw-invert:initial;--tw-opacity:initial;--tw-saturate:initial;--tw-sepia:initial;--tw-drop-shadow:initial;--tw-drop-shadow-color:initial;--tw-drop-shadow-alpha:100%;--tw-drop-shadow-size:initial;--tw-duration:initial;--tw-ease:initial;--tw-content:""}}}@layer theme{:root,:host{--font-sans:"Instrument Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-serif:ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;--font-mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;--color-red-50:oklch(97.1% .013 17.38);--color-red-100:oklch(93.6% .032 17.717);--color-red-200:oklch(88.5% .062 18.334);--color-red-300:oklch(80.8% .114 19.571);--color-red-400:oklch(70.4% .191 22.216);--color-red-500:oklch(63.7% .237 25.331);--color-red-600:oklch(57.7% .245 27.325);--color-red-700:oklch(50.5% .213 27.518);--color-red-800:oklch(44.4% .177 26.899);--color-red-900:oklch(39.6% .141 25.723);--color-red-950:oklch(25.8% .092 26.042);--color-orange-50:oklch(98% .016 73.684);--color-orange-100:oklch(95.4% .038 75.164);--color-orange-200:oklch(90.1% .076 70.697);--color-orange-300:oklch(83.7% .128 66.29);--color-orange-400:oklch(75% .183 55.934);--color-orange-500:oklch(70.5% .213 47.604);--color-orange-600:oklch(64.6% .222 41.116);--color-orange-700:oklch(55.3% .195 38.402);--color-orange-800:oklch(47% .157 37.304);--color-orange-900:oklch(40.8% .123 38.172);--color-orange-950:oklch(26.6% .079 36.259);--color-amber-50:oklch(98.7% .022 95.277);--color-amber-100:oklch(96.2% .059 95.617);--color-amber-200:oklch(92.4% .12 95.746);--color-amber-300:oklch(87.9% .169 91.605);--color-amber-400:oklch(82.8% .189 84.429);--color-amber-500:oklch(76.9% .188 70.08);--color-amber-600:oklch(66.6% .179 58.318);--color-amber-700:oklch(55.5% .163 48.998);--color-amber-800:oklch(47.3% .137 46.201);--color-amber-900:oklch(41.4% .112 45.904);--color-amber-950:oklch(27.9% .077 45.635);--color-yellow-50:oklch(98.7% .026 102.212);--color-yellow-100:oklch(97.3% .071 103.193);--color-yellow-200:oklch(94.5% .129 101.54);--color-yellow-300:oklch(90.5% .182 98.111);--color-yellow-400:oklch(85.2% .199 91.936);--color-yellow-500:oklch(79.5% .184 86.047);--color-yellow-600:oklch(68.1% .162 75.834);--color-yellow-700:oklch(55.4% .135 66.442);--color-yellow-800:oklch(47.6% .114 61.907);--color-yellow-900:oklch(42.1% .095 57.708);--color-yellow-950:oklch(28.6% .066 53.813);--color-lime-50:oklch(98.6% .031 120.757);--color-lime-100:oklch(96.7% .067 122.328);--color-lime-200:oklch(93.8% .127 124.321);--color-lime-300:oklch(89.7% .196 126.665);--color-lime-400:oklch(84.1% .238 128.85);--color-lime-500:oklch(76.8% .233 130.85);--color-lime-600:oklch(64.8% .2 131.684);--color-lime-700:oklch(53.2% .157 131.589);--color-lime-800:oklch(45.3% .124 130.933);--color-lime-900:oklch(40.5% .101 131.063);--color-lime-950:oklch(27.4% .072 132.109);--color-green-50:oklch(98.2% .018 155.826);--color-green-100:oklch(96.2% .044 156.743);--color-green-200:oklch(92.5% .084 155.995);--color-green-300:oklch(87.1% .15 154.449);--color-green-400:oklch(79.2% .209 151.711);--color-green-500:oklch(72.3% .219 149.579);--color-green-600:oklch(62.7% .194 149.214);--color-green-700:oklch(52.7% .154 150.069);--color-green-800:oklch(44.8% .119 151.328);--color-green-900:oklch(39.3% .095 152.535);--color-green-950:oklch(26.6% .065 152.934);--color-emerald-50:oklch(97.9% .021 166.113);--color-emerald-100:oklch(95% .052 163.051);--color-emerald-200:oklch(90.5% .093 164.15);--color-emerald-300:oklch(84.5% .143 164.978);--color-emerald-400:oklch(76.5% .177 163.223);--color-emerald-500:oklch(69.6% .17 162.48);--color-emerald-600:oklch(59.6% .145 163.225);--color-emerald-700:oklch(50.8% .118 165.612);--color-emerald-800:oklch(43.2% .095 166.913);--color-emerald-900:oklch(37.8% .077 168.94);--color-emerald-950:oklch(26.2% .051 172.552);--color-teal-50:oklch(98.4% .014 180.72);--color-teal-100:oklch(95.3% .051 180.801);--color-teal-200:oklch(91% .096 180.426);--color-teal-300:oklch(85.5% .138 181.071);--color-teal-400:oklch(77.7% .152 181.912);--color-teal-500:oklch(70.4% .14 182.503);--color-teal-600:oklch(60% .118 184.704);--color-teal-700:oklch(51.1% .096 186.391);--color-teal-800:oklch(43.7% .078 188.216);--color-teal-900:oklch(38.6% .063 188.416);--color-teal-950:oklch(27.7% .046 192.524);--color-cyan-50:oklch(98.4% .019 200.873);--color-cyan-100:oklch(95.6% .045 203.388);--color-cyan-200:oklch(91.7% .08 205.041);--color-cyan-300:oklch(86.5% .127 207.078);--color-cyan-400:oklch(78.9% .154 211.53);--color-cyan-500:oklch(71.5% .143 215.221);--color-cyan-600:oklch(60.9% .126 221.723);--color-cyan-700:oklch(52% .105 223.128);--color-cyan-800:oklch(45% .085 224.283);--color-cyan-900:oklch(39.8% .07 227.392);--color-cyan-950:oklch(30.2% .056 229.695);--color-sky-50:oklch(97.7% .013 236.62);--color-sky-100:oklch(95.1% .026 236.824);--color-sky-200:oklch(90.1% .058 230.902);--color-sky-300:oklch(82.8% .111 230.318);--color-sky-400:oklch(74.6% .16 232.661);--color-sky-500:oklch(68.5% .169 237.323);--color-sky-600:oklch(58.8% .158 241.966);--color-sky-700:oklch(50% .134 242.749);--color-sky-800:oklch(44.3% .11 240.79);--color-sky-900:oklch(39.1% .09 240.876);--color-sky-950:oklch(29.3% .066 243.157);--color-blue-50:oklch(97% .014 254.604);--color-blue-100:oklch(93.2% .032 255.585);--color-blue-200:oklch(88.2% .059 254.128);--color-blue-300:oklch(80.9% .105 251.813);--color-blue-400:oklch(70.7% .165 254.624);--color-blue-500:oklch(62.3% .214 259.815);--color-blue-600:oklch(54.6% .245 262.881);--color-blue-700:oklch(48.8% .243 264.376);--color-blue-800:oklch(42.4% .199 265.638);--color-blue-900:oklch(37.9% .146 265.522);--color-blue-950:oklch(28.2% .091 267.935);--color-indigo-50:oklch(96.2% .018 272.314);--color-indigo-100:oklch(93% .034 272.788);--color-indigo-200:oklch(87% .065 274.039);--color-indigo-300:oklch(78.5% .115 274.713);--color-indigo-400:oklch(67.3% .182 276.935);--color-indigo-500:oklch(58.5% .233 277.117);--color-indigo-600:oklch(51.1% .262 276.966);--color-indigo-700:oklch(45.7% .24 277.023);--color-indigo-800:oklch(39.8% .195 277.366);--color-indigo-900:oklch(35.9% .144 278.697);--color-indigo-950:oklch(25.7% .09 281.288);--color-violet-50:oklch(96.9% .016 293.756);--color-violet-100:oklch(94.3% .029 294.588);--color-violet-200:oklch(89.4% .057 293.283);--color-violet-300:oklch(81.1% .111 293.571);--color-violet-400:oklch(70.2% .183 293.541);--color-violet-500:oklch(60.6% .25 292.717);--color-violet-600:oklch(54.1% .281 293.009);--color-violet-700:oklch(49.1% .27 292.581);--color-violet-800:oklch(43.2% .232 292.759);--color-violet-900:oklch(38% .189 293.745);--color-violet-950:oklch(28.3% .141 291.089);--color-purple-50:oklch(97.7% .014 308.299);--color-purple-100:oklch(94.6% .033 307.174);--color-purple-200:oklch(90.2% .063 306.703);--color-purple-300:oklch(82.7% .119 306.383);--color-purple-400:oklch(71.4% .203 305.504);--color-purple-500:oklch(62.7% .265 303.9);--color-purple-600:oklch(55.8% .288 302.321);--color-purple-700:oklch(49.6% .265 301.924);--color-purple-800:oklch(43.8% .218 303.724);--color-purple-900:oklch(38.1% .176 304.987);--color-purple-950:oklch(29.1% .149 302.717);--color-fuchsia-50:oklch(97.7% .017 320.058);--color-fuchsia-100:oklch(95.2% .037 318.852);--color-fuchsia-200:oklch(90.3% .076 319.62);--color-fuchsia-300:oklch(83.3% .145 321.434);--color-fuchsia-400:oklch(74% .238 322.16);--color-fuchsia-500:oklch(66.7% .295 322.15);--color-fuchsia-600:oklch(59.1% .293 322.896);--color-fuchsia-700:oklch(51.8% .253 323.949);--color-fuchsia-800:oklch(45.2% .211 324.591);--color-fuchsia-900:oklch(40.1% .17 325.612);--color-fuchsia-950:oklch(29.3% .136 325.661);--color-pink-50:oklch(97.1% .014 343.198);--color-pink-100:oklch(94.8% .028 342.258);--color-pink-200:oklch(89.9% .061 343.231);--color-pink-300:oklch(82.3% .12 346.018);--color-pink-400:oklch(71.8% .202 349.761);--color-pink-500:oklch(65.6% .241 354.308);--color-pink-600:oklch(59.2% .249 .584);--color-pink-700:oklch(52.5% .223 3.958);--color-pink-800:oklch(45.9% .187 3.815);--color-pink-900:oklch(40.8% .153 2.432);--color-pink-950:oklch(28.4% .109 3.907);--color-rose-50:oklch(96.9% .015 12.422);--color-rose-100:oklch(94.1% .03 12.58);--color-rose-200:oklch(89.2% .058 10.001);--color-rose-300:oklch(81% .117 11.638);--color-rose-400:oklch(71.2% .194 13.428);--color-rose-500:oklch(64.5% .246 16.439);--color-rose-600:oklch(58.6% .253 17.585);--color-rose-700:oklch(51.4% .222 16.935);--color-rose-800:oklch(45.5% .188 13.697);--color-rose-900:oklch(41% .159 10.272);--color-rose-950:oklch(27.1% .105 12.094);--color-slate-50:oklch(98.4% .003 247.858);--color-slate-100:oklch(96.8% .007 247.896);--color-slate-200:oklch(92.9% .013 255.508);--color-slate-300:oklch(86.9% .022 252.894);--color-slate-400:oklch(70.4% .04 256.788);--color-slate-500:oklch(55.4% .046 257.417);--color-slate-600:oklch(44.6% .043 257.281);--color-slate-700:oklch(37.2% .044 257.287);--color-slate-800:oklch(27.9% .041 260.031);--color-slate-900:oklch(20.8% .042 265.755);--color-slate-950:oklch(12.9% .042 264.695);--color-gray-50:oklch(98.5% .002 247.839);--color-gray-100:oklch(96.7% .003 264.542);--color-gray-200:oklch(92.8% .006 264.531);--color-gray-300:oklch(87.2% .01 258.338);--color-gray-400:oklch(70.7% .022 261.325);--color-gray-500:oklch(55.1% .027 264.364);--color-gray-600:oklch(44.6% .03 256.802);--color-gray-700:oklch(37.3% .034 259.733);--color-gray-800:oklch(27.8% .033 256.848);--color-gray-900:oklch(21% .034 264.665);--color-gray-950:oklch(13% .028 261.692);--color-zinc-50:oklch(98.5% 0 0);--color-zinc-100:oklch(96.7% .001 286.375);--color-zinc-200:oklch(92% .004 286.32);--color-zinc-300:oklch(87.1% .006 286.286);--color-zinc-400:oklch(70.5% .015 286.067);--color-zinc-500:oklch(55.2% .016 285.938);--color-zinc-600:oklch(44.2% .017 285.786);--color-zinc-700:oklch(37% .013 285.805);--color-zinc-800:oklch(27.4% .006 286.033);--color-zinc-900:oklch(21% .006 285.885);--color-zinc-950:oklch(14.1% .005 285.823);--color-neutral-50:oklch(98.5% 0 0);--color-neutral-100:oklch(97% 0 0);--color-neutral-200:oklch(92.2% 0 0);--color-neutral-300:oklch(87% 0 0);--color-neutral-400:oklch(70.8% 0 0);--color-neutral-500:oklch(55.6% 0 0);--color-neutral-600:oklch(43.9% 0 0);--color-neutral-700:oklch(37.1% 0 0);--color-neutral-800:oklch(26.9% 0 0);--color-neutral-900:oklch(20.5% 0 0);--color-neutral-950:oklch(14.5% 0 0);--color-stone-50:oklch(98.5% .001 106.423);--color-stone-100:oklch(97% .001 106.424);--color-stone-200:oklch(92.3% .003 48.717);--color-stone-300:oklch(86.9% .005 56.366);--color-stone-400:oklch(70.9% .01 56.259);--color-stone-500:oklch(55.3% .013 58.071);--color-stone-600:oklch(44.4% .011 73.639);--color-stone-700:oklch(37.4% .01 67.558);--color-stone-800:oklch(26.8% .007 34.298);--color-stone-900:oklch(21.6% .006 56.043);--color-stone-950:oklch(14.7% .004 49.25);--color-black:#000;--color-white:#fff;--spacing:.25rem;--breakpoint-sm:40rem;--breakpoint-md:48rem;--breakpoint-lg:64rem;--breakpoint-xl:80rem;--breakpoint-2xl:96rem;--container-3xs:16rem;--container-2xs:18rem;--container-xs:20rem;--container-sm:24rem;--container-md:28rem;--container-lg:32rem;--container-xl:36rem;--container-2xl:42rem;--container-3xl:48rem;--container-4xl:56rem;--container-5xl:64rem;--container-6xl:72rem;--container-7xl:80rem;--text-xs:.75rem;--text-xs--line-height:calc(1 / .75);--text-sm:.875rem;--text-sm--line-height:calc(1.25 / .875);--text-base:1rem;--text-base--line-height: 1.5 ;--text-lg:1.125rem;--text-lg--line-height:calc(1.75 / 1.125);--text-xl:1.25rem;--text-xl--line-height:calc(1.75 / 1.25);--text-2xl:1.5rem;--text-2xl--line-height:calc(2 / 1.5);--text-3xl:1.875rem;--text-3xl--line-height: 1.2 ;--text-4xl:2.25rem;--text-4xl--line-height:calc(2.5 / 2.25);--text-5xl:3rem;--text-5xl--line-height:1;--text-6xl:3.75rem;--text-6xl--line-height:1;--text-7xl:4.5rem;--text-7xl--line-height:1;--text-8xl:6rem;--text-8xl--line-height:1;--text-9xl:8rem;--text-9xl--line-height:1;--font-weight-thin:100;--font-weight-extralight:200;--font-weight-light:300;--font-weight-normal:400;--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;--font-weight-extrabold:800;--font-weight-black:900;--tracking-tighter:-.05em;--tracking-tight:-.025em;--tracking-normal:0em;--tracking-wide:.025em;--tracking-wider:.05em;--tracking-widest:.1em;--leading-tight:1.25;--leading-snug:1.375;--leading-normal:1.5;--leading-relaxed:1.625;--leading-loose:2;--radius-xs:.125rem;--radius-sm:.25rem;--radius-md:.375rem;--radius-lg:.5rem;--radius-xl:.75rem;--radius-2xl:1rem;--radius-3xl:1.5rem;--radius-4xl:2rem;--shadow-2xs:0 1px #0000000d;--shadow-xs:0 1px 2px 0 #0000000d;--shadow-sm:0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a;--shadow-md:0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a;--shadow-lg:0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;--shadow-xl:0 20px 25px -5px #0000001a, 0 8px 10px -6px #0000001a;--shadow-2xl:0 25px 50px -12px #00000040;--inset-shadow-2xs:inset 0 1px #0000000d;--inset-shadow-xs:inset 0 1px 1px #0000000d;--inset-shadow-sm:inset 0 2px 4px #0000000d;--drop-shadow-xs:0 1px 1px #0000000d;--drop-shadow-sm:0 1px 2px #00000026;--drop-shadow-md:0 3px 3px #0000001f;--drop-shadow-lg:0 4px 4px #00000026;--drop-shadow-xl:0 9px 7px #0000001a;--drop-shadow-2xl:0 25px 25px #00000026;--ease-in:cubic-bezier(.4, 0, 1, 1);--ease-out:cubic-bezier(0, 0, .2, 1);--ease-in-out:cubic-bezier(.4, 0, .2, 1);--animate-spin:spin 1s linear infinite;--animate-ping:ping 1s cubic-bezier(0, 0, .2, 1) infinite;--animate-pulse:pulse 2s cubic-bezier(.4, 0, .6, 1) infinite;--animate-bounce:bounce 1s infinite;--blur-xs:4px;--blur-sm:8px;--blur-md:12px;--blur-lg:16px;--blur-xl:24px;--blur-2xl:40px;--blur-3xl:64px;--perspective-dramatic:100px;--perspective-near:300px;--perspective-normal:500px;--perspective-midrange:800px;--perspective-distant:1200px;--aspect-video:16 / 9;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1);--default-font-family:var(--font-sans);--default-mono-font-family:var(--font-mono)}}@layer base{*,:after,:before,::backdrop{box-sizing:border-box;border:0 solid;margin:0;padding:0}::file-selector-button{box-sizing:border-box;border:0 solid;margin:0;padding:0}html,:host{-webkit-text-size-adjust:100%;tab-size:4;line-height:1.5;font-family:var(--default-font-family,ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");font-feature-settings:var(--default-font-feature-settings,normal);font-variation-settings:var(--default-font-variation-settings,normal);-webkit-tap-highlight-color:transparent}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,samp,pre{font-family:var(--default-mono-font-family,ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);font-feature-settings:var(--default-mono-font-feature-settings,normal);font-variation-settings:var(--default-mono-font-variation-settings,normal);font-size:1em}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}:-moz-focusring{outline:auto}progress{vertical-align:baseline}summary{display:list-item}ol,ul,menu{list-style:none}img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:block}img,video{max-width:100%;height:auto}button,input,select,optgroup,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}::file-selector-button{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}:where(select:is([multiple],[size])) optgroup{font-weight:bolder}:where(select:is([multiple],[size])) optgroup option{padding-inline-start:20px}::file-selector-button{margin-inline-end:4px}::placeholder{opacity:1}@supports (not ((-webkit-appearance:-apple-pay-button))) or (contain-intrinsic-size:1px){::placeholder{color:currentColor}@supports (color:color-mix(in lab,red,red)){::placeholder{color:color-mix(in oklab,currentcolor 50%,transparent)}}}textarea{resize:vertical}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-date-and-time-value{min-height:1lh;text-align:inherit}::-webkit-datetime-edit{display:inline-flex}::-webkit-datetime-edit-fields-wrapper{padding:0}::-webkit-datetime-edit{padding-block:0}::-webkit-datetime-edit-year-field{padding-block:0}::-webkit-datetime-edit-month-field{padding-block:0}::-webkit-datetime-edit-day-field{padding-block:0}::-webkit-datetime-edit-hour-field{padding-block:0}::-webkit-datetime-edit-minute-field{padding-block:0}::-webkit-datetime-edit-second-field{padding-block:0}::-webkit-datetime-edit-millisecond-field{padding-block:0}::-webkit-datetime-edit-meridiem-field{padding-block:0}::-webkit-calendar-picker-indicator{line-height:1}:-moz-ui-invalid{box-shadow:none}button,input:where([type=button],[type=reset],[type=submit]){appearance:button}::file-selector-button{appearance:button}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}[hidden]:where(:not([hidden=until-found])){display:none!important}}@layer components;@layer utilities{.absolute{position:absolute}.fixed{position:fixed}.relative{position:relative}.static{position:static}.inset-0{inset:calc(var(--spacing) * 0)}.start{inset-inline-start:var(--spacing)}.top-0{top:calc(var(--spacing) * 0)}.right-0{right:calc(var(--spacing) * 0)}.container{width:100%}@media(min-width:40rem){.container{max-width:40rem}}@media(min-width:48rem){.container{max-width:48rem}}@media(min-width:64rem){.container{max-width:64rem}}@media(min-width:80rem){.container{max-width:80rem}}@media(min-width:96rem){.container{max-width:96rem}}.mx-auto{margin-inline:auto}.-mt-\[6\.6rem\]{margin-top:-6.6rem}.-mt-px{margin-top:-1px}.mt-2{margin-top:calc(var(--spacing) * 2)}.mt-4{margin-top:calc(var(--spacing) * 4)}.mt-6{margin-top:calc(var(--spacing) * 6)}.mt-8{margin-top:calc(var(--spacing) * 8)}.mr-2{margin-right:calc(var(--spacing) * 2)}.-mb-px{margin-bottom:-1px}.mb-1{margin-bottom:calc(var(--spacing) * 1)}.mb-2{margin-bottom:calc(var(--spacing) * 2)}.mb-4{margin-bottom:calc(var(--spacing) * 4)}.mb-6{margin-bottom:calc(var(--spacing) * 6)}.-ml-8{margin-left:calc(var(--spacing) * -8)}.-ml-px{margin-left:-1px}.ml-1{margin-left:calc(var(--spacing) * 1)}.ml-2{margin-left:calc(var(--spacing) * 2)}.ml-4{margin-left:calc(var(--spacing) * 4)}.ml-12{margin-left:calc(var(--spacing) * 12)}.contents{display:contents}.flex{display:flex}.grid{display:grid}.hidden{display:none}.inline-block{display:inline-block}.inline-flex{display:inline-flex}.table{display:table}.aspect-\[335\/364\]{aspect-ratio:335/364}.h-1{height:calc(var(--spacing) * 1)}.h-1\.5{height:calc(var(--spacing) * 1.5)}.h-2{height:calc(var(--spacing) * 2)}.h-2\.5{height:calc(var(--spacing) * 2.5)}.h-3{height:calc(var(--spacing) * 3)}.h-3\.5{height:calc(var(--spacing) * 3.5)}.h-5{height:calc(var(--spacing) * 5)}.h-8{height:calc(var(--spacing) * 8)}.h-14{height:calc(var(--spacing) * 14)}.h-14\.5{height:calc(var(--spacing) * 14.5)}.h-16{height:calc(var(--spacing) * 16)}.min-h-screen{min-height:100vh}.w-1{width:calc(var(--spacing) * 1)}.w-1\.5{width:calc(var(--spacing) * 1.5)}.w-2{width:calc(var(--spacing) * 2)}.w-2\.5{width:calc(var(--spacing) * 2.5)}.w-3{width:calc(var(--spacing) * 3)}.w-3\.5{width:calc(var(--spacing) * 3.5)}.w-5{width:calc(var(--spacing) * 5)}.w-8{width:calc(var(--spacing) * 8)}.w-\[438px\]{width:438px}.w-auto{width:auto}.w-full{width:100%}.max-w-6xl{max-width:var(--container-6xl)}.max-w-\[335px\]{max-width:335px}.max-w-none{max-width:none}.max-w-xl{max-width:var(--container-xl)}.flex-1{flex:1}.shrink-0{flex-shrink:0}.translate-y-0{--tw-translate-y:calc(var(--spacing) * 0);translate:var(--tw-translate-x) var(--tw-translate-y)}.transform{transform:var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,)}.cursor-default{cursor:default}.cursor-not-allowed{cursor:not-allowed}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-col-reverse{flex-direction:column-reverse}.items-center{align-items:center}.justify-between{justify-content:space-between}.justify-center{justify-content:center}.justify-end{justify-content:flex-end}.justify-items-center{justify-items:center}.gap-2{gap:calc(var(--spacing) * 2)}.gap-3{gap:calc(var(--spacing) * 3)}.gap-4{gap:calc(var(--spacing) * 4)}:where(.space-x-1>:not(:last-child)){--tw-space-x-reverse:0;margin-inline-start:calc(calc(var(--spacing) * 1) * var(--tw-space-x-reverse));margin-inline-end:calc(calc(var(--spacing) * 1) * calc(1 - var(--tw-space-x-reverse)))}.overflow-hidden{overflow:hidden}.rounded-full{border-radius:3.40282e38px}.rounded-md{border-radius:var(--radius-md)}.rounded-sm{border-radius:var(--radius-sm)}.rounded-t-lg{border-top-left-radius:var(--radius-lg);border-top-right-radius:var(--radius-lg)}.rounded-l-md{border-top-left-radius:var(--radius-md);border-bottom-left-radius:var(--radius-md)}.rounded-r-md{border-top-right-radius:var(--radius-md);border-bottom-right-radius:var(--radius-md)}.rounded-br-lg{border-bottom-right-radius:var(--radius-lg)}.rounded-bl-lg{border-bottom-left-radius:var(--radius-lg)}.border{border-style:var(--tw-border-style);border-width:1px}.border-t{border-top-style:var(--tw-border-style);border-top-width:1px}.border-r{border-right-style:var(--tw-border-style);border-right-width:1px}.border-\[\#19140035\]{border-color:#19140035}.border-\[\#e3e3e0\]{border-color:#e3e3e0}.border-black{border-color:var(--color-black)}.border-gray-200{border-color:var(--color-gray-200)}.border-gray-300{border-color:var(--color-gray-300)}.border-gray-400{border-color:var(--color-gray-400)}.border-transparent{border-color:#0000}.bg-\[\#1b1b18\]{background-color:#1b1b18}.bg-\[\#FDFDFC\]{background-color:#fdfdfc}.bg-\[\#dbdbd7\]{background-color:#dbdbd7}.bg-\[\#fff2f2\]{background-color:#fff2f2}.bg-gray-100{background-color:var(--color-gray-100)}.bg-gray-200{background-color:var(--color-gray-200)}.bg-white{background-color:var(--color-white)}.p-6{padding:calc(var(--spacing) * 6)}.px-2{padding-inline:calc(var(--spacing) * 2)}.px-4{padding-inline:calc(var(--spacing) * 4)}.px-5{padding-inline:calc(var(--spacing) * 5)}.px-6{padding-inline:calc(var(--spacing) * 6)}.py-1{padding-block:calc(var(--spacing) * 1)}.py-1\.5{padding-block:calc(var(--spacing) * 1.5)}.py-2{padding-block:calc(var(--spacing) * 2)}.py-4{padding-block:calc(var(--spacing) * 4)}.pt-8{padding-top:calc(var(--spacing) * 8)}.pb-6{padding-bottom:calc(var(--spacing) * 6)}.pb-12{padding-bottom:calc(var(--spacing) * 12)}.text-center{text-align:center}.text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}.text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.text-\[13px\]{font-size:13px}.leading-5{--tw-leading:calc(var(--spacing) * 5);line-height:calc(var(--spacing) * 5)}.leading-7{--tw-leading:calc(var(--spacing) * 7);line-height:calc(var(--spacing) * 7)}.leading-\[20px\]{--tw-leading:20px;line-height:20px}.leading-normal{--tw-leading:var(--leading-normal);line-height:var(--leading-normal)}.font-medium{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.font-semibold{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.tracking-wider{--tw-tracking:var(--tracking-wider);letter-spacing:var(--tracking-wider)}.text-\[\#1B1B18\],.text-\[\#1b1b18\]{color:#1b1b18}.text-\[\#706f6c\]{color:#706f6c}.text-\[\#F3BEC7\]{color:#f3bec7}.text-\[\#F8B803\]{color:#f8b803}.text-\[\#F53003\],.text-\[\#f53003\]{color:#f53003}.text-gray-200{color:var(--color-gray-200)}.text-gray-300{color:var(--color-gray-300)}.text-gray-400{color:var(--color-gray-400)}.text-gray-500{color:var(--color-gray-500)}.text-gray-600{color:var(--color-gray-600)}.text-gray-700{color:var(--color-gray-700)}.text-gray-800{color:var(--color-gray-800)}.text-gray-900{color:var(--color-gray-900)}.text-white{color:var(--color-white)}.uppercase{text-transform:uppercase}.underline{text-decoration-line:underline}.underline-offset-4{text-underline-offset:4px}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-100{opacity:1}.mix-blend-color{mix-blend-mode:color}.mix-blend-darken{mix-blend-mode:darken}.mix-blend-hard-light{mix-blend-mode:hard-light}.mix-blend-multiply{mix-blend-mode:multiply}.shadow{--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-\[0px_0px_1px_0px_rgba\(0\,0\,0\,0\.03\)\,0px_1px_2px_0px_rgba\(0\,0\,0\,0\.06\)\]{--tw-shadow:0px 0px 1px 0px var(--tw-shadow-color,#00000008), 0px 1px 2px 0px var(--tw-shadow-color,#0000000f);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-\[inset_0px_0px_0px_1px_rgba\(26\,26\,0\,0\.16\)\]{--tw-shadow:inset 0px 0px 0px 1px var(--tw-shadow-color,#1a1a0029);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.ring-gray-300{--tw-ring-color:var(--color-gray-300)}.filter{filter:var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,)}.transition{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to,opacity,box-shadow,transform,translate,scale,rotate,filter,-webkit-backdrop-filter,backdrop-filter,display,content-visibility,overlay,pointer-events;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-all{transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-opacity{transition-property:opacity;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.delay-200{transition-delay:.2s}.delay-300{transition-delay:.3s}.delay-400{transition-delay:.4s}.duration-150{--tw-duration:.15s;transition-duration:.15s}.duration-750{--tw-duration:.75s;transition-duration:.75s}.ease-in-out{--tw-ease:var(--ease-in-out);transition-timing-function:var(--ease-in-out)}.\[--stroke-color\:\#1B1B18\]{--stroke-color:#1b1b18}.not-has-\[nav\]\:hidden:not(:has(:is(nav))){display:none}.before\:absolute:before{content:var(--tw-content);position:absolute}.before\:top-0:before{content:var(--tw-content);top:calc(var(--spacing) * 0)}.before\:top-1\/2:before{content:var(--tw-content);top:50%}.before\:bottom-0:before{content:var(--tw-content);bottom:calc(var(--spacing) * 0)}.before\:bottom-1\/2:before{content:var(--tw-content);bottom:50%}.before\:left-\[0\.4rem\]:before{content:var(--tw-content);left:.4rem}.before\:border-l:before{content:var(--tw-content);border-left-style:var(--tw-border-style);border-left-width:1px}.before\:border-\[\#e3e3e0\]:before{content:var(--tw-content);border-color:#e3e3e0}@media(hover:hover){.hover\:border-\[\#1915014a\]:hover{border-color:#1915014a}.hover\:border-\[\#19140035\]:hover{border-color:#19140035}.hover\:border-black:hover{border-color:var(--color-black)}.hover\:bg-black:hover{background-color:var(--color-black)}.hover\:bg-gray-100:hover{background-color:var(--color-gray-100)}.hover\:text-gray-400:hover{color:var(--color-gray-400)}.hover\:text-gray-700:hover{color:var(--color-gray-700)}}.focus\:border-blue-300:focus{border-color:var(--color-blue-300)}.focus\:ring:focus{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.focus\:outline-none:focus{--tw-outline-style:none;outline-style:none}.active\:bg-gray-100:active{background-color:var(--color-gray-100)}.active\:text-gray-500:active{color:var(--color-gray-500)}.active\:text-gray-700:active{color:var(--color-gray-700)}.active\:text-gray-800:active{color:var(--color-gray-800)}@media(min-width:40rem){.sm\:flex{display:flex}.sm\:hidden{display:none}.sm\:flex-1{flex:1}.sm\:items-center{align-items:center}.sm\:justify-between{justify-content:space-between}.sm\:justify-start{justify-content:flex-start}.sm\:gap-2{gap:calc(var(--spacing) * 2)}.sm\:px-6{padding-inline:calc(var(--spacing) * 6)}.sm\:pt-0{padding-top:calc(var(--spacing) * 0)}}@media(min-width:64rem){.lg\:mt-10{margin-top:calc(var(--spacing) * 10)}.lg\:mb-0{margin-bottom:calc(var(--spacing) * 0)}.lg\:mb-6{margin-bottom:calc(var(--spacing) * 6)}.lg\:-ml-px{margin-left:-1px}.lg\:ml-0{margin-left:calc(var(--spacing) * 0)}.lg\:block{display:block}.lg\:aspect-auto{aspect-ratio:auto}.lg\:w-\[438px\]{width:438px}.lg\:max-w-4xl{max-width:var(--container-4xl)}.lg\:grow{flex-grow:1}.lg\:flex-row{flex-direction:row}.lg\:justify-center{justify-content:center}.lg\:rounded-t-none{border-top-left-radius:0;border-top-right-radius:0}.lg\:rounded-tl-lg{border-top-left-radius:var(--radius-lg)}.lg\:rounded-r-lg{border-top-right-radius:var(--radius-lg);border-bottom-right-radius:var(--radius-lg)}.lg\:rounded-br-none{border-bottom-right-radius:0}.lg\:p-8{padding:calc(var(--spacing) * 8)}.lg\:p-20{padding:calc(var(--spacing) * 20)}.lg\:px-8{padding-inline:calc(var(--spacing) * 8)}.lg\:pb-10{padding-bottom:calc(var(--spacing) * 10)}}.rtl\:flex-row-reverse:where(:dir(rtl),[dir=rtl],[dir=rtl] *){flex-direction:row-reverse}@media(prefers-color-scheme:dark){.dark\:border-\[\#3E3E3A\]{border-color:#3e3e3a}.dark\:border-\[\#eeeeec\]{border-color:#eeeeec}.dark\:border-gray-600{border-color:var(--color-gray-600)}.dark\:bg-\[\#0a0a0a\]{background-color:#0a0a0a}.dark\:bg-\[\#1D0002\]{background-color:#1d0002}.dark\:bg-\[\#3E3E3A\]{background-color:#3e3e3a}.dark\:bg-\[\#161615\]{background-color:#161615}.dark\:bg-\[\#eeeeec\]{background-color:#eeeeec}.dark\:bg-gray-700{background-color:var(--color-gray-700)}.dark\:bg-gray-800{background-color:var(--color-gray-800)}.dark\:bg-gray-900{background-color:var(--color-gray-900)}.dark\:text-\[\#1C1C1A\]{color:#1c1c1a}.dark\:text-\[\#4B0600\]{color:#4b0600}.dark\:text-\[\#391800\]{color:#391800}.dark\:text-\[\#733000\]{color:#733000}.dark\:text-\[\#A1A09A\]{color:#a1a09a}.dark\:text-\[\#EDEDEC\]{color:#ededec}.dark\:text-\[\#F61500\]{color:#f61500}.dark\:text-\[\#FF4433\]{color:#f43}.dark\:text-black{color:var(--color-black)}.dark\:text-gray-200{color:var(--color-gray-200)}.dark\:text-gray-300{color:var(--color-gray-300)}.dark\:text-gray-400{color:var(--color-gray-400)}.dark\:text-gray-600{color:var(--color-gray-600)}.dark\:mix-blend-hard-light{mix-blend-mode:hard-light}.dark\:mix-blend-normal{mix-blend-mode:normal}.dark\:shadow-\[inset_0px_0px_0px_1px_\#fffaed2d\]{--tw-shadow:inset 0px 0px 0px 1px var(--tw-shadow-color,#fffaed2d);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.dark\:\[--stroke-color\:\#FF750F\]{--stroke-color:#ff750f}.dark\:before\:border-\[\#3E3E3A\]:before{content:var(--tw-content);border-color:#3e3e3a}@media(hover:hover){.dark\:hover\:border-\[\#3E3E3A\]:hover{border-color:#3e3e3a}.dark\:hover\:border-\[\#62605b\]:hover{border-color:#62605b}.dark\:hover\:border-white:hover{border-color:var(--color-white)}.dark\:hover\:bg-gray-900:hover{background-color:var(--color-gray-900)}.dark\:hover\:bg-white:hover{background-color:var(--color-white)}.dark\:hover\:text-gray-200:hover{color:var(--color-gray-200)}.dark\:hover\:text-gray-300:hover{color:var(--color-gray-300)}}.dark\:focus\:border-blue-700:focus{border-color:var(--color-blue-700)}.dark\:focus\:border-blue-800:focus{border-color:var(--color-blue-800)}.dark\:active\:bg-gray-700:active{background-color:var(--color-gray-700)}.dark\:active\:text-gray-300:active{color:var(--color-gray-300)}}@starting-style{.starting\:opacity-0{opacity:0}}@media(prefers-reduced-motion:no-preference){@starting-style{.motion-safe\:starting\:-translate-x-\[26px\]{--tw-translate-x: -26px ;translate:var(--tw-translate-x) var(--tw-translate-y)}}@starting-style{.motion-safe\:starting\:-translate-x-\[51px\]{--tw-translate-x: -51px ;translate:var(--tw-translate-x) var(--tw-translate-y)}}@starting-style{.motion-safe\:starting\:-translate-x-\[78px\]{--tw-translate-x: -78px ;translate:var(--tw-translate-x) var(--tw-translate-y)}}@starting-style{.motion-safe\:starting\:-translate-x-\[102px\]{--tw-translate-x: -102px ;translate:var(--tw-translate-x) var(--tw-translate-y)}}@starting-style{.motion-safe\:starting\:translate-y-6{--tw-translate-y:calc(var(--spacing) * 6);translate:var(--tw-translate-x) var(--tw-translate-y)}}}}@property --tw-translate-x{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-y{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-z{syntax:"*";inherits:false;initial-value:0}@property --tw-rotate-x{syntax:"*";inherits:false}@property --tw-rotate-y{syntax:"*";inherits:false}@property --tw-rotate-z{syntax:"*";inherits:false}@property --tw-skew-x{syntax:"*";inherits:false}@property --tw-skew-y{syntax:"*";inherits:false}@property --tw-space-x-reverse{syntax:"*";inherits:false;initial-value:0}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-leading{syntax:"*";inherits:false}@property --tw-font-weight{syntax:"*";inherits:false}@property --tw-tracking{syntax:"*";inherits:false}@property --tw-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-shadow-color{syntax:"*";inherits:false}@property --tw-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-inset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-shadow-color{syntax:"*";inherits:false}@property --tw-inset-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-ring-color{syntax:"*";inherits:false}@property --tw-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-ring-color{syntax:"*";inherits:false}@property --tw-inset-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-ring-inset{syntax:"*";inherits:false}@property --tw-ring-offset-width{syntax:"<length>";inherits:false;initial-value:0}@property --tw-ring-offset-color{syntax:"*";inherits:false;initial-value:#fff}@property --tw-ring-offset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-blur{syntax:"*";inherits:false}@property --tw-brightness{syntax:"*";inherits:false}@property --tw-contrast{syntax:"*";inherits:false}@property --tw-grayscale{syntax:"*";inherits:false}@property --tw-hue-rotate{syntax:"*";inherits:false}@property --tw-invert{syntax:"*";inherits:false}@property --tw-opacity{syntax:"*";inherits:false}@property --tw-saturate{syntax:"*";inherits:false}@property --tw-sepia{syntax:"*";inherits:false}@property --tw-drop-shadow{syntax:"*";inherits:false}@property --tw-drop-shadow-color{syntax:"*";inherits:false}@property --tw-drop-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-drop-shadow-size{syntax:"*";inherits:false}@property --tw-duration{syntax:"*";inherits:false}@property --tw-ease{syntax:"*";inherits:false}@property --tw-content{syntax:"*";inherits:false;initial-value:""}@keyframes spin{to{transform:rotate(360deg)}}@keyframes ping{75%,to{opacity:0;transform:scale(2)}}@keyframes pulse{50%{opacity:.5}}@keyframes bounce{0%,to{animation-timing-function:cubic-bezier(.8,0,1,1);transform:translateY(-25%)}50%{animation-timing-function:cubic-bezier(0,0,.2,1);transform:none}}
-            </style>
-        @endif
+        <title>Adventurer's Ledger</title>
+        <style>
+            :root{--bg:#130f0d;--panel:#221915;--soft:#31231d;--line:#4e372a;--text:#f7ead8;--muted:#d8bea0;--accent:#d58345;--accent2:#efba70}
+            *{box-sizing:border-box} html{scroll-behavior:smooth}
+            body{position:relative;min-height:100vh;margin:0;font-family:"Trebuchet MS","Segoe UI",sans-serif;color:var(--text);background:#100c0b;overflow-x:hidden}
+            body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(circle at top left,rgba(213,131,69,.22),transparent 25%),linear-gradient(160deg,#100c0b,#1b1411 50%,#0e0b0a)}
+            body::after{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.18))}
+            button,input,textarea,select{font:inherit} a{text-decoration:none;color:inherit}
+            .wrap{position:relative;z-index:1;width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:1rem 0 4rem}
+            .topbar,.card,.panel,.char,.stat,.notice,.mini{border:1px solid var(--line);border-radius:24px;background:rgba(34,25,21,.9);box-shadow:0 20px 50px rgba(0,0,0,.28)}
+            .topbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.2rem;margin-top:1rem;border-radius:999px;background:rgba(19,15,13,.84);backdrop-filter:blur(10px)}
+            .brand{display:flex;align-items:center;gap:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+            .mark{display:grid;place-items:center;width:2.5rem;height:2.5rem;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#25170f;font-weight:900}
+            .nav{display:flex;flex-wrap:wrap;gap:.6rem}
+            .nav a,.btn,.btn-soft{padding:.8rem 1rem;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);cursor:pointer;transition:.18s ease}
+            .btn:hover,.btn-soft:hover,.nav a:hover{transform:translateY(-1px);border-color:#8b623f;color:var(--text)}
+            .btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#29180f;font-weight:700}
+            main#top{display:grid;gap:1.4rem}
+            main#top > section{margin-top:0}
+            .hero{display:grid;grid-template-columns:1fr;align-items:start;gap:1rem;padding:2rem 0 .4rem;order:1}
+            .card,.panel{padding:1.5rem}
+            .eyebrow{display:inline-block;margin-bottom:.8rem;color:var(--accent2);font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+            h1,h2,h3{margin:0;font-family:Georgia,"Times New Roman",serif;line-height:1.05}
+            h1{font-size:clamp(2.7rem,5vw,4.6rem);max-width:9ch}
+            h2{font-size:clamp(1.7rem,3vw,2.2rem)}
+            p{color:var(--muted);line-height:1.7}
+            .hero-actions,.actions,.quick{display:flex;flex-wrap:wrap;gap:.75rem}
+            .quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:1rem}
+            .mini{padding:1rem;border-radius:18px;background:var(--soft)}
+            .mini strong{display:block;margin-top:.35rem;font-size:1.15rem;color:var(--text)}
+            section{margin-top:1.4rem}
+            .head{display:flex;justify-content:space-between;align-items:end;gap:1rem;margin-bottom:1rem}
+            .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+            .char{padding:1rem;display:grid;gap:.9rem;background:rgba(255,255,255,.03)}
+            .char-top{display:flex;justify-content:space-between;gap:1rem;align-items:start}
+            .meta{color:var(--muted);font-size:.95rem}
+            .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem}
+            .stat{padding:.75rem;border-radius:16px;text-align:center;background:rgba(255,255,255,.03)}
+            .stat span{display:block}.stat .label{font-size:.72rem;letter-spacing:.08em;color:var(--accent2)} .stat .value{margin-top:.2rem;font-weight:700}
+            .form{display:grid;gap:1rem}
+            .form-section{padding:1rem;border-radius:22px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+            .form-section + .form-section{margin-top:.1rem}
+            .section-head{display:grid;gap:.35rem;margin-bottom:1rem}
+            .section-kicker{font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2)}
+            .section-head p{margin:0}
+            .section-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem}
+            .full{grid-column:1 / -1}
+            label{display:grid;gap:.35rem;color:var(--muted);font-size:.92rem}
+            input,textarea,select{width:100%;padding:.85rem 1rem;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);outline:none}
+            textarea{min-height:7rem;resize:vertical}
+            input:focus,textarea:focus,select:focus{border-color:#9e754f}
+            .check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}
+            .check-chip{display:block;color:inherit;font-size:inherit}
+            .check-chip-input{position:absolute;opacity:0;pointer-events:none}
+            .check-chip-label{display:block;padding:.9rem 1rem;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;transition:.18s ease}
+            .check-chip:hover .check-chip-label{border-color:#8b623f;transform:translateY(-1px)}
+            .check-chip-input:focus-visible + .check-chip-label{outline:2px solid rgba(239,186,112,.6);outline-offset:2px}
+            .check-chip-input:checked + .check-chip-label{border-color:#476b3f;background:linear-gradient(135deg,rgba(43,76,49,.94),rgba(70,108,64,.95));color:#f4fff1;box-shadow:0 10px 24px rgba(28,52,34,.32)}
+            .notice{display:none;padding:1rem 1.1rem;margin-bottom:1rem;border-radius:18px}
+            .notice.show{display:block}.notice.error{color:#ffd9d9;border-color:#7b4a4a;background:rgba(123,74,74,.18)}.notice.success{color:#d7f0dc;border-color:#4d7556;background:rgba(77,117,86,.18)}
+            .empty{padding:2rem;text-align:center}
+            .stack{display:grid;gap:1rem}
+            .rule-block{padding:1rem;border-radius:18px;background:var(--soft);border:1px solid var(--line)}
+            .rule-block ul{margin:.7rem 0 0;padding-left:1rem;color:var(--muted)}
+            .rule-block li{margin:.3rem 0}
+            .wizard-log{display:grid;gap:.8rem;max-height:520px;overflow:auto;padding-right:.2rem}
+            .wizard-message{padding:1rem;border-radius:18px;border:1px solid var(--line);background:var(--soft)}
+            .wizard-message.user{background:rgba(213,131,69,.12);border-color:#8b623f}
+            .wizard-speaker{margin-bottom:.45rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2)}
+            .wizard-message p{margin:0}
+            .wizard-form{display:grid;grid-template-columns:1fr auto;gap:.75rem;margin-top:1rem}
+            .wizard-actions{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1rem}
+            .wizard-actions.rich{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+            .wizard-option{display:grid;gap:.25rem;justify-items:start;text-align:left;border-radius:18px;padding:1rem !important}
+            .wizard-option strong{color:var(--text);font-size:1rem}
+            .dice-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;margin-top:1rem}
+            .dice-form{display:grid;grid-template-columns:minmax(0,1fr) 180px auto;gap:.75rem;margin-top:1rem}
+            .dice-result-card{padding:1.1rem;border-radius:18px;background:var(--soft);border:1px solid var(--line)}
+            .dice-result-card h3{margin-bottom:.45rem}
+            .dice-result-card p{margin:.3rem 0 0}
+            .dice-inline{display:flex;flex-wrap:wrap;gap:.55rem;margin:.9rem 0 .2rem}
+            .wizard-summary-card{padding:1rem;border-radius:18px;background:var(--soft);border:1px solid var(--line)}
+            .wizard-summary-card h3{margin-bottom:.45rem}
+            .wizard-summary-card ul{margin:.6rem 0 0;padding-left:1rem;color:var(--muted)}
+            .wizard-summary-card li{margin:.25rem 0}
+            .hover-help{padding:.95rem 1rem;border-radius:18px;border:1px solid rgba(139,98,63,.7);background:rgba(255,255,255,.04);color:var(--muted)}
+            .hover-help strong{display:block;margin-bottom:.35rem;color:var(--accent2);font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
+            .summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+            .library-toolbar{display:grid;grid-template-columns:280px 1fr;gap:1rem;margin-bottom:1rem}
+            .library-stage{padding:1rem;border-radius:24px;border:1px solid rgba(78,55,42,.72);background:linear-gradient(180deg,rgba(58,41,32,.34),rgba(34,25,21,.18));box-shadow:inset 0 1px 0 rgba(255,255,255,.03);backdrop-filter:blur(2px);overflow:hidden}
+            .library-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;align-content:start}
+            .library-results{column-width:320px;column-gap:1rem}
+            .library-results > .library-card,.library-results > .empty{display:inline-block;vertical-align:top;width:100%;margin:0 0 1rem;break-inside:avoid}
+            .library-card{padding:1rem;border-radius:18px;background:var(--soft);border:1px solid var(--line)}
+            .chip-list{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.85rem}
+            .chip{padding:.35rem .6rem;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+            .chip-action{appearance:none;cursor:pointer}
+            .chip-action:hover{border-color:#8b623f;color:var(--text)}
+            .entry-meta{margin-top:.8rem;color:var(--muted);font-size:.88rem}
+            .entry-list{margin:.75rem 0 0;padding-left:1rem;color:var(--muted)}
+            .entry-list li{margin:.3rem 0}
+            .tiny{font-size:.92rem;color:rgba(247,234,216,.65)}
+            #forge{order:2}
+            #dice{order:3}
+            #wizard{order:4}
+            #library{order:5}
+            @media (max-width:980px){.hero,.grid,.library-grid,.library-toolbar,.summary-grid,.quick{grid-template-columns:1fr}.topbar{position:static;border-radius:28px;align-items:stretch}.nav{justify-content:center}}
+            @media (max-width:720px){.section-grid,.stats,.quick,.check-grid{grid-template-columns:1fr}.topbar{border-radius:26px;padding:1rem}.brand{justify-content:center}.nav a{flex:1 1 calc(50% - .6rem);text-align:center}.head{flex-direction:column;align-items:start}}
+            @media (max-width:720px){.dice-buttons,.dice-form{grid-template-columns:1fr}}
+            @media (max-width:640px){.wrap{width:min(100% - 1rem,100%)}.topbar,.card,.panel{padding:1.05rem}h1{max-width:100%}.library-results{column-width:auto;columns:1}}
+        </style>
     </head>
-    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-        <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
-            @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        <a
-                            href="{{ url('/dashboard') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal"
-                        >
-                            Dashboard
-                        </a>
-                    @else
-                        <a
-                            href="{{ route('login') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal"
-                        >
-                            Log in
-                        </a>
-
-                        @if (Route::has('register'))
-                            <a
-                                href="{{ route('register') }}"
-                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Register
-                            </a>
-                        @endif
-                    @endauth
+    <body>
+        <div class="wrap">
+            <header class="topbar">
+                <a class="brand" href="#top"><span class="mark">D20</span><span>Adventurer's Ledger</span></a>
+                <nav class="nav">
+                    <a href="#forge">Builder</a>
+                    <a href="#dice">Dice</a>
+                    <a href="#wizard">Wizard</a>
+                    <a href="{{ route('roster') }}">Roster</a>
+                    <a href="#library">Library</a>
+                    <a href="/api/compendium">Rules API</a>
                 </nav>
-            @endif
-        </header>
-        <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
-            <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
-                <div class="text-[13px] leading-[20px] flex-1 p-6 pb-6 lg:p-20 lg:pb-10 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
-                    <h1 class="mb-1 font-medium">Let's get started</h1>
-                    <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">With so many options available to you,<br /> we suggest you start with the following:</p>
-                    <ul class="flex flex-col mb-4 lg:mb-6">
-                        <li class="flex items-center gap-4 py-2 relative before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A] before:top-1/2 before:bottom-0 before:left-[0.4rem] before:absolute">
-                            <span class="relative py-1 bg-white dark:bg-[#161615]">
-                                <span class="flex items-center justify-center rounded-full bg-[#FDFDFC] dark:bg-[#161615] shadow-[0px_0px_1px_0px_rgba(0,0,0,0.03),0px_1px_2px_0px_rgba(0,0,0,0.06)] w-3.5 h-3.5 border dark:border-[#3E3E3A] border-[#e3e3e0]">
-                                    <span class="rounded-full bg-[#dbdbd7] dark:bg-[#3E3E3A] w-1.5 h-1.5"></span>
-                                </span>
-                            </span>
-                            <span>
-                                Read the
-                                <a href="https://laravel.com/docs" target="_blank" class="inline-flex items-center space-x-1 font-medium underline underline-offset-4 text-[#f53003] dark:text-[#FF4433] ml-1">
-                                    <span>Documentation</span>
-                                    <svg
-                                        width="10"
-                                        height="11"
-                                        viewBox="0 0 10 11"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        class="w-2.5 h-2.5"
-                                    >
-                                        <path
-                                            d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001"
-                                            stroke="currentColor"
-                                            stroke-linecap="square"
-                                        />
-                                    </svg>
-                                </a>
-                            </span>
-                        </li>
-                        <li class="flex items-center gap-4 py-2 relative before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A] before:bottom-1/2 before:top-0 before:left-[0.4rem] before:absolute">
-                            <span class="relative py-1 bg-white dark:bg-[#161615]">
-                                <span class="flex items-center justify-center rounded-full bg-[#FDFDFC] dark:bg-[#161615] shadow-[0px_0px_1px_0px_rgba(0,0,0,0.03),0px_1px_2px_0px_rgba(0,0,0,0.06)] w-3.5 h-3.5 border dark:border-[#3E3E3A] border-[#e3e3e0]">
-                                    <span class="rounded-full bg-[#dbdbd7] dark:bg-[#3E3E3A] w-1.5 h-1.5"></span>
-                                </span>
-                            </span>
-                            <span>
-                                Watch video tutorials at
-                                <a href="https://laracasts.com" target="_blank" class="inline-flex items-center space-x-1 font-medium underline underline-offset-4 text-[#f53003] dark:text-[#FF4433] ml-1">
-                                    <span>Laracasts</span>
-                                    <svg
-                                        width="10"
-                                        height="11"
-                                        viewBox="0 0 10 11"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        class="w-2.5 h-2.5"
-                                    >
-                                        <path
-                                            d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001"
-                                            stroke="currentColor"
-                                            stroke-linecap="square"
-                                        />
-                                    </svg>
-                                </a>
-                            </span>
-                        </li>
-                    </ul>
-                    <ul class="flex gap-3 text-sm leading-normal">
-                        <li>
-                            <a href="https://cloud.laravel.com" target="_blank" class="inline-block dark:bg-[#eeeeec] dark:border-[#eeeeec] dark:text-[#1C1C1A] dark:hover:bg-white dark:hover:border-white hover:bg-black hover:border-black px-5 py-1.5 bg-[#1b1b18] rounded-sm border border-black text-white text-sm leading-normal">
-                                Deploy now
-                            </a>
-                        </li>
-                    </ul>
+            </header>
 
-                    <p class="mt-6 lg:mt-10 text-[#706f6c] dark:text-[#A1A09A]">
-                        v{{ app()->version() }}
-                        <a href="https://github.com/laravel/laravel/blob/13.x/CHANGELOG.md" target="_blank" class="inline-flex items-center space-x-1 font-medium underline underline-offset-4 text-[#f53003] dark:text-[#FF4433] ml-1">
-                            <span>View changelog</span>
-                            <svg
-                                width="10"
-                                height="11"
-                                viewBox="0 0 10 11"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="w-2.5 h-2.5"
-                            >
-                                <path
-                                    d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001"
-                                    stroke="currentColor"
-                                    stroke-linecap="square"
-                                />
-                            </svg>
-                        </a>
-                    </p>
-                </div>
-                <div class="bg-[#fff2f2] dark:bg-[#1D0002] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/364] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
-                    {{-- Laravel Logo --}}
-                    <svg class="w-full text-[#F53003] dark:text-[#F61500] transition-all translate-y-0 opacity-100 max-w-none duration-750 starting:opacity-0 motion-safe:starting:translate-y-6" viewBox="0 0 438 104" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.2036 -3H0V102.197H49.5189V86.7187H17.2036V-3Z" fill="currentColor" />
-                        <path d="M110.256 41.6337C108.061 38.1275 104.945 35.3731 100.905 33.3681C96.8667 31.3647 92.8016 30.3618 88.7131 30.3618C83.4247 30.3618 78.5885 31.3389 74.201 33.2923C69.8111 35.2456 66.0474 37.928 62.9059 41.3333C59.7643 44.7401 57.3198 48.6726 55.5754 53.1293C53.8287 57.589 52.9572 62.274 52.9572 67.1813C52.9572 72.1925 53.8287 76.8995 55.5754 81.3069C57.3191 85.7173 59.7636 89.6241 62.9059 93.0293C66.0474 96.4361 69.8119 99.1155 74.201 101.069C78.5885 103.022 83.4247 103.999 88.7131 103.999C92.8016 103.999 96.8667 102.997 100.905 100.994C104.945 98.9911 108.061 96.2359 110.256 92.7282V102.195H126.563V32.1642H110.256V41.6337ZM108.76 75.7472C107.762 78.4531 106.366 80.8078 104.572 82.8112C102.776 84.8161 100.606 86.4183 98.0637 87.6206C95.5202 88.823 92.7004 89.4238 89.6103 89.4238C86.5178 89.4238 83.7252 88.823 81.2324 87.6206C78.7388 86.4183 76.5949 84.8161 74.7998 82.8112C73.004 80.8078 71.6319 78.4531 70.6856 75.7472C69.7356 73.0421 69.2644 70.1868 69.2644 67.1821C69.2644 64.1758 69.7356 61.3205 70.6856 58.6154C71.6319 55.9102 73.004 53.5571 74.7998 51.5522C76.5949 49.5495 78.738 47.9451 81.2324 46.7427C83.7252 45.5404 86.5178 44.9396 89.6103 44.9396C92.7012 44.9396 95.5202 45.5404 98.0637 46.7427C100.606 47.9451 102.776 49.5487 104.572 51.5522C106.367 53.5571 107.762 55.9102 108.76 58.6154C109.756 61.3205 110.256 64.1758 110.256 67.1821C110.256 70.1868 109.756 73.0421 108.76 75.7472Z" fill="currentColor" />
-                        <path d="M242.805 41.6337C240.611 38.1275 237.494 35.3731 233.455 33.3681C229.416 31.3647 225.351 30.3618 221.262 30.3618C215.974 30.3618 211.138 31.3389 206.75 33.2923C202.36 35.2456 198.597 37.928 195.455 41.3333C192.314 44.7401 189.869 48.6726 188.125 53.1293C186.378 57.589 185.507 62.274 185.507 67.1813C185.507 72.1925 186.378 76.8995 188.125 81.3069C189.868 85.7173 192.313 89.6241 195.455 93.0293C198.597 96.4361 202.361 99.1155 206.75 101.069C211.138 103.022 215.974 103.999 221.262 103.999C225.351 103.999 229.416 102.997 233.455 100.994C237.494 98.9911 240.611 96.2359 242.805 92.7282V102.195H259.112V32.1642H242.805V41.6337ZM241.31 75.7472C240.312 78.4531 238.916 80.8078 237.122 82.8112C235.326 84.8161 233.156 86.4183 230.614 87.6206C228.07 88.823 225.251 89.4238 222.16 89.4238C219.068 89.4238 216.275 88.823 213.782 87.6206C211.289 86.4183 209.145 84.8161 207.35 82.8112C205.554 80.8078 204.182 78.4531 203.236 75.7472C202.286 73.0421 201.814 70.1868 201.814 67.1821C201.814 64.1758 202.286 61.3205 203.236 58.6154C204.182 55.9102 205.554 53.5571 207.35 51.5522C209.145 49.5495 211.288 47.9451 213.782 46.7427C216.275 45.5404 219.068 44.9396 222.16 44.9396C225.251 44.9396 228.07 45.5404 230.614 46.7427C233.156 47.9451 235.326 49.5487 237.122 51.5522C238.917 53.5571 240.312 55.9102 241.31 58.6154C242.306 61.3205 242.806 64.1758 242.806 67.1821C242.805 70.1868 242.305 73.0421 241.31 75.7472Z" fill="currentColor" />
-                        <path d="M438 -3H421.694V102.197H438V-3Z" fill="currentColor" />
-                        <path d="M139.43 102.197H155.735V48.2834H183.712V32.1665H139.43V102.197Z" fill="currentColor" />
-                        <path d="M324.49 32.1665L303.995 85.794L283.498 32.1665H266.983L293.748 102.197H314.242L341.006 32.1665H324.49Z" fill="currentColor" />
-                        <path d="M376.571 30.3656C356.603 30.3656 340.797 46.8497 340.797 67.1828C340.797 89.6597 356.094 104 378.661 104C391.29 104 399.354 99.1488 409.206 88.5848L398.189 80.0226C398.183 80.031 389.874 90.9895 377.468 90.9895C363.048 90.9895 356.977 79.3111 356.977 73.269H411.075C413.917 50.1328 398.775 30.3656 376.571 30.3656ZM357.02 61.0967C357.145 59.7487 359.023 43.3761 376.442 43.3761C393.861 43.3761 395.978 59.7464 396.099 61.0967H357.02Z" fill="currentColor" />
-                    </svg>
+            <main id="top">
+                <section class="hero">
+                    <article class="card">
+                        <span class="eyebrow">Character Builder</span>
+                        <h1>Build a character and keep the whole sheet in one place.</h1>
+                        <p>Create a full character sheet, roll stats, save your roster, and browse the rules without bouncing between tools.</p>
+                        <div class="hero-actions">
+                            <a class="btn" href="#forge">Open builder</a>
+                            <a class="btn-soft" href="{{ route('roster') }}">Open roster</a>
+                        </div>
+                    </article>
+                </section>
 
-                    {{-- 13 --}}
-                    <svg class="w-[438px] max-w-none relative -mt-[6.6rem] -ml-8 lg:ml-0 [--stroke-color:#1B1B18] dark:[--stroke-color:#FF750F]" viewBox="0 0 440 392" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g class="mix-blend-darken dark:mix-blend-normal transition-all delay-300 opacity-100 duration-750 starting:opacity-0 text-[#1B1B18] dark:text-black">
-                            <mask id="path-1-mask" maskUnits="userSpaceOnUse" x="-0.328613" y="103" width="338" height="299" fill="black">
-                                <rect fill="white" x="-0.328613" y="103" width="338" height="299"/>
-                                <path d="M234.936 400.8C204.136 400.8 178.936 392.4 159.336 375.6C140.136 358.8 130.536 337 130.536 310.2H200.736C200.736 318.2 203.736 324.8 209.736 330C215.736 335.2 223.736 337.8 233.736 337.8C243.336 337.8 251.136 335 257.136 329.4C263.536 323.8 266.736 316.6 266.736 307.8C266.736 299.8 263.936 293.2 258.336 288C252.736 282.8 245.536 280.2 236.736 280.2H199.536V218.4H236.736C243.536 218.4 249.336 216 254.136 211.2C258.936 206.4 261.336 200.4 261.336 193.2C261.336 184.8 258.736 178.2 253.536 173.4C248.336 168.6 241.736 166.2 233.736 166.2C226.536 166.2 220.336 168.4 215.136 172.8C210.336 177.2 207.936 182.8 207.936 189.6H141.336C141.336 164.8 150.136 144.6 167.736 129C185.336 113 207.936 105 235.536 105C263.136 105 285.536 112.2 302.736 126.6C320.336 141 329.136 160 329.136 183.6C329.136 200.8 324.536 214.8 315.336 225.6C306.136 236 294.336 243.2 279.936 247.2C297.136 252 310.736 260.2 320.736 271.8C331.136 283.4 336.336 298 336.336 315.6C336.336 340.4 326.936 360.8 308.136 376.8C289.336 392.8 264.936 400.8 234.936 400.8Z"/>
-                                <path d="M26.8714 167.6H1.67139V105.2H94.6714V400.2H26.8714V167.6Z"/>
-                            </mask>
-                            <path d="M234.936 400.8C204.136 400.8 178.936 392.4 159.336 375.6C140.136 358.8 130.536 337 130.536 310.2H200.736C200.736 318.2 203.736 324.8 209.736 330C215.736 335.2 223.736 337.8 233.736 337.8C243.336 337.8 251.136 335 257.136 329.4C263.536 323.8 266.736 316.6 266.736 307.8C266.736 299.8 263.936 293.2 258.336 288C252.736 282.8 245.536 280.2 236.736 280.2H199.536V218.4H236.736C243.536 218.4 249.336 216 254.136 211.2C258.936 206.4 261.336 200.4 261.336 193.2C261.336 184.8 258.736 178.2 253.536 173.4C248.336 168.6 241.736 166.2 233.736 166.2C226.536 166.2 220.336 168.4 215.136 172.8C210.336 177.2 207.936 182.8 207.936 189.6H141.336C141.336 164.8 150.136 144.6 167.736 129C185.336 113 207.936 105 235.536 105C263.136 105 285.536 112.2 302.736 126.6C320.336 141 329.136 160 329.136 183.6C329.136 200.8 324.536 214.8 315.336 225.6C306.136 236 294.336 243.2 279.936 247.2C297.136 252 310.736 260.2 320.736 271.8C331.136 283.4 336.336 298 336.336 315.6C336.336 340.4 326.936 360.8 308.136 376.8C289.336 392.8 264.936 400.8 234.936 400.8Z" fill="currentColor"/>
-                            <path d="M26.8714 167.6H1.67139V105.2H94.6714V400.2H26.8714V167.6Z" fill="currentColor"/>
-                            <path d="M234.936 400.8C204.136 400.8 178.936 392.4 159.336 375.6C140.136 358.8 130.536 337 130.536 310.2H200.736C200.736 318.2 203.736 324.8 209.736 330C215.736 335.2 223.736 337.8 233.736 337.8C243.336 337.8 251.136 335 257.136 329.4C263.536 323.8 266.736 316.6 266.736 307.8C266.736 299.8 263.936 293.2 258.336 288C252.736 282.8 245.536 280.2 236.736 280.2H199.536V218.4H236.736C243.536 218.4 249.336 216 254.136 211.2C258.936 206.4 261.336 200.4 261.336 193.2C261.336 184.8 258.736 178.2 253.536 173.4C248.336 168.6 241.736 166.2 233.736 166.2C226.536 166.2 220.336 168.4 215.136 172.8C210.336 177.2 207.936 182.8 207.936 189.6H141.336C141.336 164.8 150.136 144.6 167.736 129C185.336 113 207.936 105 235.536 105C263.136 105 285.536 112.2 302.736 126.6C320.336 141 329.136 160 329.136 183.6C329.136 200.8 324.536 214.8 315.336 225.6C306.136 236 294.336 243.2 279.936 247.2C297.136 252 310.736 260.2 320.736 271.8C331.136 283.4 336.336 298 336.336 315.6C336.336 340.4 326.936 360.8 308.136 376.8C289.336 392.8 264.936 400.8 234.936 400.8Z" stroke="var(--stroke-color)" stroke-width="2.4" mask="url(#path-1-mask)"/>
-                            <path d="M26.8714 167.6H1.67139V105.2H94.6714V400.2H26.8714V167.6Z" stroke="var(--stroke-color)" stroke-width="2.4" mask="url(#path-1-mask)"/>
-                        </g>
+                <section class="panel">
+                    <div class="head">
+                        <div>
+                            <span class="eyebrow">Live Snapshot</span>
+                            <h2>Everything in one place</h2>
+                        </div>
+                    </div>
+                    <p>Keep the current roster size, latest roll, and rules index in view while you build.</p>
+                    <div class="quick">
+                        <div class="mini">Characters<strong id="count">0</strong></div>
+                        <div class="mini">Latest Roll<strong id="latest-roll">Ready</strong></div>
+                        <div class="mini">Library<strong>{{ count(config('dnd.compendium_sections', [])) }} sections</strong></div>
+                        <div class="mini">Verified<strong>{{ config('dnd.verified_at') }}</strong></div>
+                    </div>
+                </section>
 
-                        <g class="transition-all delay-400 opacity-100 duration-750 starting:opacity-0 motion-safe:starting:-translate-x-[26px] text-[#F3BEC7] dark:text-[#4B0600]">
-                            <mask id="path-2-mask" maskUnits="userSpaceOnUse" x="25.3357" y="103" width="338" height="299" fill="black">
-                                <rect fill="white" x="25.3357" y="103" width="338" height="299"/>
-                                <path d="M260.6 400.8C229.8 400.8 204.6 392.4 185 375.6C165.8 358.8 156.2 337 156.2 310.2H226.4C226.4 318.2 229.4 324.8 235.4 330C241.4 335.2 249.4 337.8 259.4 337.8C269 337.8 276.8 335 282.8 329.4C289.2 323.8 292.4 316.6 292.4 307.8C292.4 299.8 289.6 293.2 284 288C278.4 282.8 271.2 280.2 262.4 280.2H225.2V218.4H262.4C269.2 218.4 275 216 279.8 211.2C284.6 206.4 287 200.4 287 193.2C287 184.8 284.4 178.2 279.2 173.4C274 168.6 267.4 166.2 259.4 166.2C252.2 166.2 246 168.4 240.8 172.8C236 177.2 233.6 182.8 233.6 189.6H167C167 164.8 175.8 144.6 193.4 129C211 113 233.6 105 261.2 105C288.8 105 311.2 112.2 328.4 126.6C346 141 354.8 160 354.8 183.6C354.8 200.8 350.2 214.8 341 225.6C331.8 236 320 243.2 305.6 247.2C322.8 252 336.4 260.2 346.4 271.8C356.8 283.4 362 298 362 315.6C362 340.4 352.6 360.8 333.8 376.8C315 392.8 290.6 400.8 260.6 400.8Z"/>
-                                <path d="M52.5357 167.6H27.3357V105.2H120.336V400.2H52.5357V167.6Z"/>
-                            </mask>
-                            <path d="M260.6 400.8C229.8 400.8 204.6 392.4 185 375.6C165.8 358.8 156.2 337 156.2 310.2H226.4C226.4 318.2 229.4 324.8 235.4 330C241.4 335.2 249.4 337.8 259.4 337.8C269 337.8 276.8 335 282.8 329.4C289.2 323.8 292.4 316.6 292.4 307.8C292.4 299.8 289.6 293.2 284 288C278.4 282.8 271.2 280.2 262.4 280.2H225.2V218.4H262.4C269.2 218.4 275 216 279.8 211.2C284.6 206.4 287 200.4 287 193.2C287 184.8 284.4 178.2 279.2 173.4C274 168.6 267.4 166.2 259.4 166.2C252.2 166.2 246 168.4 240.8 172.8C236 177.2 233.6 182.8 233.6 189.6H167C167 164.8 175.8 144.6 193.4 129C211 113 233.6 105 261.2 105C288.8 105 311.2 112.2 328.4 126.6C346 141 354.8 160 354.8 183.6C354.8 200.8 350.2 214.8 341 225.6C331.8 236 320 243.2 305.6 247.2C322.8 252 336.4 260.2 346.4 271.8C356.8 283.4 362 298 362 315.6C362 340.4 352.6 360.8 333.8 376.8C315 392.8 290.6 400.8 260.6 400.8Z" fill="currentColor"/>
-                            <path d="M52.5357 167.6H27.3357V105.2H120.336V400.2H52.5357V167.6Z" fill="currentColor"/>
-                            <path d="M260.6 400.8C229.8 400.8 204.6 392.4 185 375.6C165.8 358.8 156.2 337 156.2 310.2H226.4C226.4 318.2 229.4 324.8 235.4 330C241.4 335.2 249.4 337.8 259.4 337.8C269 337.8 276.8 335 282.8 329.4C289.2 323.8 292.4 316.6 292.4 307.8C292.4 299.8 289.6 293.2 284 288C278.4 282.8 271.2 280.2 262.4 280.2H225.2V218.4H262.4C269.2 218.4 275 216 279.8 211.2C284.6 206.4 287 200.4 287 193.2C287 184.8 284.4 178.2 279.2 173.4C274 168.6 267.4 166.2 259.4 166.2C252.2 166.2 246 168.4 240.8 172.8C236 177.2 233.6 182.8 233.6 189.6H167C167 164.8 175.8 144.6 193.4 129C211 113 233.6 105 261.2 105C288.8 105 311.2 112.2 328.4 126.6C346 141 354.8 160 354.8 183.6C354.8 200.8 350.2 214.8 341 225.6C331.8 236 320 243.2 305.6 247.2C322.8 252 336.4 260.2 346.4 271.8C356.8 283.4 362 298 362 315.6C362 340.4 352.6 360.8 333.8 376.8C315 392.8 290.6 400.8 260.6 400.8Z" stroke="var(--stroke-color)" stroke-width="2.4" mask="url(#path-2-mask)"/>
-                            <path d="M52.5357 167.6H27.3357V105.2H120.336V400.2H52.5357V167.6Z" stroke="var(--stroke-color)" stroke-width="2.4" mask="url(#path-2-mask)"/>
-                        </g>
-                        
-                        <g class="mix-blend-color dark:mix-blend-hard-light transition-all delay-400 opacity-100 duration-750 starting:opacity-0 motion-safe:starting:-translate-x-[51px] text-[#F8B803] dark:text-[#391800]">
-                            <mask id="path-3-mask" maskUnits="userSpaceOnUse" x="51" y="103" width="338" height="299" fill="black">
-                                <rect fill="white" x="51" y="103" width="338" height="299"/>
-                                <path d="M286.264 400.8C255.464 400.8 230.264 392.4 210.664 375.6C191.464 358.8 181.864 337 181.864 310.2H252.064C252.064 318.2 255.064 324.8 261.064 330C267.064 335.2 275.064 337.8 285.064 337.8C294.664 337.8 302.464 335 308.464 329.4C314.864 323.8 318.064 316.6 318.064 307.8C318.064 299.8 315.264 293.2 309.664 288C304.064 282.8 296.864 280.2 288.064 280.2H250.864V218.4H288.064C294.864 218.4 300.664 216 305.464 211.2C310.264 206.4 312.664 200.4 312.664 193.2C312.664 184.8 310.064 178.2 304.864 173.4C299.664 168.6 293.064 166.2 285.064 166.2C277.864 166.2 271.664 168.4 266.464 172.8C261.664 177.2 259.264 182.8 259.264 189.6H192.664C192.664 164.8 201.464 144.6 219.064 129C236.664 113 259.264 105 286.864 105C314.464 105 336.864 112.2 354.064 126.6C371.664 141 380.464 160 380.464 183.6C380.464 200.8 375.864 214.8 366.664 225.6C357.464 236 345.664 243.2 331.264 247.2C348.464 252 362.064 260.2 372.064 271.8C382.464 283.4 387.664 298 387.664 315.6C387.664 340.4 378.264 360.8 359.464 376.8C340.664 392.8 316.264 400.8 286.264 400.8Z"/>
-                                <path d="M78.2 167.6H53V105.2H146V400.2H78.2V167.6Z"/>
-                            </mask>
-                            <path d="M286.264 400.8C255.464 400.8 230.264 392.4 210.664 375.6C191.464 358.8 181.864 337 181.864 310.2H252.064C252.064 318.2 255.064 324.8 261.064 330C267.064 335.2 275.064 337.8 285.064 337.8C294.664 337.8 302.464 335 308.464 329.4C314.864 323.8 318.064 316.6 318.064 307.8C318.064 299.8 315.264 293.2 309.664 288C304.064 282.8 296.864 280.2 288.064 280.2H250.864V218.4H288.064C294.864 218.4 300.664 216 305.464 211.2C310.264 206.4 312.664 200.4 312.664 193.2C312.664 184.8 310.064 178.2 304.864 173.4C299.664 168.6 293.064 166.2 285.064 166.2C277.864 166.2 271.664 168.4 266.464 172.8C261.664 177.2 259.264 182.8 259.264 189.6H192.664C192.664 164.8 201.464 144.6 219.064 129C236.664 113 259.264 105 286.864 105C314.464 105 336.864 112.2 354.064 126.6C371.664 141 380.464 160 380.464 183.6C380.464 200.8 375.864 214.8 366.664 225.6C357.464 236 345.664 243.2 331.264 247.2C348.464 252 362.064 260.2 372.064 271.8C382.464 283.4 387.664 298 387.664 315.6C387.664 340.4 378.264 360.8 359.464 376.8C340.664 392.8 316.264 400.8 286.264 400.8Z" fill="currentColor"/>
-                            <path d="M78.2 167.6H53V105.2H146V400.2H78.2V167.6Z" fill="currentColor"/>
-                            <path d="M286.264 400.8C255.464 400.8 230.264 392.4 210.664 375.6C191.464 358.8 181.864 337 181.864 310.2H252.064C252.064 318.2 255.064 324.8 261.064 330C267.064 335.2 275.064 337.8 285.064 337.8C294.664 337.8 302.464 335 308.464 329.4C314.864 323.8 318.064 316.6 318.064 307.8C318.064 299.8 315.264 293.2 309.664 288C304.064 282.8 296.864 280.2 288.064 280.2H250.864V218.4H288.064C294.864 218.4 300.664 216 305.464 211.2C310.264 206.4 312.664 200.4 312.664 193.2C312.664 184.8 310.064 178.2 304.864 173.4C299.664 168.6 293.064 166.2 285.064 166.2C277.864 166.2 271.664 168.4 266.464 172.8C261.664 177.2 259.264 182.8 259.264 189.6H192.664C192.664 164.8 201.464 144.6 219.064 129C236.664 113 259.264 105 286.864 105C314.464 105 336.864 112.2 354.064 126.6C371.664 141 380.464 160 380.464 183.6C380.464 200.8 375.864 214.8 366.664 225.6C357.464 236 345.664 243.2 331.264 247.2C348.464 252 362.064 260.2 372.064 271.8C382.464 283.4 387.664 298 387.664 315.6C387.664 340.4 378.264 360.8 359.464 376.8C340.664 392.8 316.264 400.8 286.264 400.8Z" stroke="var(--stroke-color)" stroke-width="2.4" mask="url(#path-3-mask)"/>
-                            <path d="M78.2 167.6H53V105.2H146V400.2H78.2V167.6Z" stroke="var(--stroke-color)" stroke-width="2.4" mask="url(#path-3-mask)"/>
-                        </g>
-                        
-                        <g class="mix-blend-multiply dark:mix-blend-normal transition-all delay-400 opacity-100 duration-750 starting:opacity-0 motion-safe:starting:-translate-x-[78px] text-[#F3BEC7] dark:text-[#733000]">
-                            <mask id="path-4-mask" maskUnits="userSpaceOnUse" x="76.6643" y="103" width="338" height="299" fill="black">
-                                <rect fill="white" x="76.6643" y="103" width="338" height="299"/>
-                                <path d="M311.929 400.8C281.129 400.8 255.929 392.4 236.329 375.6C217.129 358.8 207.529 337 207.529 310.2H277.729C277.729 318.2 280.729 324.8 286.729 330C292.729 335.2 300.729 337.8 310.729 337.8C320.329 337.8 328.129 335 334.129 329.4C340.529 323.8 343.729 316.6 343.729 307.8C343.729 299.8 340.929 293.2 335.329 288C329.729 282.8 322.529 280.2 313.729 280.2H276.529V218.4H313.729C320.529 218.4 326.329 216 331.129 211.2C335.929 206.4 338.329 200.4 338.329 193.2C338.329 184.8 335.729 178.2 330.529 173.4C325.329 168.6 318.729 166.2 310.729 166.2C303.529 166.2 297.329 168.4 292.129 172.8C287.329 177.2 284.929 182.8 284.929 189.6H218.329C218.329 164.8 227.129 144.6 244.729 129C262.329 113 284.929 105 312.529 105C340.129 105 362.529 112.2 379.729 126.6C397.329 141 406.129 160 406.129 183.6C406.129 200.8 401.529 214.8 392.329 225.6C383.129 236 371.329 243.2 356.929 247.2C374.129 252 387.729 260.2 397.729 271.8C408.129 283.4 413.329 298 413.329 315.6C413.329 340.4 403.929 360.8 385.129 376.8C366.329 392.8 341.929 400.8 311.929 400.8Z"/>
-                                <path d="M103.864 167.6H78.6643V105.2H171.664V400.2H103.864V167.6Z"/>
-                            </mask>
-                            <path d="M311.929 400.8C281.129 400.8 255.929 392.4 236.329 375.6C217.129 358.8 207.529 337 207.529 310.2H277.729C277.729 318.2 280.729 324.8 286.729 330C292.729 335.2 300.729 337.8 310.729 337.8C320.329 337.8 328.129 335 334.129 329.4C340.529 323.8 343.729 316.6 343.729 307.8C343.729 299.8 340.929 293.2 335.329 288C329.729 282.8 322.529 280.2 313.729 280.2H276.529V218.4H313.729C320.529 218.4 326.329 216 331.129 211.2C335.929 206.4 338.329 200.4 338.329 193.2C338.329 184.8 335.729 178.2 330.529 173.4C325.329 168.6 318.729 166.2 310.729 166.2C303.529 166.2 297.329 168.4 292.129 172.8C287.329 177.2 284.929 182.8 284.929 189.6H218.329C218.329 164.8 227.129 144.6 244.729 129C262.329 113 284.929 105 312.529 105C340.129 105 362.529 112.2 379.729 126.6C397.329 141 406.129 160 406.129 183.6C406.129 200.8 401.529 214.8 392.329 225.6C383.129 236 371.329 243.2 356.929 247.2C374.129 252 387.729 260.2 397.729 271.8C408.129 283.4 413.329 298 413.329 315.6C413.329 340.4 403.929 360.8 385.129 376.8C366.329 392.8 341.929 400.8 311.929 400.8Z" fill="currentColor"/>
-                            <path d="M103.864 167.6H78.6643V105.2H171.664V400.2H103.864V167.6Z" fill="currentColor"/>
-                            <path d="M311.929 400.8C281.129 400.8 255.929 392.4 236.329 375.6C217.129 358.8 207.529 337 207.529 310.2H277.729C277.729 318.2 280.729 324.8 286.729 330C292.729 335.2 300.729 337.8 310.729 337.8C320.329 337.8 328.129 335 334.129 329.4C340.529 323.8 343.729 316.6 343.729 307.8C343.729 299.8 340.929 293.2 335.329 288C329.729 282.8 322.529 280.2 313.729 280.2H276.529V218.4H313.729C320.529 218.4 326.329 216 331.129 211.2C335.929 206.4 338.329 200.4 338.329 193.2C338.329 184.8 335.729 178.2 330.529 173.4C325.329 168.6 318.729 166.2 310.729 166.2C303.529 166.2 297.329 168.4 292.129 172.8C287.329 177.2 284.929 182.8 284.929 189.6H218.329C218.329 164.8 227.129 144.6 244.729 129C262.329 113 284.929 105 312.529 105C340.129 105 362.529 112.2 379.729 126.6C397.329 141 406.129 160 406.129 183.6C406.129 200.8 401.529 214.8 392.329 225.6C383.129 236 371.329 243.2 356.929 247.2C374.129 252 387.729 260.2 397.729 271.8C408.129 283.4 413.329 298 413.329 315.6C413.329 340.4 403.929 360.8 385.129 376.8C366.329 392.8 341.929 400.8 311.929 400.8Z" stroke="var(--stroke-color)" stroke-width="2.4" mask="url(#path-4-mask)"/>
-                            <path d="M103.864 167.6H78.6643V105.2H171.664V400.2H103.864V167.6Z" stroke="var(--stroke-color)" stroke-width="2.4" mask="url(#path-4-mask)"/>
-                        </g>
-                        
-                        <g class="mix-blend-hard-light transition-all delay-400 opacity-100 duration-750 starting:opacity-0 motion-safe:starting:-translate-x-[102px] text-[#F3BEC7] dark:text-[#4B0600]">
-                            <mask id="path-5-mask" maskUnits="userSpaceOnUse" x="102.329" y="103" width="338" height="299" fill="black">
-                                <rect fill="white" x="102.329" y="103" width="338" height="299"/>
-                                <path d="M337.593 400.8C306.793 400.8 281.593 392.4 261.993 375.6C242.793 358.8 233.193 337 233.193 310.2H303.393C303.393 318.2 306.393 324.8 312.393 330C318.393 335.2 326.393 337.8 336.393 337.8C345.993 337.8 353.793 335 359.793 329.4C366.193 323.8 369.393 316.6 369.393 307.8C369.393 299.8 366.593 293.2 360.993 288C355.393 282.8 348.193 280.2 339.393 280.2H302.193V218.4H339.393C346.193 218.4 351.993 216 356.793 211.2C361.593 206.4 363.993 200.4 363.993 193.2C363.993 184.8 361.393 178.2 356.193 173.4C350.993 168.6 344.393 166.2 336.393 166.2C329.193 166.2 322.993 168.4 317.793 172.8C312.993 177.2 310.593 182.8 310.593 189.6H243.993C243.993 164.8 252.793 144.6 270.393 129C287.993 113 310.593 105 338.193 105C365.793 105 388.193 112.2 405.393 126.6C422.993 141 431.793 160 431.793 183.6C431.793 200.8 427.193 214.8 417.993 225.6C408.793 236 396.993 243.2 382.593 247.2C399.793 252 413.393 260.2 423.393 271.8C433.793 283.4 438.993 298 438.993 315.6C438.993 340.4 429.593 360.8 410.793 376.8C391.993 392.8 367.593 400.8 337.593 400.8Z"/>
-                                <path d="M129.529 167.6H104.329V105.2H197.329V400.2H129.529V167.6Z"/>
-                            </mask>
-                            <path d="M337.593 400.8C306.793 400.8 281.593 392.4 261.993 375.6C242.793 358.8 233.193 337 233.193 310.2H303.393C303.393 318.2 306.393 324.8 312.393 330C318.393 335.2 326.393 337.8 336.393 337.8C345.993 337.8 353.793 335 359.793 329.4C366.193 323.8 369.393 316.6 369.393 307.8C369.393 299.8 366.593 293.2 360.993 288C355.393 282.8 348.193 280.2 339.393 280.2H302.193V218.4H339.393C346.193 218.4 351.993 216 356.793 211.2C361.593 206.4 363.993 200.4 363.993 193.2C363.993 184.8 361.393 178.2 356.193 173.4C350.993 168.6 344.393 166.2 336.393 166.2C329.193 166.2 322.993 168.4 317.793 172.8C312.993 177.2 310.593 182.8 310.593 189.6H243.993C243.993 164.8 252.793 144.6 270.393 129C287.993 113 310.593 105 338.193 105C365.793 105 388.193 112.2 405.393 126.6C422.993 141 431.793 160 431.793 183.6C431.793 200.8 427.193 214.8 417.993 225.6C408.793 236 396.993 243.2 382.593 247.2C399.793 252 413.393 260.2 423.393 271.8C433.793 283.4 438.993 298 438.993 315.6C438.993 340.4 429.593 360.8 410.793 376.8C391.993 392.8 367.593 400.8 337.593 400.8Z" fill="currentColor"/>
-                            <path d="M129.529 167.6H104.329V105.2H197.329V400.2H129.529V167.6Z" fill="currentColor"/>
-                            <path d="M337.593 400.8C306.793 400.8 281.593 392.4 261.993 375.6C242.793 358.8 233.193 337 233.193 310.2H303.393C303.393 318.2 306.393 324.8 312.393 330C318.393 335.2 326.393 337.8 336.393 337.8C345.993 337.8 353.793 335 359.793 329.4C366.193 323.8 369.393 316.6 369.393 307.8C369.393 299.8 366.593 293.2 360.993 288C355.393 282.8 348.193 280.2 339.393 280.2H302.193V218.4H339.393C346.193 218.4 351.993 216 356.793 211.2C361.593 206.4 363.993 200.4 363.993 193.2C363.993 184.8 361.393 178.2 356.193 173.4C350.993 168.6 344.393 166.2 336.393 166.2C329.193 166.2 322.993 168.4 317.793 172.8C312.993 177.2 310.593 182.8 310.593 189.6H243.993C243.993 164.8 252.793 144.6 270.393 129C287.993 113 310.593 105 338.193 105C365.793 105 388.193 112.2 405.393 126.6C422.993 141 431.793 160 431.793 183.6C431.793 200.8 427.193 214.8 417.993 225.6C408.793 236 396.993 243.2 382.593 247.2C399.793 252 413.393 260.2 423.393 271.8C433.793 283.4 438.993 298 438.993 315.6C438.993 340.4 429.593 360.8 410.793 376.8C391.993 392.8 367.593 400.8 337.593 400.8Z" stroke="var(--stroke-color)" stroke-width="2.4" mask="url(#path-5-mask)"/>
-                            <path d="M129.529 167.6H104.329V105.2H197.329V400.2H129.529V167.6Z" stroke="var(--stroke-color)" stroke-width="2.4" mask="url(#path-5-mask)"/>
-                        </g>
-                    </svg>
-                    <div class="absolute inset-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"></div>
-                </div>
+                <section class="stack" id="wizard">
+                    <div class="panel">
+                        <div class="head">
+                            <div>
+                                <span class="eyebrow">Rules Wizard</span>
+                                <h2>Chat-style character guide</h2>
+                            </div>
+                            <button class="btn-soft" id="wizard-reset" type="button">Reset wizard</button>
+                        </div>
+                        <p>Use the wizard to build a character step by step, check level gains, track combat resources, roll dice, and look up monsters without leaving the page.</p>
+                        <div class="notice" id="wizard-notice"></div>
+                        <div class="wizard-log" id="wizard-log"></div>
+                        <div class="wizard-actions" id="wizard-actions"></div>
+                        <div class="hover-help" id="wizard-action-help" hidden>
+                            <strong>Option Details</strong>
+                            <span id="wizard-action-help-text">Hover a wizard option to see what it means.</span>
+                        </div>
+
+                        <form class="wizard-form" id="wizard-form">
+                            <input id="wizard-input" type="text" placeholder="Type a command like new character, roll d20+5, show summary, or level up">
+                            <button class="btn" type="submit">Send</button>
+                        </form>
+                    </div>
+
+                    <div class="panel">
+                        <span class="eyebrow">Wizard Support</span>
+                        <div class="rule-block">
+                            <h3>Ability Preview</h3>
+                            <div class="stats" id="preview">
+                                <div class="stat"><span class="label">STR</span><span class="value">-</span></div>
+                                <div class="stat"><span class="label">DEX</span><span class="value">-</span></div>
+                                <div class="stat"><span class="label">CON</span><span class="value">-</span></div>
+                                <div class="stat"><span class="label">INT</span><span class="value">-</span></div>
+                                <div class="stat"><span class="label">WIS</span><span class="value">-</span></div>
+                                <div class="stat"><span class="label">CHA</span><span class="value">-</span></div>
+                            </div>
+                        </div>
+                        <div class="rule-block" style="margin-top:1rem">
+                            <h3>Wizard Snapshot</h3>
+                            <div class="stack" id="wizard-summary">
+                                <div class="wizard-summary-card">
+                                    <h3>No active character</h3>
+                                    <p>The wizard will show the current sheet, combat state, features, and next-level preview here.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rule-block" style="margin-top:1rem">
+                            <h3>Try Asking</h3>
+                            <input id="try-asking-search" type="text" placeholder="Search example commands like roll, rest, or summary">
+                            <div class="chip-list" id="try-asking-chips">
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="new character">new character</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="list characters">list characters</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="load latest">load latest</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="show summary">show summary</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="show status">show status</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="what did I gain">what did I gain</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="show next">show next</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="level up">level up</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="show spells">show spells</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="roll d20">roll d20</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="roll 2d6+3">roll 2d6+3</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="help me roleplay">help me roleplay</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="show appearance help">show appearance help</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="roll initiative">roll initiative</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="short rest 2">short rest 2</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="show monster goblin">show monster goblin</button>
+                                <button class="chip chip-action" type="button" data-try-chip data-try-command="save character">save character</button>
+                            </div>
+                            <p class="tiny" id="try-asking-empty" hidden>No example commands match that search yet.</p>
+                        </div>
+                        <div class="rule-block" style="margin-top:1rem">
+                            <h3>Wizard Dice</h3>
+                            <p>The wizard understands custom rolls like <code>roll d20</code> or <code>roll 2d6+3</code>. These shortcuts send the command straight into the wizard log.</p>
+                            <div class="dice-inline" id="wizard-dice-buttons">
+                                <button class="btn-soft" type="button" data-wizard-command="roll d4">d4</button>
+                                <button class="btn-soft" type="button" data-wizard-command="roll d6">d6</button>
+                                <button class="btn-soft" type="button" data-wizard-command="roll d8">d8</button>
+                                <button class="btn-soft" type="button" data-wizard-command="roll d10">d10</button>
+                                <button class="btn-soft" type="button" data-wizard-command="roll d12">d12</button>
+                                <button class="btn-soft" type="button" data-wizard-command="roll d20">d20</button>
+                                <button class="btn-soft" type="button" data-wizard-command="roll d20 advantage">Adv d20</button>
+                                <button class="btn-soft" type="button" data-wizard-command="roll d20 disadvantage">Dis d20</button>
+                                <button class="btn-soft" type="button" data-wizard-command="roll d100">d100</button>
+                                <button class="btn-soft" type="button" data-wizard-command="roll 2d6+3">2d6+3</button>
+                                <button class="btn-soft" type="button" data-wizard-command="roll stats">Roll Stats</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="stack" id="forge">
+                    <div class="panel">
+                        <span class="eyebrow">Character Builder</span>
+                        <h2>Build a character</h2>
+                        <p>Work through the sheet in a clear order: class, origin, ability scores, alignment, then the extra details that round the character out.</p>
+                        <div class="notice" id="form-notice"></div>
+
+                        <form id="character-form">
+                            <div class="form">
+                                <div class="form-section">
+                                    <div class="section-head">
+                                        <span class="section-kicker">Step 1</span>
+                                        <h3>Choose a class</h3>
+                                        <p>Class is the biggest gameplay choice. It sets your role, your main tactics, and what kinds of scores matter most. Everything in this step is required.</p>
+                                    </div>
+                                    <div class="section-grid">
+                                        <label>
+                                            <span>Class</span>
+                                            <select id="class" name="class" required>
+                                                <option value="">Choose a class</option>
+                                                @foreach (config('dnd.classes', []) as $class)
+                                                    <option value="{{ $class }}">{{ $class }}</option>
+                                                @endforeach
+                                            </select>
+                                        </label>
+                                        <label>
+                                            <span>Level</span>
+                                            <input id="level" name="level" type="number" min="1" value="1" required>
+                                        </label>
+                                        <label class="full">
+                                            <span>Subclass</span>
+                                            <select id="subclass" name="subclass" required>
+                                                <option value="">Choose a class first</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                    <div class="hover-help" id="step1-choice-help" hidden>
+                                        <strong>Step 1 Details</strong>
+                                        <span>Hover class and subclass choices to preview them here.</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <div class="section-head">
+                                        <span class="section-kicker">Step 2</span>
+                                        <h3>Determine origin</h3>
+                                        <p>Origin covers the parts your character brings into the adventure: background, species, languages, and the feat that came with that early life. Everything in this step is required.</p>
+                                    </div>
+                                    <div class="section-grid">
+                                        <label>
+                                            <span>Name</span>
+                                            <input id="name" name="name" required placeholder="Rin, Mara, Toren...">
+                                            <span class="tiny" id="name-placeholder-note">Name ideas can shift with species, but any name is valid.</span>
+                                        </label>
+                                        <label>
+                                            <span>Background</span>
+                                            <select id="background" name="background" required>
+                                                <option value="">Choose a background</option>
+                                                @foreach (config('dnd.backgrounds', []) as $background)
+                                                    <option value="{{ $background }}">{{ $background }}</option>
+                                                @endforeach
+                                            </select>
+                                        </label>
+                                        <label>
+                                            <span>Species</span>
+                                            <select id="species" name="species" required>
+                                                <option value="">Choose a species</option>
+                                                @foreach (config('dnd.species', []) as $species)
+                                                    <option value="{{ $species }}">{{ $species }}</option>
+                                                @endforeach
+                                            </select>
+                                        </label>
+                                        <label>
+                                            <span>Origin Feat</span>
+                                            <select id="origin_feat" name="origin_feat" required>
+                                                <option value="">Choose an origin feat</option>
+                                                @foreach (config('dnd.origin_feats', []) as $originFeat)
+                                                    <option value="{{ $originFeat }}">{{ $originFeat }}</option>
+                                                @endforeach
+                                            </select>
+                                        </label>
+                                        <label class="full">
+                                            <span>Languages</span>
+                                            <div class="check-grid" id="languages">
+                                                @foreach (config('dnd.languages', []) as $language)
+                                                    <label class="check-chip">
+                                                        <input class="check-chip-input" type="checkbox" name="languages[]" value="{{ $language }}">
+                                                        <span class="check-chip-label">{{ $language }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                            <span class="tiny">Pick at least one language. This is part of the core character sheet.</span>
+                                        </label>
+                                    </div>
+                                    <div class="hover-help" id="step2-choice-help" hidden>
+                                        <strong>Step 2 Details</strong>
+                                        <span>Hover origin choices to preview them here.</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <div class="section-head">
+                                        <span class="section-kicker">Step 3</span>
+                                        <h3>Determine ability scores</h3>
+                                        <p>This is the mechanical heart of the sheet, so it comes before personality notes and appearance details. Everything in this step is required.</p>
+                                    </div>
+                                    <div class="section-grid">
+                                        <label><span>Strength</span><input id="strength" name="strength" type="number" min="3" max="18" required></label>
+                                        <label><span>Dexterity</span><input id="dexterity" name="dexterity" type="number" min="3" max="18" required></label>
+                                        <label><span>Constitution</span><input id="constitution" name="constitution" type="number" min="3" max="18" required></label>
+                                        <label><span>Intelligence</span><input id="intelligence" name="intelligence" type="number" min="3" max="18" required></label>
+                                        <label><span>Wisdom</span><input id="wisdom" name="wisdom" type="number" min="3" max="18" required></label>
+                                        <label><span>Charisma</span><input id="charisma" name="charisma" type="number" min="3" max="18" required></label>
+                                    </div>
+                                    <div class="actions" style="margin-top:1rem">
+                                        <button class="btn" id="roll-btn" type="button">Roll ability scores</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <div class="section-head">
+                                        <span class="section-kicker">Step 4</span>
+                                        <h3>Choose an alignment</h3>
+                                        <p>Alignment is a small shorthand for outlook. It helps guide roleplay, but it should not override the rest of the character. This step is optional.</p>
+                                    </div>
+                                    <div class="section-grid">
+                                        <label class="full">
+                                            <span>Alignment</span>
+                                            <select id="alignment" name="alignment">
+                                                <option value="">Choose an alignment</option>
+                                                @foreach (config('dnd.alignments', []) as $alignment)
+                                                    <option value="{{ $alignment }}">{{ $alignment }}</option>
+                                                @endforeach
+                                            </select>
+                                        </label>
+                                    </div>
+                                    <div class="hover-help" id="step4-choice-help" hidden>
+                                        <strong>Step 4 Details</strong>
+                                        <span>Hover the alignment field to preview the current choice here.</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <div class="section-head">
+                                        <span class="section-kicker">Step 5</span>
+                                        <h3>Fill in details</h3>
+                                        <p>Finish the sheet with the optional details that make the character easier to picture and easier to play. Everything in this step is skippable.</p>
+                                    </div>
+                                    <div class="section-grid">
+                                        <label class="full">
+                                            <span>Personality Traits</span>
+                                            <textarea id="personality_traits" name="personality_traits" placeholder="Short first-impression notes like calm, curious, dry humor..."></textarea>
+                                            <span class="tiny">{{ config('dnd.roleplay_field_help.personality_traits') }}</span>
+                                        </label>
+                                        <label class="full">
+                                            <span>Ideals</span>
+                                            <textarea id="ideals" name="ideals" placeholder="What principle matters most to this character?"></textarea>
+                                            <span class="tiny">{{ config('dnd.roleplay_field_help.ideals') }}</span>
+                                        </label>
+                                        <label class="full">
+                                            <span>Bonds</span>
+                                            <textarea id="bonds" name="bonds" placeholder="Who or what matters enough to change their decisions?"></textarea>
+                                            <span class="tiny">{{ config('dnd.roleplay_field_help.bonds') }}</span>
+                                        </label>
+                                        <label class="full">
+                                            <span>Flaws</span>
+                                            <textarea id="flaws" name="flaws" placeholder="What weakness or habit tends to cause trouble?"></textarea>
+                                            <span class="tiny">{{ config('dnd.roleplay_field_help.flaws') }}</span>
+                                        </label>
+                                        <div class="full tiny" id="roleplay-placeholder-note">Roleplay prompts adapt to alignment, class, and background. They are examples, not limits.</div>
+                                        <label><span>Age</span><input id="age" name="age" placeholder="23 or 120"></label>
+                                        <label><span>Height</span><input id="height" name="height" placeholder="173 cm or 5ft 8in"></label>
+                                        <label><span>Weight</span><input id="weight" name="weight" placeholder="72 kg or 160 lb"></label>
+                                        <label><span>Eyes</span><input id="eyes" name="eyes" placeholder="Gray, green, amber..."></label>
+                                        <label><span>Hair</span><input id="hair" name="hair" placeholder="Black braid, copper curls..."></label>
+                                        <label><span>Skin</span><input id="skin" name="skin" placeholder="Olive, freckled, scarred..."></label>
+                                        <div class="full tiny" id="appearance-placeholder-note">Appearance examples shift with species. They are lore-style examples, not hard limits.</div>
+                                        <label class="full"><span>Notes</span><textarea id="notes" name="notes" placeholder="Campaign notes, hooks, gear, personality..."></textarea></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="actions" style="margin-top:1rem">
+                                <button class="btn-soft" id="random-character-btn" type="button">Random character</button>
+                                <button class="btn-soft" id="clear-btn" type="button">Clear form</button>
+                                <button class="btn" type="submit">Save character</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="panel">
+                        <span class="eyebrow">Build Guide</span>
+                        <div class="summary-grid">
+                            <div class="rule-block">
+                                <h3 id="selected-build-title">Start the build</h3>
+                                <p id="selected-build-summary">Work top to bottom: class, origin, ability scores, alignment, then the rest of the sheet.</p>
+                                <p id="selected-build-focus" class="tiny">This panel updates live so you can see what is already covered and what still needs attention.</p>
+                                <ul id="selected-build-checklist"></ul>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-class-title">Choose a class</h3>
+                                <p id="selected-class-summary">Class notes appear here once you make a choice.</p>
+                                <p id="selected-class-focus" class="tiny">Primary focus and playstyle notes will appear here.</p>
+                                <ul id="selected-subclasses"></ul>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-background-title">Choose a background</h3>
+                                <p id="selected-background-summary">Background notes appear here once you make a choice.</p>
+                                <p id="selected-background-theme" class="tiny">Background themes and roleplay hooks will appear here.</p>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-species-title">Choose a species</h3>
+                                <p id="selected-species-summary">Species notes appear here once you make a choice.</p>
+                                <ul id="selected-species-traits"></ul>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-origin-feat-title">Choose an origin feat</h3>
+                                <p id="selected-origin-feat-summary">Feat notes appear here once you make a choice.</p>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-languages-title">Choose languages</h3>
+                                <ul id="selected-language-list"></ul>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-stats-title">Ability score guide</h3>
+                                <p id="selected-stats-summary">Roll or enter scores to see modifiers, class-fit advice, and where the build is strongest.</p>
+                                <ul id="selected-stats-list"></ul>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-alignment-title">Choose an alignment</h3>
+                                <p id="selected-alignment-summary">Your selected alignment summary will appear here.</p>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-roleplay-title">Beginner roleplay help</h3>
+                                <p id="selected-roleplay-summary">Pick one alignment and a few short personality anchors. You do not need to write a novel.</p>
+                                <ul id="selected-roleplay-list"></ul>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-appearance-title">Appearance help</h3>
+                                <p id="selected-appearance-summary">A few visual anchors are enough: age, height, eyes, hair, and one memorable detail.</p>
+                                <ul id="selected-appearance-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="stack" id="dice">
+                    <div class="panel">
+                        <div class="head">
+                            <div>
+                                <span class="eyebrow">Dice Tray</span>
+                                <h2>Roll outside the wizard</h2>
+                            </div>
+                        </div>
+                        <p>Use the tray when you just need fast dice. It supports the full standard set, custom expressions like <code>2d6+3</code>, and a full six-stat roll.</p>
+                        <div class="notice" id="dice-notice"></div>
+                        <div class="dice-buttons" id="dice-buttons">
+                            <button class="btn-soft" type="button" data-dice-expression="d4">d4</button>
+                            <button class="btn-soft" type="button" data-dice-expression="d6">d6</button>
+                            <button class="btn-soft" type="button" data-dice-expression="d8">d8</button>
+                            <button class="btn-soft" type="button" data-dice-expression="d10">d10</button>
+                            <button class="btn-soft" type="button" data-dice-expression="d12">d12</button>
+                            <button class="btn-soft" type="button" data-dice-expression="d20">d20</button>
+                            <button class="btn-soft" type="button" data-dice-expression="d20" data-dice-mode="advantage">Adv d20</button>
+                            <button class="btn-soft" type="button" data-dice-expression="d20" data-dice-mode="disadvantage">Dis d20</button>
+                            <button class="btn-soft" type="button" data-dice-expression="d100">d100</button>
+                            <button class="btn-soft" type="button" data-dice-expression="2d6+3">2d6+3</button>
+                            <button class="btn-soft" type="button" data-dice-expression="1d8+2">1d8+2</button>
+                            <button class="btn-soft" id="dice-roll-stats" type="button">Roll Stats</button>
+                        </div>
+                        <form class="dice-form" id="dice-form">
+                            <input id="dice-expression" type="text" placeholder="Custom roll like 2d6+3, d20, or 4d8-1">
+                            <select id="dice-mode">
+                                <option value="">Normal</option>
+                                <option value="advantage">Advantage</option>
+                                <option value="disadvantage">Disadvantage</option>
+                            </select>
+                            <button class="btn" type="submit">Roll</button>
+                        </form>
+                        <div class="actions" style="margin-top:1rem">
+                            <button class="btn-soft" id="dice-clear" type="button">Clear tray</button>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <span class="eyebrow">Result</span>
+                        <div class="dice-result-card" id="dice-result">
+                            <h3>Ready to roll</h3>
+                            <p>Pick any die, use a custom expression, or roll full ability scores from here.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel" id="library">
+                    <div class="head">
+                        <div>
+                            <span class="eyebrow">Rules Library</span>
+                            <h2>Browse the rules reference</h2>
+                        </div>
+                    </div>
+
+                    <p>Use the section list and search box to find classes, spells, monsters, equipment, and other rules entries.</p>
+
+                    <div class="library-toolbar">
+                        <select id="compendium-section">
+                            @foreach (config('dnd.compendium_sections', []) as $section)
+                                <option value="{{ $section['key'] }}">{{ $section['title'] }} ({{ $section['count'] }})</option>
+                            @endforeach
+                        </select>
+                        <input id="compendium-search" type="text" placeholder="Search names, summaries, traits, or tags...">
+                    </div>
+
+                    <div class="notice" id="compendium-notice"></div>
+                    <div class="library-card" style="margin-bottom:1rem">
+                        <h3 id="compendium-title">Rules Reference</h3>
+                        <p id="compendium-summary" class="tiny">Section summary</p>
+                    </div>
+                    <div class="library-stage">
+                        <div class="library-results" id="compendium-results"></div>
+                    </div>
+                </section>
             </main>
         </div>
 
-        @if (Route::has('login'))
-            <div class="h-14.5 hidden lg:block"></div>
-        @endif
+        @php
+            $pageData = [
+                'configurator' => [
+                    'class_details' => config('dnd.class_details'),
+                    'species_details' => config('dnd.species_details'),
+                    'background_details' => config('dnd.background_details'),
+                    'ability_details' => config('dnd.ability_details'),
+                    'alignment_details' => config('dnd.alignment_details'),
+                    'alignment_roleplay' => config('dnd.alignment_roleplay'),
+                    'roleplay_field_help' => config('dnd.roleplay_field_help'),
+                    'origin_feat_details' => config('dnd.origin_feat_details'),
+                    'language_details' => config('dnd.language_details'),
+                    'appearance_field_help' => config('dnd.appearance_field_help'),
+                    'form_placeholder_profiles' => config('dnd.form_placeholder_profiles'),
+                    'ability_appearance_cues' => config('dnd.ability_appearance_cues'),
+                ],
+                'compendium' => config('dnd.compendium'),
+                'compendium_sections' => array_values(config('dnd.compendium_sections')),
+            ];
+        @endphp
+        <script id="page-data" type="application/json">{!! json_encode($pageData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+        <script>
+            const pageData = JSON.parse(document.getElementById('page-data').textContent);
+            const configurator = pageData.configurator;
+            const compendium = pageData.compendium;
+            const compendiumSections = pageData.compendium_sections;
+            const countEl = document.getElementById('count');
+            const rollEl = document.getElementById('latest-roll');
+            const formNotice = document.getElementById('form-notice');
+            const wizardNotice = document.getElementById('wizard-notice');
+            const diceNotice = document.getElementById('dice-notice');
+            const compendiumNotice = document.getElementById('compendium-notice');
+            const previewEl = document.getElementById('preview');
+            const wizardActionHelp = document.getElementById('wizard-action-help');
+            const wizardActionHelpText = document.getElementById('wizard-action-help-text');
+            const form = document.getElementById('character-form');
+            const wizardForm = document.getElementById('wizard-form');
+            const wizardInput = document.getElementById('wizard-input');
+            const wizardLog = document.getElementById('wizard-log');
+            const wizardActions = document.getElementById('wizard-actions');
+            const wizardSummary = document.getElementById('wizard-summary');
+            const tryAskingSearch = document.getElementById('try-asking-search');
+            const tryAskingContainer = document.getElementById('try-asking-chips');
+            const tryAskingChips = Array.from(document.querySelectorAll('[data-try-chip]'));
+            const tryAskingEmpty = document.getElementById('try-asking-empty');
+            const diceForm = document.getElementById('dice-form');
+            const diceExpressionInput = document.getElementById('dice-expression');
+            const diceModeSelect = document.getElementById('dice-mode');
+            const diceButtons = document.getElementById('dice-buttons');
+            const diceResult = document.getElementById('dice-result');
+            const wizardDiceButtons = document.querySelectorAll('[data-wizard-command]');
+            const nameInput = document.getElementById('name');
+            const levelInput = document.getElementById('level');
+            const classSelect = document.getElementById('class');
+            const subclassSelect = document.getElementById('subclass');
+            const speciesSelect = document.getElementById('species');
+            const backgroundSelect = document.getElementById('background');
+            const alignmentSelect = document.getElementById('alignment');
+            const originFeatSelect = document.getElementById('origin_feat');
+            const languageInputs = Array.from(document.querySelectorAll('input[name="languages[]"]'));
+            const personalityTraitsInput = document.getElementById('personality_traits');
+            const idealsInput = document.getElementById('ideals');
+            const bondsInput = document.getElementById('bonds');
+            const flawsInput = document.getElementById('flaws');
+            const ageInput = document.getElementById('age');
+            const heightInput = document.getElementById('height');
+            const weightInput = document.getElementById('weight');
+            const eyesInput = document.getElementById('eyes');
+            const hairInput = document.getElementById('hair');
+            const skinInput = document.getElementById('skin');
+            const notesInput = document.getElementById('notes');
+            const namePlaceholderNote = document.getElementById('name-placeholder-note');
+            const roleplayPlaceholderNote = document.getElementById('roleplay-placeholder-note');
+            const appearancePlaceholderNote = document.getElementById('appearance-placeholder-note');
+            const step1ChoiceHelp = document.getElementById('step1-choice-help');
+            const step2ChoiceHelp = document.getElementById('step2-choice-help');
+            const step4ChoiceHelp = document.getElementById('step4-choice-help');
+            const compendiumSectionSelect = document.getElementById('compendium-section');
+            const compendiumSearchInput = document.getElementById('compendium-search');
+            const compendiumTitle = document.getElementById('compendium-title');
+            const compendiumSummary = document.getElementById('compendium-summary');
+            const compendiumResults = document.getElementById('compendium-results');
+            const statFields = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+            const optionalTextFields = ['alignment', 'personality_traits', 'ideals', 'bonds', 'flaws', 'age', 'height', 'weight', 'eyes', 'hair', 'skin', 'notes'];
+            let wizardState = {};
+
+            function notice(el, message, type) {
+                el.textContent = message;
+                el.className = `notice show ${type}`;
+            }
+
+            function clearNotice(el) {
+                el.textContent = '';
+                el.className = 'notice';
+            }
+
+            function showHoverHelp(box, title, text) {
+                if (! box || ! text) {
+                    if (box) box.hidden = true;
+                    return;
+                }
+
+                box.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(text)}</span>`;
+                box.hidden = false;
+            }
+
+            function hideHoverHelp(box) {
+                if (box) box.hidden = true;
+            }
+
+            function escapeHtml(value) {
+                return String(value ?? '')
+                    .replaceAll('&', '&amp;')
+                    .replaceAll('<', '&lt;')
+                    .replaceAll('>', '&gt;')
+                    .replaceAll('"', '&quot;')
+                    .replaceAll("'", '&#39;');
+            }
+
+            function renderPreview(stats) {
+                const labels = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+                const values = stats ? [stats.strength, stats.dexterity, stats.constitution, stats.intelligence, stats.wisdom, stats.charisma] : ['-', '-', '-', '-', '-', '-'];
+                previewEl.innerHTML = labels.map((label, index) => `<div class="stat"><span class="label">${label}</span><span class="value">${values[index]}</span></div>`).join('');
+            }
+
+            function abilityFieldLabel(field) {
+                const labels = {
+                    strength: 'Strength',
+                    dexterity: 'Dexterity',
+                    constitution: 'Constitution',
+                    intelligence: 'Intelligence',
+                    wisdom: 'Wisdom',
+                    charisma: 'Charisma',
+                };
+
+                return labels[field] || field;
+            }
+
+            function abilityModifier(score) {
+                return Math.floor((Number(score) - 10) / 2);
+            }
+
+            function formatModifier(modifier) {
+                return modifier >= 0 ? `+${modifier}` : String(modifier);
+            }
+
+            function currentAppearanceCues() {
+                const scores = statFields.map((field) => ({
+                    field,
+                    value: Number(document.getElementById(field).value),
+                })).filter((entry) => Number.isFinite(entry.value) && entry.value > 0);
+
+                if (! scores.length) return [];
+
+                const highest = [...scores].sort((a, b) => b.value - a.value)[0];
+                const lowest = [...scores].sort((a, b) => a.value - b.value)[0];
+                const cues = [];
+
+                if (highest) {
+                    const label = abilityFieldLabel(highest.field);
+                    const words = configurator.ability_appearance_cues?.[label]?.high || [];
+                    if (words.length) cues.push(`High ${label} cue: ${words.join(', ')}`);
+                }
+
+                if (lowest && lowest.field !== highest.field) {
+                    const label = abilityFieldLabel(lowest.field);
+                    const words = configurator.ability_appearance_cues?.[label]?.low || [];
+                    if (words.length) cues.push(`Low ${label} cue: ${words.join(', ')}`);
+                }
+
+                return cues;
+            }
+
+            function backgroundDrivenBondPlaceholder(backgroundValue, fallback) {
+                const theme = configurator.background_details?.[backgroundValue]?.theme;
+
+                if (! theme) return fallback;
+
+                return `A person, place, or promise tied to ${theme.toLowerCase()}...`;
+            }
+
+            function classDrivenTraitPlaceholder(classValue, fallback) {
+                const suggestions = {
+                    Barbarian: 'Blunt, intense, protective, hard to intimidate...',
+                    Bard: 'Warm, theatrical, teasing, always with a story...',
+                    Cleric: 'Steady, observant, compassionate, quietly certain...',
+                    Druid: 'Grounded, patient, weather-wise, hard to rush...',
+                    Fighter: 'Disciplined, practical, alert, built for pressure...',
+                    Monk: 'Calm, focused, restrained, always measuring the room...',
+                    Paladin: 'Earnest, resolute, inspiring, impossible to ignore...',
+                    Ranger: 'Watchful, dry-humored, capable, always tracking something...',
+                    Rogue: 'Quick-eyed, guarded, clever, never fully off-balance...',
+                    Sorcerer: 'Intense, instinctive, magnetic, power close to the surface...',
+                    Warlock: 'Measured, uncanny, confident, keeping a private edge...',
+                    Wizard: 'Curious, precise, distracted, always connecting patterns...',
+                };
+
+                return suggestions[classValue] || fallback;
+            }
+
+            function updateAdaptivePlaceholders() {
+                const profiles = configurator.form_placeholder_profiles || {};
+                const defaultProfile = profiles.default || {};
+                const speciesProfile = profiles.species?.[speciesSelect.value] || {};
+                const alignmentRoleplay = configurator.alignment_roleplay?.[alignmentSelect.value] || {};
+                const backgroundTheme = configurator.background_details?.[backgroundSelect.value]?.theme;
+                const focus = configurator.class_details?.[classSelect.value]?.primary_focus || [];
+
+                const mergedProfile = {
+                    ...defaultProfile,
+                    ...speciesProfile,
+                };
+
+                nameInput.placeholder = mergedProfile.name || 'Rin, Mara, Toren...';
+                ageInput.placeholder = mergedProfile.age || '19, 42, or 120';
+                heightInput.placeholder = mergedProfile.height || '173 cm or 5ft 8in';
+                weightInput.placeholder = mergedProfile.weight || '72 kg or 160 lb';
+                eyesInput.placeholder = mergedProfile.eyes || 'Gray, green, amber...';
+                hairInput.placeholder = mergedProfile.hair || 'Black braid, copper curls...';
+                skinInput.placeholder = mergedProfile.skin || 'Olive, freckled, scarred...';
+
+                personalityTraitsInput.placeholder = alignmentRoleplay.starter_trait
+                    || classDrivenTraitPlaceholder(classSelect.value, 'Short first-impression notes like calm, curious, dry humor...');
+                idealsInput.placeholder = alignmentRoleplay.starter_ideal
+                    || (backgroundTheme ? `${backgroundTheme} matters more than comfort.` : 'What principle matters most to this character?');
+                bondsInput.placeholder = alignmentRoleplay.starter_bond
+                    || backgroundDrivenBondPlaceholder(backgroundSelect.value, 'Who or what matters enough to change their decisions?');
+                flawsInput.placeholder = alignmentRoleplay.starter_flaw
+                    || (classSelect.value ? `A ${classSelect.value.toLowerCase()} habit that sometimes causes trouble...` : 'What weakness or habit tends to cause trouble?');
+
+                const notesBits = [
+                    classSelect.value ? `${classSelect.value} hooks` : '',
+                    backgroundSelect.value ? `${backgroundSelect.value} ties` : '',
+                    speciesSelect.value ? `${speciesSelect.value} details` : '',
+                    focus.length ? `${focus.join('/')} focus` : '',
+                ].filter(Boolean);
+                notesInput.placeholder = notesBits.length
+                    ? `${notesBits.join(', ')}, gear, party links...`
+                    : 'Campaign notes, hooks, gear, personality...';
+
+                if (namePlaceholderNote) {
+                    namePlaceholderNote.textContent = speciesSelect.value
+                        ? `Name examples are flavored for ${speciesSelect.value}, but any name is still valid.`
+                        : (defaultProfile.name_note || 'Name ideas can shift with species, but any name is valid.');
+                }
+
+                if (roleplayPlaceholderNote) {
+                    const sources = [
+                        alignmentSelect.value ? `alignment (${alignmentSelect.value})` : '',
+                        classSelect.value ? `class (${classSelect.value})` : '',
+                        backgroundSelect.value ? `background (${backgroundSelect.value})` : '',
+                    ].filter(Boolean);
+
+                    roleplayPlaceholderNote.textContent = sources.length
+                        ? `Roleplay prompts are borrowing from ${sources.join(', ')}. Treat them as examples, not limits.`
+                        : 'Roleplay prompts adapt to alignment, class, and background. They are examples, not limits.';
+                }
+
+                if (appearancePlaceholderNote) {
+                    appearancePlaceholderNote.textContent = speciesSelect.value
+                        ? `Appearance examples are flavored for ${speciesSelect.value}. They are lore-style examples, not hard limits.`
+                        : (defaultProfile.appearance_note || 'Appearance examples shift with species. They are lore-style examples, not hard limits.');
+                }
+            }
+
+            function setLatestRoll(label) {
+                rollEl.textContent = String(label || 'Ready').slice(0, 28);
+            }
+
+            function renderDiceResultCard(title, lines = []) {
+                diceResult.innerHTML = `
+                    <h3>${escapeHtml(title)}</h3>
+                    ${lines.map((line) => `<p>${escapeHtml(line)}</p>`).join('')}
+                `;
+            }
+
+            function renderDiceExpressionResult(data) {
+                const modeLabel = data.mode ? ` (${data.mode})` : '';
+                renderDiceResultCard(
+                    `${data.expression}${modeLabel} = ${data.total}`,
+                    [data.detail || 'Roll complete.'],
+                );
+                setLatestRoll(`${data.expression}: ${data.total}`);
+            }
+
+            function renderDiceStatsResult(stats, { populateForm = false } = {}) {
+                if (populateForm) {
+                    statFields.forEach((field) => document.getElementById(field).value = stats[field]);
+                    renderPreview(stats);
+                }
+
+                const summary = statFields
+                    .map((field) => `${field.slice(0, 3).toUpperCase()} ${stats[field]}`)
+                    .join(' | ');
+
+                renderDiceResultCard('Ability Scores Rolled', [summary, 'Rolled as 4d6 and dropped the lowest die for each stat.']);
+                setLatestRoll(summary);
+            }
+
+            function appendWizardMessage(role, text) {
+                const article = document.createElement('article');
+                article.className = `wizard-message ${role}`;
+                article.innerHTML = `
+                    <div class="wizard-speaker">${role === 'user' ? 'You' : 'Rules Wizard'}</div>
+                    <p>${escapeHtml(text).replaceAll('\n', '<br>')}</p>
+                `;
+                wizardLog.appendChild(article);
+                wizardLog.scrollTop = wizardLog.scrollHeight;
+            }
+
+            function wizardActionDescription(action) {
+                const pendingField = wizardState?.pending_field;
+
+                if (! pendingField) return '';
+                if (action === 'skip') return 'Leave this optional field blank for now.';
+                if (action === 'skip all details') return 'Finish the core draft now and come back to optional details later.';
+
+                if (pendingField === 'species') {
+                    return configurator.species_details?.[action]?.summary || '';
+                }
+
+                if (pendingField === 'class') {
+                    const detail = configurator.class_details?.[action];
+                    if (! detail) return '';
+                    return [detail.summary, Array.isArray(detail.primary_focus) && detail.primary_focus.length ? `Focus: ${detail.primary_focus.join(', ')}` : '']
+                        .filter(Boolean)
+                        .join(' ');
+                }
+
+                if (pendingField === 'background') {
+                    const detail = configurator.background_details?.[action];
+                    if (! detail) return '';
+                    return [detail.summary, detail.theme ? `Theme: ${detail.theme}` : ''].filter(Boolean).join(' ');
+                }
+
+                if (pendingField === 'alignment') {
+                    return configurator.alignment_details?.[action] || '';
+                }
+
+                if (pendingField === 'origin_feat') {
+                    return configurator.origin_feat_details?.[action] || '';
+                }
+
+                if (pendingField === 'subclass') {
+                    return wizardState?.character?.class
+                        ? `Subclass option for ${wizardState.character.class}.`
+                        : 'Subclass option for the chosen class.';
+                }
+
+                return '';
+            }
+
+            function formChoiceDescription(field, value) {
+                if (! value) return '';
+
+                if (field === 'class') {
+                    const detail = configurator.class_details?.[value];
+                    return detail
+                        ? [detail.summary, Array.isArray(detail.primary_focus) && detail.primary_focus.length ? `Focus: ${detail.primary_focus.join(', ')}` : '']
+                            .filter(Boolean)
+                            .join(' ')
+                        : '';
+                }
+
+                if (field === 'subclass') {
+                    return classSelect.value
+                        ? `${value} is a subclass option for ${classSelect.value}.`
+                        : `${value} is a subclass option.`;
+                }
+
+                if (field === 'species') {
+                    const detail = configurator.species_details?.[value];
+                    return detail
+                        ? [detail.summary, detail.size ? `Size: ${detail.size}.` : '', detail.speed ? `Speed: ${detail.speed}.` : '']
+                            .filter(Boolean)
+                            .join(' ')
+                        : '';
+                }
+
+                if (field === 'background') {
+                    const detail = configurator.background_details?.[value];
+                    return detail
+                        ? [detail.summary, detail.theme ? `Theme: ${detail.theme}.` : '']
+                            .filter(Boolean)
+                            .join(' ')
+                        : '';
+                }
+
+                if (field === 'alignment') {
+                    return configurator.alignment_details?.[value] || '';
+                }
+
+                if (field === 'origin_feat') {
+                    return configurator.origin_feat_details?.[value] || '';
+                }
+
+                if (field === 'language') {
+                    return configurator.language_details?.[value] || '';
+                }
+
+                return '';
+            }
+
+            function renderWizardActions(actions) {
+                wizardActions.innerHTML = '';
+                const richActions = actions.some((action) => wizardActionDescription(action));
+                wizardActions.classList.toggle('rich', richActions);
+                hideHoverHelp(wizardActionHelp);
+
+                actions.slice(0, 12).forEach((action) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = `btn-soft${richActions ? ' wizard-option' : ''}`;
+                    button.dataset.wizardAction = action;
+                    const description = wizardActionDescription(action);
+                    button.textContent = action;
+                    button.title = description || '';
+                    if (description) {
+                        button.addEventListener('mouseenter', () => showHoverHelp(wizardActionHelp, action, description));
+                        button.addEventListener('focus', () => showHoverHelp(wizardActionHelp, action, description));
+                        button.addEventListener('mouseleave', () => hideHoverHelp(wizardActionHelp));
+                        button.addEventListener('blur', () => hideHoverHelp(wizardActionHelp));
+                    }
+                    wizardActions.appendChild(button);
+                });
+            }
+
+            function syncSelectTitle(control, field) {
+                const description = formChoiceDescription(field, control.value);
+                control.title = description || '';
+            }
+
+            function wireChoiceHelp(control, field, box, titlePrefix) {
+                const show = () => {
+                    const value = control.value;
+                    const description = formChoiceDescription(field, value);
+                    syncSelectTitle(control, field);
+                    if (! value || ! description) {
+                        hideHoverHelp(box);
+                        return;
+                    }
+
+                    showHoverHelp(box, `${titlePrefix}: ${value}`, description);
+                };
+
+                control.addEventListener('mouseenter', show);
+                control.addEventListener('focus', show);
+                control.addEventListener('change', show);
+                control.addEventListener('mouseleave', () => hideHoverHelp(box));
+                control.addEventListener('blur', () => hideHoverHelp(box));
+            }
+
+            function filterTryAsking() {
+                const query = tryAskingSearch.value.trim().toLowerCase();
+                let matches = 0;
+
+                tryAskingChips.forEach((chip) => {
+                    const visible = ! query || chip.textContent.toLowerCase().includes(query);
+                    chip.hidden = ! visible;
+                    if (visible) matches += 1;
+                });
+
+                tryAskingEmpty.hidden = matches !== 0;
+            }
+
+            function renderWizardSummary(snapshot) {
+                if (! snapshot || ! snapshot.identity) {
+                    wizardSummary.innerHTML = `
+                        <div class="wizard-summary-card">
+                            <h3>No active character</h3>
+                            <p>The wizard will show the current sheet, combat state, features, and next-level preview here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const stats = (snapshot.stats || []).map((stat) => `
+                    <li>${escapeHtml(stat.label)}: ${stat.score ?? '-'}${stat.modifier ? ` (${escapeHtml(stat.modifier)})` : ''}</li>
+                `).join('');
+
+                const currentFeatures = (snapshot.current_features || []).map((feature) => `<li>${escapeHtml(feature)}</li>`).join('');
+                const nextGains = (snapshot.next_gains || []).map((feature) => `<li>${escapeHtml(feature)}</li>`).join('');
+                const missing = (snapshot.missing_fields || []).map((field) => `<li>${escapeHtml(field)}</li>`).join('');
+                const characterDetails = (snapshot.character_details || []).join(' / ');
+                const languages = (snapshot.languages || []).join(', ');
+                const roleplay = (snapshot.roleplay || []).map((entry) => `<li>${escapeHtml(entry)}</li>`).join('');
+                const appearance = (snapshot.appearance || []).map((entry) => `<li>${escapeHtml(entry)}</li>`).join('');
+                const notes = snapshot.notes ? escapeHtml(snapshot.notes) : '';
+                const conditions = (snapshot.conditions || []).map((condition) => `<li>Condition: ${escapeHtml(condition)}</li>`).join('');
+                const resources = (snapshot.resources || []).map((resource) => `<li>${escapeHtml(resource)}</li>`).join('');
+                const concentration = snapshot.concentration ? `<li>Concentration: ${escapeHtml(snapshot.concentration)}</li>` : '';
+                const deathTrack = snapshot.death_track ? `<li>${escapeHtml(snapshot.death_track)}</li>` : '';
+                const dungeonStatus = snapshot.dungeon_status ? `<li>${escapeHtml(snapshot.dungeon_status)}</li>` : '<li>Dungeon state is waiting on the active build.</li>';
+
+                wizardSummary.innerHTML = `
+                    <div class="wizard-summary-card">
+                        <h3>${escapeHtml(snapshot.identity)}</h3>
+                        <p>${snapshot.proficiency_bonus ? `Proficiency Bonus ${escapeHtml(snapshot.proficiency_bonus)}` : 'Proficiency Bonus pending'}</p>
+                        <p>${snapshot.estimated_hit_points !== null ? `Estimated HP ${snapshot.estimated_hit_points}` : 'Estimated HP pending'}</p>
+                        <p>${snapshot.spellcasting_summary ? escapeHtml(snapshot.spellcasting_summary) : 'No spellcasting summary yet'}</p>
+                        <p>${characterDetails ? escapeHtml(characterDetails) : 'Core identity details like class, species, background, and origin feat are not set yet.'}</p>
+                        <p>${languages ? `Languages: ${escapeHtml(languages)}` : 'Languages are not set yet.'}</p>
+                        <p>${notes ? `Notes: ${notes}` : 'Notes are not set yet.'}</p>
+                    </div>
+                    <div class="wizard-summary-card">
+                        <h3>Dungeon State</h3>
+                        <ul>${dungeonStatus}${conditions}${resources}${concentration}${deathTrack}</ul>
+                    </div>
+                    <div class="wizard-summary-card">
+                        <h3>Stats</h3>
+                        <ul>${stats || '<li>No stats set yet.</li>'}</ul>
+                    </div>
+                    <div class="wizard-summary-card">
+                        <h3>Roleplay</h3>
+                        <ul>${roleplay || '<li>No trait, ideal, bond, or flaw set yet.</li>'}</ul>
+                    </div>
+                    <div class="wizard-summary-card">
+                        <h3>Appearance</h3>
+                        <ul>${appearance || '<li>No appearance details set yet.</li>'}</ul>
+                    </div>
+                    <div class="wizard-summary-card">
+                        <h3>Current Features</h3>
+                        <ul>${currentFeatures || '<li>No class features available yet.</li>'}</ul>
+                    </div>
+                    <div class="wizard-summary-card">
+                        <h3>Next Level Preview</h3>
+                        <ul>${nextGains || '<li>No preview available yet.</li>'}</ul>
+                    </div>
+                    <div class="wizard-summary-card">
+                        <h3>Missing Fields</h3>
+                        <ul>${missing || '<li>Build is complete.</li>'}</ul>
+                    </div>
+                `;
+            }
+
+            function renderCompendium() {
+                const sectionKey = compendiumSectionSelect.value;
+                const searchValue = compendiumSearchInput.value.trim().toLowerCase();
+                const section = compendium?.[sectionKey];
+
+                if (! section) {
+                    notice(compendiumNotice, 'The requested compendium section was not found.', 'error');
+                    compendiumResults.innerHTML = '';
+                    return;
+                }
+
+                clearNotice(compendiumNotice);
+                compendiumTitle.textContent = `${section.title}`;
+                compendiumSummary.textContent = sectionKey === 'spells'
+                    ? `${section.count} spell entries with level, school, duration, range, and class tags.`
+                    : sectionKey === 'monsters'
+                        ? `${section.count} monster entries with core combat and stat-block details.`
+                    : `${section.count} entries in this section.`;
+
+                const entries = section.items.filter((item) => {
+                    const haystack = JSON.stringify(item).toLowerCase();
+                    return ! searchValue || haystack.includes(searchValue);
+                });
+
+                if (! entries.length) {
+                    compendiumResults.innerHTML = `<div class="empty library-card"><span class="eyebrow">No matches</span><h3>No entries match that search.</h3><p>Try a broader keyword or switch to another compendium section.</p></div>`;
+                    return;
+                }
+
+                compendiumResults.innerHTML = entries.map((item) => {
+                    const tags = [];
+                    const meta = [];
+
+                    if (item.ability) tags.push(`Ability: ${item.ability}`);
+                    if (item.size) tags.push(`Size: ${item.size}`);
+                    if (item.creature_type) tags.push(`Type: ${item.creature_type}`);
+                    if (item.alignment) tags.push(`Alignment: ${item.alignment}`);
+                    if (item.speed) tags.push(`Speed: ${item.speed}`);
+                    if (item.theme) tags.push(`Theme: ${item.theme}`);
+                    if (Array.isArray(item.primary_focus)) tags.push(`Focus: ${item.primary_focus.join(', ')}`);
+                    if (item.level_label) tags.push(`Level: ${item.level_label}`);
+                    if (item.school) tags.push(`School: ${item.school}`);
+                    if (item.casting_time) tags.push(`Cast: ${item.casting_time}`);
+                    if (item.range) tags.push(`Range: ${item.range}`);
+                    if (item.ac) tags.push(`AC: ${item.ac}`);
+                    if (item.hp) tags.push(`HP: ${item.hp}`);
+                    if (item.cr) tags.push(`CR: ${item.cr}`);
+                    if (item.initiative) tags.push(`Initiative: ${item.initiative}`);
+                    if (item.proficiency_bonus) tags.push(`${item.proficiency_bonus}`);
+
+                    if (item.duration) meta.push(`Duration: ${item.duration}`);
+                    if (item.components) meta.push(`Components: ${item.components}`);
+                    if (item.attack_save) meta.push(`Attack/Save: ${item.attack_save}`);
+                    if (item.damage_effect) meta.push(`Effect: ${item.damage_effect}`);
+                    if (item.ritual) meta.push('Ritual');
+                    if (item.concentration) meta.push('Concentration');
+                    if (Array.isArray(item.classes) && item.classes.length) meta.push(`Classes: ${item.classes.join(', ')}`);
+                    if (item.skills) meta.push(`Skills: ${item.skills}`);
+                    if (item.senses) meta.push(`Senses: ${item.senses}`);
+                    if (item.languages) meta.push(`Languages: ${item.languages}`);
+                    if (item.resistances) meta.push(`Resistances: ${item.resistances}`);
+                    if (item.immunities) meta.push(`Immunities: ${item.immunities}`);
+                    if (item.condition_immunities) meta.push(`Condition Immunities: ${item.condition_immunities}`);
+                    if (item.vulnerabilities) meta.push(`Vulnerabilities: ${item.vulnerabilities}`);
+                    if (item.gear) meta.push(`Gear: ${item.gear}`);
+                    if (item.abilities && typeof item.abilities === 'object') {
+                        const scores = ['str', 'dex', 'con', 'int', 'wis', 'cha']
+                            .filter((key) => item.abilities[key] !== undefined)
+                            .map((key) => `${key.toUpperCase()} ${item.abilities[key]}`);
+                        if (scores.length) meta.push(scores.join(' | '));
+                    }
+
+                    const bullets = [];
+                    if (Array.isArray(item.subclasses)) bullets.push(...item.subclasses.map((entry) => `Subclass: ${entry}`));
+                    if (Array.isArray(item.traits)) bullets.push(...item.traits.map((entry) => `Trait: ${entry}`));
+                    if (Array.isArray(item.trait_names)) bullets.push(...item.trait_names.map((entry) => `Trait: ${entry}`));
+                    if (Array.isArray(item.action_names)) bullets.push(...item.action_names.map((entry) => `Action: ${entry}`));
+                    if (Array.isArray(item.bonus_action_names)) bullets.push(...item.bonus_action_names.map((entry) => `Bonus Action: ${entry}`));
+                    if (Array.isArray(item.reaction_names)) bullets.push(...item.reaction_names.map((entry) => `Reaction: ${entry}`));
+                    if (Array.isArray(item.legendary_action_names)) bullets.push(...item.legendary_action_names.map((entry) => `Legendary Action: ${entry}`));
+                    if (Array.isArray(item.lair_action_names)) bullets.push(...item.lair_action_names.map((entry) => `Lair Action: ${entry}`));
+
+                    return `
+                        <article class="library-card">
+                            <h3>${escapeHtml(item.name)}</h3>
+                            <p>${escapeHtml(item.summary || 'Rules entry.')}</p>
+                            ${tags.length ? `<div class="chip-list">${tags.map((tag) => `<span class="chip">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+                            ${meta.length ? `<div class="entry-meta">${meta.map((entry) => escapeHtml(entry)).join(' | ')}</div>` : ''}
+                            ${bullets.length ? `<ul class="entry-list">${bullets.map((entry) => `<li>${escapeHtml(entry)}</li>`).join('')}</ul>` : ''}
+                        </article>
+                    `;
+                }).join('');
+            }
+
+            function populateSubclassOptions(selectedClass, selectedSubclass = '') {
+                const subclasses = configurator.class_details?.[selectedClass]?.subclasses ?? [];
+                const options = ['<option value="">Choose a subclass</option>'];
+
+                subclasses.forEach((subclass) => {
+                    const isSelected = selectedSubclass === subclass ? ' selected' : '';
+                    options.push(`<option value="${subclass}"${isSelected}>${subclass}</option>`);
+                });
+
+                if (! selectedClass) {
+                    subclassSelect.innerHTML = '<option value="">Choose a class first</option>';
+                    return;
+                }
+
+                subclassSelect.innerHTML = options.join('');
+            }
+
+            function renderSelectionReference() {
+                updateAdaptivePlaceholders();
+
+                const nameValue = nameInput.value.trim();
+                const classValue = classSelect.value;
+                const subclassValue = subclassSelect.value;
+                const speciesValue = speciesSelect.value;
+                const backgroundValue = backgroundSelect.value;
+                const alignmentValue = alignmentSelect.value;
+                const originFeatValue = originFeatSelect.value;
+                const languageValues = languageInputs.filter((input) => input.checked).map((input) => input.value);
+                const levelValue = levelInput.value.trim();
+                const personalityTraitsValue = personalityTraitsInput.value.trim();
+                const idealsValue = idealsInput.value.trim();
+                const bondsValue = bondsInput.value.trim();
+                const flawsValue = flawsInput.value.trim();
+                const appearanceValues = {
+                    age: ageInput.value.trim(),
+                    height: heightInput.value.trim(),
+                    weight: weightInput.value.trim(),
+                    eyes: eyesInput.value.trim(),
+                    hair: hairInput.value.trim(),
+                    skin: skinInput.value.trim(),
+                };
+
+                const classDetail = configurator.class_details?.[classValue];
+                const speciesDetail = configurator.species_details?.[speciesValue];
+                const backgroundDetail = configurator.background_details?.[backgroundValue];
+                const alignmentDetail = configurator.alignment_details?.[alignmentValue];
+                const alignmentRoleplay = configurator.alignment_roleplay?.[alignmentValue];
+                const originFeatDetail = configurator.origin_feat_details?.[originFeatValue];
+                const focusAbilities = Array.isArray(classDetail?.primary_focus) ? classDetail.primary_focus : [];
+                const languageDetails = languageValues.map((language) => ({
+                    name: language,
+                    summary: configurator.language_details?.[language] || '',
+                }));
+                const appearanceCues = currentAppearanceCues();
+                const statScores = statFields.map((field) => ({
+                    field,
+                    label: abilityFieldLabel(field),
+                    score: Number(document.getElementById(field).value),
+                })).filter((entry) => Number.isFinite(entry.score) && entry.score > 0);
+                const sortedHigh = [...statScores].sort((a, b) => b.score - a.score);
+                const sortedLow = [...statScores].sort((a, b) => a.score - b.score);
+                const highestStat = sortedHigh[0]?.field || null;
+                const lowestStat = sortedLow[0]?.field || null;
+                const coreChecklist = [
+                    classValue ? `Class ready: ${classValue}` : 'Class still needed',
+                    levelValue ? `Level ready: ${levelValue}` : 'Level still needed',
+                    subclassValue ? `Subclass ready: ${subclassValue}` : 'Subclass still needed',
+                    nameValue ? `Name ready: ${nameValue}` : 'Name still needed',
+                    backgroundValue ? `Background ready: ${backgroundValue}` : 'Background still needed',
+                    speciesValue ? `Species ready: ${speciesValue}` : 'Species still needed',
+                    originFeatValue ? `Origin feat ready: ${originFeatValue}` : 'Origin feat still needed',
+                    languageValues.length ? `Languages ready: ${languageValues.join(', ')}` : 'Languages still needed',
+                    statScores.length === statFields.length ? 'Ability scores ready' : `Ability scores set: ${statScores.length}/${statFields.length}`,
+                    alignmentValue ? `Alignment ready: ${alignmentValue}` : 'Alignment still optional',
+                ];
+                const missingCore = [
+                    ! classValue ? 'class' : '',
+                    ! levelValue ? 'level' : '',
+                    ! subclassValue ? 'subclass' : '',
+                    ! nameValue ? 'name' : '',
+                    ! backgroundValue ? 'background' : '',
+                    ! speciesValue ? 'species' : '',
+                    ! originFeatValue ? 'origin feat' : '',
+                    ! languageValues.length ? 'languages' : '',
+                    statScores.length !== statFields.length ? 'ability scores' : '',
+                ].filter(Boolean);
+
+                document.getElementById('selected-build-title').textContent = nameValue
+                    ? `${nameValue}${classValue ? `, ${classValue}` : ''}${subclassValue ? ` (${subclassValue})` : ''}`
+                    : 'Start the build';
+                document.getElementById('selected-build-summary').textContent = missingCore.length
+                    ? `Still to choose: ${missingCore.join(', ')}.`
+                    : 'Core sheet is complete. You can still add alignment, roleplay, appearance, and notes.';
+                document.getElementById('selected-build-focus').textContent = focusAbilities.length
+                    ? `Step focus: class first, origin next, then scores. ${classValue} usually leans on ${focusAbilities.join(', ')}.${levelValue ? ` Level ${levelValue} is selected.` : ''}`
+                    : `${levelValue ? `Level ${levelValue} is selected.` : 'Pick a class and level to see focus guidance.'}`;
+                document.getElementById('selected-build-checklist').innerHTML = coreChecklist.map((entry) => `<li>${escapeHtml(entry)}</li>`).join('');
+
+                document.getElementById('selected-stats-title').textContent = statScores.length ? 'Ability score guide' : 'Roll or enter scores';
+                document.getElementById('selected-stats-summary').textContent = statScores.length
+                    ? `Highest score: ${abilityFieldLabel(highestStat)}. Lowest score: ${abilityFieldLabel(lowestStat)}.`
+                    : 'Roll or enter scores to see modifiers, class-fit advice, and where the build is strongest.';
+                document.getElementById('selected-stats-list').innerHTML = statScores.length
+                    ? statFields.map((field) => {
+                        const label = abilityFieldLabel(field);
+                        const score = Number(document.getElementById(field).value);
+                        if (! Number.isFinite(score) || score <= 0) {
+                            return `<li><strong>${label}</strong>: waiting for a score.</li>`;
+                        }
+
+                        const tags = [];
+                        if (focusAbilities.includes(label)) tags.push('class focus');
+                        if (field === highestStat) tags.push('highest');
+                        if (field === lowestStat) tags.push('lowest');
+
+                        return `<li><strong>${label} ${score} (${formatModifier(abilityModifier(score))})</strong>: ${escapeHtml(configurator.ability_details?.[label] || 'Score notes appear here once the value is set.')}${tags.length ? ` <span class="tiny">(${escapeHtml(tags.join(', '))})</span>` : ''}</li>`;
+                    }).join('')
+                    : '<li>Primary class focus and ability modifiers will appear here.</li>';
+
+                document.getElementById('selected-class-title').textContent = classValue
+                    ? `${classValue}${subclassValue ? ` / ${subclassValue}` : ''}`
+                    : 'Choose a class';
+                document.getElementById('selected-class-summary').textContent = classDetail?.summary || 'Class notes appear here once you make a choice.';
+                document.getElementById('selected-class-focus').textContent = Array.isArray(classDetail?.primary_focus) && classDetail.primary_focus.length
+                    ? `Primary focus: ${classDetail.primary_focus.join(', ')}${subclassValue ? ` | Selected subclass: ${subclassValue}` : ''}`
+                    : 'Primary focus and playstyle notes will appear here.';
+                document.getElementById('selected-subclasses').innerHTML = (classDetail?.subclasses || []).length
+                    ? (classDetail.subclasses || []).map((subclass) => `<li>${escapeHtml(subclass)}${subclassValue === subclass ? ' <span class="tiny">(selected)</span>' : ''}</li>`).join('')
+                    : '<li>Subclass options will appear after you choose a class.</li>';
+
+                document.getElementById('selected-species-title').textContent = speciesValue || 'Choose a species';
+                document.getElementById('selected-species-summary').textContent = speciesDetail?.summary || 'Species notes appear here once you make a choice.';
+                document.getElementById('selected-species-traits').innerHTML = speciesDetail
+                    ? [
+                        speciesDetail.size ? `<li>Size: ${speciesDetail.size}</li>` : '',
+                        speciesDetail.speed ? `<li>Speed: ${speciesDetail.speed}</li>` : '',
+                        ...(speciesDetail.traits || []).map((trait) => `<li>Trait: ${trait}</li>`),
+                    ].filter(Boolean).join('')
+                    : '<li>Size, speed, and species traits will appear here.</li>';
+
+                document.getElementById('selected-background-title').textContent = backgroundValue || 'Choose a background';
+                document.getElementById('selected-background-summary').textContent = backgroundDetail?.summary || 'Background notes appear here once you make a choice.';
+                document.getElementById('selected-background-theme').textContent = backgroundDetail?.theme
+                    ? `Theme: ${backgroundDetail.theme}`
+                    : 'Background themes and roleplay hooks will appear here.';
+
+                document.getElementById('selected-alignment-title').textContent = alignmentValue || 'Choose an alignment';
+                document.getElementById('selected-alignment-summary').textContent = alignmentDetail || 'Your selected alignment summary will appear here.';
+
+                document.getElementById('selected-origin-feat-title').textContent = originFeatValue || 'Choose an origin feat';
+                document.getElementById('selected-origin-feat-summary').textContent = originFeatDetail || 'Feat notes appear here once you make a choice.';
+
+                document.getElementById('selected-languages-title').textContent = languageValues.length ? `Languages (${languageValues.length})` : 'Choose languages';
+                document.getElementById('selected-language-list').innerHTML = languageDetails.length
+                    ? languageDetails.map((language) => `<li><strong>${language.name}</strong>${language.summary ? `: ${language.summary}` : ''}</li>`).join('')
+                    : '<li>Your selected language summaries will appear here.</li>';
+
+                document.getElementById('selected-roleplay-title').textContent = alignmentValue ? `${alignmentValue} roleplay starter` : 'Beginner roleplay help';
+                document.getElementById('selected-roleplay-summary').textContent = alignmentRoleplay?.play_well
+                    || 'Pick one alignment and a few short personality anchors. You do not need to write a novel.';
+                document.getElementById('selected-roleplay-list').innerHTML = [
+                    alignmentRoleplay?.watch_out ? `<li><strong>Watch out:</strong> ${alignmentRoleplay.watch_out}</li>` : '',
+                    personalityTraitsValue ? `<li><strong>Current trait:</strong> ${escapeHtml(personalityTraitsValue)}</li>` : `<li><strong>Trait idea:</strong> ${escapeHtml(alignmentRoleplay?.starter_trait || configurator.roleplay_field_help?.personality_traits || '')}</li>`,
+                    idealsValue ? `<li><strong>Current ideal:</strong> ${escapeHtml(idealsValue)}</li>` : `<li><strong>Ideal idea:</strong> ${escapeHtml(alignmentRoleplay?.starter_ideal || configurator.roleplay_field_help?.ideals || '')}</li>`,
+                    bondsValue ? `<li><strong>Current bond:</strong> ${escapeHtml(bondsValue)}</li>` : `<li><strong>Bond idea:</strong> ${escapeHtml(alignmentRoleplay?.starter_bond || configurator.roleplay_field_help?.bonds || '')}</li>`,
+                    flawsValue ? `<li><strong>Current flaw:</strong> ${escapeHtml(flawsValue)}</li>` : `<li><strong>Flaw idea:</strong> ${escapeHtml(alignmentRoleplay?.starter_flaw || configurator.roleplay_field_help?.flaws || '')}</li>`,
+                ].filter(Boolean).join('');
+
+                document.getElementById('selected-appearance-title').textContent = (appearanceValues.eyes || appearanceValues.hair || appearanceValues.skin)
+                    ? 'Current look'
+                    : 'Appearance help';
+                document.getElementById('selected-appearance-summary').textContent = 'A few visual anchors are enough: age, height, eyes, hair, and one memorable detail.';
+                document.getElementById('selected-appearance-list').innerHTML = [
+                    appearanceValues.age ? `<li><strong>Age:</strong> ${escapeHtml(appearanceValues.age)}</li>` : `<li><strong>Age:</strong> ${escapeHtml(configurator.appearance_field_help?.age || '')}</li>`,
+                    appearanceValues.height ? `<li><strong>Height:</strong> ${escapeHtml(appearanceValues.height)}</li>` : `<li><strong>Height:</strong> ${escapeHtml(configurator.appearance_field_help?.height || '')}</li>`,
+                    appearanceValues.weight ? `<li><strong>Weight:</strong> ${escapeHtml(appearanceValues.weight)}</li>` : `<li><strong>Weight:</strong> ${escapeHtml(configurator.appearance_field_help?.weight || '')}</li>`,
+                    appearanceValues.eyes ? `<li><strong>Eyes:</strong> ${escapeHtml(appearanceValues.eyes)}</li>` : `<li><strong>Eyes:</strong> ${escapeHtml(configurator.appearance_field_help?.eyes || '')}</li>`,
+                    appearanceValues.hair ? `<li><strong>Hair:</strong> ${escapeHtml(appearanceValues.hair)}</li>` : `<li><strong>Hair:</strong> ${escapeHtml(configurator.appearance_field_help?.hair || '')}</li>`,
+                    appearanceValues.skin ? `<li><strong>Skin:</strong> ${escapeHtml(appearanceValues.skin)}</li>` : `<li><strong>Skin:</strong> ${escapeHtml(configurator.appearance_field_help?.skin || '')}</li>`,
+                    ...appearanceCues.map((cue) => `<li><strong>Cue:</strong> ${escapeHtml(cue)}</li>`),
+                ].join('');
+
+                syncSelectTitle(classSelect, 'class');
+                syncSelectTitle(subclassSelect, 'subclass');
+                syncSelectTitle(backgroundSelect, 'background');
+                syncSelectTitle(speciesSelect, 'species');
+                syncSelectTitle(originFeatSelect, 'origin_feat');
+                syncSelectTitle(alignmentSelect, 'alignment');
+            }
+
+            function randomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function randomChoice(items) {
+                return items.length ? items[randomInt(0, items.length - 1)] : null;
+            }
+
+            function randomUniqueChoices(items, count) {
+                const pool = [...items];
+                const picks = [];
+
+                while (pool.length && picks.length < count) {
+                    const index = randomInt(0, pool.length - 1);
+                    picks.push(pool.splice(index, 1)[0]);
+                }
+
+                return picks;
+            }
+
+            function splitSuggestionPool(value) {
+                return String(value ?? '')
+                    .replaceAll('...', '')
+                    .split(',')
+                    .map((entry) => entry.replace(/^or\s+/i, '').trim())
+                    .filter(Boolean);
+            }
+
+            function randomFromSuggestion(value, fallback = '') {
+                const pool = splitSuggestionPool(value);
+                return randomChoice(pool) || fallback;
+            }
+
+            function localAbilityScore() {
+                const rolls = Array.from({ length: 4 }, () => randomInt(1, 6)).sort((a, b) => a - b);
+                rolls.shift();
+                return rolls.reduce((total, roll) => total + roll, 0);
+            }
+
+            function randomLanguagesSelection() {
+                const allLanguages = Object.keys(configurator.language_details || {});
+                const nonCommon = allLanguages.filter((language) => language !== 'Common');
+                const picks = allLanguages.includes('Common') ? ['Common'] : [];
+                const extras = randomUniqueChoices(nonCommon, Math.min(nonCommon.length, randomInt(1, 2)));
+                const selection = [...picks, ...extras];
+
+                return selection.length ? selection : randomUniqueChoices(allLanguages, 1);
+            }
+
+            function randomCharacterName(species) {
+                const speciesProfile = configurator.form_placeholder_profiles?.species?.[species] || {};
+                return randomFromSuggestion(speciesProfile.name, `${species} Wanderer`);
+            }
+
+            function randomAppearanceProfile(species) {
+                const defaultProfile = configurator.form_placeholder_profiles?.default || {};
+                const speciesProfile = configurator.form_placeholder_profiles?.species?.[species] || {};
+                const mergedProfile = { ...defaultProfile, ...speciesProfile };
+
+                return {
+                    age: randomFromSuggestion(mergedProfile.age, '25'),
+                    height: randomFromSuggestion(mergedProfile.height, '173 cm'),
+                    weight: randomFromSuggestion(mergedProfile.weight, '72 kg'),
+                    eyes: randomFromSuggestion(mergedProfile.eyes, 'Gray'),
+                    hair: randomFromSuggestion(mergedProfile.hair, 'Dark braid'),
+                    skin: randomFromSuggestion(mergedProfile.skin, 'Weathered'),
+                };
+            }
+
+            function fillRandomCharacter() {
+                const classOptions = Object.keys(configurator.class_details || {});
+                const speciesOptions = Object.keys(configurator.species_details || {});
+                const backgroundOptions = Object.keys(configurator.background_details || {});
+                const alignmentOptions = Object.keys(configurator.alignment_details || {});
+                const originFeatOptions = Object.keys(configurator.origin_feat_details || {});
+
+                const classValue = randomChoice(classOptions);
+                const speciesValue = randomChoice(speciesOptions);
+                const backgroundValue = randomChoice(backgroundOptions);
+                const alignmentValue = randomChoice(alignmentOptions);
+                const originFeatValue = randomChoice(originFeatOptions);
+                const subclassValue = randomChoice(configurator.class_details?.[classValue]?.subclasses || []);
+                const languagesValue = randomLanguagesSelection();
+                const roleplayProfile = configurator.alignment_roleplay?.[alignmentValue] || {};
+                const appearance = randomAppearanceProfile(speciesValue);
+                const levelValue = randomInt(1, 20);
+                const generatedStats = Object.fromEntries(statFields.map((field) => [field, localAbilityScore()]));
+                const nameValue = randomCharacterName(speciesValue);
+                const backgroundTheme = configurator.background_details?.[backgroundValue]?.theme || 'adventuring trouble';
+
+                clearNotice(formNotice);
+                form.reset();
+
+                classSelect.value = classValue || '';
+                levelInput.value = levelValue;
+                populateSubclassOptions(classValue || '');
+                subclassSelect.value = subclassValue || '';
+                backgroundSelect.value = backgroundValue || '';
+                speciesSelect.value = speciesValue || '';
+                originFeatSelect.value = originFeatValue || '';
+                alignmentSelect.value = alignmentValue || '';
+                nameInput.value = nameValue || '';
+
+                languageInputs.forEach((input) => {
+                    input.checked = languagesValue.includes(input.value);
+                });
+
+                renderDiceStatsResult(generatedStats, { populateForm: true });
+
+                personalityTraitsInput.value = roleplayProfile.starter_trait || personalityTraitsInput.placeholder;
+                idealsInput.value = roleplayProfile.starter_ideal || idealsInput.placeholder;
+                bondsInput.value = roleplayProfile.starter_bond || bondsInput.placeholder;
+                flawsInput.value = roleplayProfile.starter_flaw || flawsInput.placeholder;
+                ageInput.value = appearance.age;
+                heightInput.value = appearance.height;
+                weightInput.value = appearance.weight;
+                eyesInput.value = appearance.eyes;
+                hairInput.value = appearance.hair;
+                skinInput.value = appearance.skin;
+                notesInput.value = `${nameValue} is a level ${levelValue} ${subclassValue} ${classValue} with a ${backgroundValue.toLowerCase()} background. Speaks ${languagesValue.join(', ')}. Ask the DM how their ${backgroundTheme.toLowerCase()} first tied them to the party.`;
+
+                renderSelectionReference();
+                notice(formNotice, 'Random character generated. Review anything you want, then save the sheet.', 'success');
+            }
+
+            async function loadCharacterCount() {
+                try {
+                    const response = await fetch('/api/characters', { headers: { Accept: 'application/json' } });
+                    if (! response.ok) throw new Error();
+                    const characters = await response.json();
+                    countEl.textContent = Array.isArray(characters) ? characters.length : '0';
+                } catch {
+                    countEl.textContent = '-';
+                }
+            }
+
+            async function rollStats(options = {}) {
+                const { populateForm = true } = options;
+
+                try {
+                    const response = await fetch('/api/roll-stats', { method: 'POST', headers: { Accept: 'application/json' } });
+                    if (! response.ok) throw new Error();
+                    const stats = await response.json();
+                    renderDiceStatsResult(stats, { populateForm });
+                    clearNotice(formNotice);
+                    clearNotice(diceNotice);
+                    if (populateForm) renderSelectionReference();
+                } catch {
+                    notice(formNotice, 'Rolling stats failed. Try again in a moment.', 'error');
+                    if (! populateForm) notice(diceNotice, 'Rolling stats failed. Try again in a moment.', 'error');
+                }
+            }
+
+            async function rollDiceExpression(expression, mode = '') {
+                try {
+                    clearNotice(diceNotice);
+                    const response = await fetch('/api/roll-dice', {
+                        method: 'POST',
+                        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            expression,
+                            mode: mode || null,
+                        }),
+                    });
+
+                    const data = await response.json();
+                    if (! response.ok) {
+                        throw new Error(data.message || 'The dice roll failed.');
+                    }
+
+                    renderDiceExpressionResult(data);
+                } catch (error) {
+                    notice(diceNotice, error.message || 'The dice roll failed.', 'error');
+                }
+            }
+
+            function resetForm() {
+                form.reset();
+                document.getElementById('level').value = 1;
+                renderPreview(null);
+                populateSubclassOptions('');
+                renderSelectionReference();
+                clearNotice(formNotice);
+            }
+
+            function resetDiceTray() {
+                diceForm.reset();
+                renderDiceResultCard('Ready to roll', ['Pick any die, use a custom expression, or roll full ability scores from here.']);
+                clearNotice(diceNotice);
+                setLatestRoll('Ready');
+            }
+
+            function payload() {
+                const data = Object.fromEntries(new FormData(form).entries());
+                delete data['languages[]'];
+                optionalTextFields.forEach((field) => {
+                    data[field] = typeof data[field] === 'string' && data[field].trim() ? data[field].trim() : null;
+                });
+                data.languages = languageInputs.filter((input) => input.checked).map((input) => input.value);
+                data.level = Number(data.level);
+                statFields.forEach((field) => data[field] = Number(data[field]));
+                return data;
+            }
+
+            async function createCharacter(event) {
+                event.preventDefault();
+                clearNotice(formNotice);
+
+                if (! languageInputs.some((input) => input.checked)) {
+                    notice(formNotice, 'Choose at least one language before saving the character.', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/characters', {
+                        method: 'POST',
+                        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload()),
+                    });
+
+                    const data = await response.json();
+                    if (! response.ok) {
+                        const message = data.errors ? Object.values(data.errors)[0][0] : 'The character could not be saved.';
+                        throw new Error(message);
+                    }
+
+                    notice(formNotice, 'Character saved successfully.', 'success');
+                    resetForm();
+                    await loadCharacterCount();
+                } catch (error) {
+                    notice(formNotice, error.message || 'The character could not be saved.', 'error');
+                }
+            }
+
+            async function sendWizardMessage(message, options = {}) {
+                const { echoUser = true, reset = false } = options;
+
+                if (reset) {
+                    wizardState = {};
+                    wizardLog.innerHTML = '';
+                    renderWizardActions([]);
+                    renderWizardSummary(null);
+                }
+
+                if (message && echoUser) {
+                    appendWizardMessage('user', message);
+                }
+
+                try {
+                    clearNotice(wizardNotice);
+
+                    const response = await fetch('/api/rules-wizard/message', {
+                        method: 'POST',
+                        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message,
+                            state: wizardState,
+                        }),
+                    });
+
+                    const data = await response.json();
+                    if (! response.ok) {
+                        const message = data.errors ? Object.values(data.errors)[0][0] : 'The rules wizard could not respond.';
+                        throw new Error(message);
+                    }
+
+                    wizardState = data.state ?? {};
+                    appendWizardMessage('bot', data.reply ?? 'No response.');
+                    renderWizardActions(data.quick_actions ?? []);
+                    renderWizardSummary(data.snapshot ?? null);
+
+                    if (/^(roll|roll initiative|roll death save)/i.test(message || '')) {
+                        setLatestRoll((data.reply ?? 'Rolled').split('\n')[0]);
+                    }
+                } catch (error) {
+                    notice(wizardNotice, error.message || 'The rules wizard could not respond.', 'error');
+                }
+            }
+
+            document.getElementById('roll-btn').addEventListener('click', rollStats);
+            document.getElementById('random-character-btn').addEventListener('click', fillRandomCharacter);
+            document.getElementById('clear-btn').addEventListener('click', resetForm);
+            document.getElementById('dice-roll-stats').addEventListener('click', () => rollStats({ populateForm: false }));
+            document.getElementById('dice-clear').addEventListener('click', resetDiceTray);
+            document.getElementById('wizard-reset').addEventListener('click', () => sendWizardMessage('', { echoUser: false, reset: true }));
+            tryAskingSearch.addEventListener('input', filterTryAsking);
+            tryAskingContainer.addEventListener('click', (event) => {
+                const button = event.target.closest('[data-try-command]');
+                if (! button) return;
+                sendWizardMessage(button.dataset.tryCommand);
+            });
+            form.addEventListener('submit', createCharacter);
+            diceForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const expression = diceExpressionInput.value.trim();
+                if (! expression) return;
+                rollDiceExpression(expression, diceModeSelect.value);
+            });
+            wizardForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const message = wizardInput.value.trim();
+                if (! message) return;
+                wizardInput.value = '';
+                sendWizardMessage(message);
+            });
+            compendiumSectionSelect.addEventListener('change', renderCompendium);
+            compendiumSearchInput.addEventListener('input', renderCompendium);
+            diceButtons.addEventListener('click', (event) => {
+                const button = event.target.closest('[data-dice-expression]');
+                if (! button) return;
+                rollDiceExpression(button.dataset.diceExpression, button.dataset.diceMode || '');
+            });
+            wireChoiceHelp(classSelect, 'class', step1ChoiceHelp, 'Class');
+            wireChoiceHelp(subclassSelect, 'subclass', step1ChoiceHelp, 'Subclass');
+            wireChoiceHelp(backgroundSelect, 'background', step2ChoiceHelp, 'Background');
+            wireChoiceHelp(speciesSelect, 'species', step2ChoiceHelp, 'Species');
+            wireChoiceHelp(originFeatSelect, 'origin_feat', step2ChoiceHelp, 'Origin Feat');
+            wireChoiceHelp(alignmentSelect, 'alignment', step4ChoiceHelp, 'Alignment');
+
+            nameInput.addEventListener('input', renderSelectionReference);
+            classSelect.addEventListener('change', () => {
+                populateSubclassOptions(classSelect.value);
+                renderSelectionReference();
+            });
+            subclassSelect.addEventListener('change', renderSelectionReference);
+            speciesSelect.addEventListener('change', renderSelectionReference);
+            backgroundSelect.addEventListener('change', renderSelectionReference);
+            alignmentSelect.addEventListener('change', renderSelectionReference);
+            originFeatSelect.addEventListener('change', renderSelectionReference);
+            languageInputs.forEach((input) => input.addEventListener('change', renderSelectionReference));
+            languageInputs.forEach((input) => {
+                const chip = input.closest('.check-chip');
+                const show = () => {
+                    const description = formChoiceDescription('language', input.value);
+                    showHoverHelp(step2ChoiceHelp, `Language: ${input.value}`, description || 'Language reference note.');
+                };
+
+                chip?.addEventListener('mouseenter', show);
+                chip?.addEventListener('mouseleave', () => hideHoverHelp(step2ChoiceHelp));
+                chip?.addEventListener('focusin', show);
+                chip?.addEventListener('focusout', () => hideHoverHelp(step2ChoiceHelp));
+                input.title = formChoiceDescription('language', input.value) || '';
+            });
+            levelInput.addEventListener('input', renderSelectionReference);
+            [personalityTraitsInput, idealsInput, bondsInput, flawsInput, ageInput, heightInput, weightInput, eyesInput, hairInput, skinInput].forEach((input) => {
+                input.addEventListener('input', renderSelectionReference);
+            });
+            statFields.forEach((field) => {
+                document.getElementById(field).addEventListener('input', renderSelectionReference);
+            });
+
+            wizardActions.addEventListener('click', (event) => {
+                const button = event.target.closest('[data-wizard-action]');
+                if (button) sendWizardMessage(button.dataset.wizardAction);
+            });
+            wizardDiceButtons.forEach((button) => {
+                button.addEventListener('click', () => sendWizardMessage(button.dataset.wizardCommand));
+            });
+
+            populateSubclassOptions('');
+            filterTryAsking();
+            resetDiceTray();
+            renderSelectionReference();
+            if (compendiumSections.length) {
+                compendiumSectionSelect.value = compendiumSections[0].key;
+            }
+            renderCompendium();
+            loadCharacterCount();
+            sendWizardMessage('', { echoUser: false });
+        </script>
     </body>
 </html>
