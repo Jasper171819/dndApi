@@ -12,7 +12,7 @@
             body::after{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.18))}
             button,input,textarea,select{font:inherit} a{text-decoration:none;color:inherit}
             .wrap{position:relative;z-index:1;width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:1rem 0 4rem}
-            .workspace{display:grid;grid-template-columns:240px minmax(0,1fr);gap:1rem;align-items:start}
+            .workspace{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:1rem;align-items:start}
             .topbar,.card,.panel,.char,.stat,.notice,.mini{border:1px solid var(--line);border-radius:24px;background:rgba(34,25,21,.9);box-shadow:0 20px 50px rgba(0,0,0,.28)}
             .topbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.2rem;margin-top:1rem;border-radius:999px;background:rgba(19,15,13,.84);backdrop-filter:blur(10px)}
             .brand{display:flex;align-items:center;gap:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
@@ -21,7 +21,7 @@
             .nav a,.btn,.btn-soft{padding:.8rem 1rem;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);cursor:pointer;transition:.18s ease}
             .btn:hover,.btn-soft:hover,.nav a:hover{transform:translateY(-1px);border-color:#8b623f;color:var(--text)}
             .btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#29180f;font-weight:700}
-            main#top{display:grid;gap:1.4rem}
+            main#top{display:grid;gap:1.4rem;grid-column:1;grid-row:1}
             main#top > section{margin-top:0}
             .hero{display:grid;grid-template-columns:1fr;align-items:start;gap:1rem;padding:2rem 0 .4rem;order:1}
             .card,.panel{padding:1.5rem}
@@ -35,7 +35,7 @@
             .mini{padding:1rem;border-radius:18px;background:var(--soft)}
             .mini strong{display:block;margin-top:.35rem;font-size:1.15rem;color:var(--text)}
             section{margin-top:1.4rem}
-            .preview-rail{position:sticky;top:6.5rem;align-self:start;margin-top:2rem}
+            .preview-rail{position:sticky;top:6.5rem;align-self:start;margin-top:2rem;grid-column:2;grid-row:1}
             .preview-panel p{margin:.45rem 0 0}
             .preview-stats{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:1rem}
             .preview-stat{padding:.85rem .75rem}
@@ -119,7 +119,7 @@
             #dice{order:3}
             #wizard{order:4}
             #library{order:5}
-            @media (max-width:980px){.workspace,.hero,.grid,.library-grid,.library-toolbar,.summary-grid,.quick{grid-template-columns:1fr}.topbar{position:static;border-radius:28px;align-items:stretch}.nav{justify-content:center}.preview-rail{position:static;margin-top:0}}
+            @media (max-width:980px){.workspace,.hero,.grid,.library-grid,.library-toolbar,.summary-grid,.quick{grid-template-columns:1fr}.topbar{position:static;border-radius:28px;align-items:stretch}.nav{justify-content:center}.preview-rail{position:static;margin-top:0;grid-column:auto;grid-row:auto}}
             @media (max-width:720px){.section-grid,.stats,.quick,.check-grid,.skill-grid{grid-template-columns:1fr}.topbar{border-radius:26px;padding:1rem}.brand{justify-content:center}.nav a{flex:1 1 calc(50% - .6rem);text-align:center}.head{flex-direction:column;align-items:start}}
             @media (max-width:720px){.dice-buttons,.dice-form{grid-template-columns:1fr}}
             @media (max-width:640px){.wrap{width:min(100% - 1rem,100%)}.topbar,.card,.panel{padding:1.05rem}h1{max-width:100%}.library-results{column-width:auto;columns:1}.hover-tooltip{width:min(280px,calc(100vw - 1rem))}}
@@ -142,7 +142,7 @@
             <div class="workspace">
                 <aside class="preview-rail">
                     <section class="panel preview-panel">
-                        <span class="eyebrow">Ability Preview</span>
+                        <span class="eyebrow">Ability Tracker</span>
                         <h2>Scores and modifiers</h2>
                         <p class="tiny">Keep the six abilities in view while you build. Hover a score here or in Step 3 to see the save bonus, related skills, and any saved proficiency or expertise tied to that ability.</p>
                         <div class="stats preview-stats" id="preview">
