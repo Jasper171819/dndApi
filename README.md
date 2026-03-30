@@ -1,22 +1,58 @@
-# dndApi
-Projectbeschrijving – D&D Dice Character Creator
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-Voor de eindopdracht van het vak API Development en het Basis Agile Portfolio ontwikkel ik een kleine webapplicatie genaamd D&D Dice Character Creator. Het doel van dit project is om zowel mijn technische API-vaardigheden als mijn kennis van de Agile werkwijze aan te tonen.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-De applicatie stelt gebruikers in staat om Dungeons & Dragons personages te genereren met behulp van dobbelstenen. In plaats van handmatig statistieken te kiezen, gebruikt de applicatie een dobbelsteenmechanisme om de ability scores te bepalen. Hierdoor ontstaat een eenvoudige en speelse manier om een karakter te maken.
+## About Laravel
 
-Gebruikers kunnen in de applicatie:
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-Ability scores genereren met een dobbelsteenmechanisme
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Een nieuw personage aanmaken
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-Opgeslagen personages bekijken
+## Learning Laravel
 
-Personages verwijderen
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-De ability scores worden gegenereerd met de bekende 4d6 drop lowest methode. Hierbij worden vier zeszijdige dobbelstenen gegooid, waarna de laagste worp wordt verwijderd en de overige drie waarden worden opgeteld.
+In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-Technisch bestaat de applicatie uit een Laravel REST API die communiceert met een React frontend. De data van de personages wordt opgeslagen in een MySQL database. Daarnaast wordt gebruik gemaakt van tools zoals Git voor versiebeheer en Postman voor het testen van API-endpoints.
+You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
 
-Het project heeft een kleine scope, zodat het binnen ongeveer één week ontwikkeld kan worden, maar tegelijkertijd voldoende functionaliteit bevat om API-ontwikkeling, databasegebruik, frontend-integratie en Agile documentatie te demonstreren.
+## Agentic Development
+
+Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+
+```bash
+composer require laravel/boost --dev
+
+php artisan boost:install
+```
+
+Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+
+## Contributing
+
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+
+## Code of Conduct
+
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
