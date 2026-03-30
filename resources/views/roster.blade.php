@@ -57,7 +57,7 @@
             <header class="topbar">
                 <a class="brand" href="{{ route('home') }}"><span class="mark">D20</span><span>Adventurer's Ledger</span></a>
                 <nav class="nav">
-                    <a href="{{ route('home') }}#forge">Configurator</a>
+                    <a href="{{ route('home') }}#forge">Builder</a>
                     <a href="{{ route('home') }}#dice">Dice</a>
                     <a href="{{ route('home') }}#wizard">Wizard</a>
                     <a href="{{ route('home') }}#library">Library</a>
@@ -68,9 +68,9 @@
             <main>
                 <section class="hero">
                     <article class="card">
-                        <span class="eyebrow">Party Roster</span>
-                        <h1>See the whole party on its own page.</h1>
-                        <p>This page keeps the saved characters together in one place, with cleaner roster numbering that closes gaps after deletes. The visible roster number is just a display slot, while the real database record stays stable under the hood.</p>
+                        <span class="eyebrow">Roster</span>
+                        <h1>Keep the whole party in view.</h1>
+                        <p>See every saved character in one place, search the group quickly, and tidy the roster without losing track of who is who. The number shown on each card is just that character's current roster slot on this page.</p>
                         <div class="hero-actions">
                             <a class="btn" href="{{ route('home') }}#forge">Create a character</a>
                             <a class="btn-soft" href="{{ route('home') }}#wizard">Open the wizard</a>
@@ -78,12 +78,12 @@
                     </article>
 
                     <aside class="card">
-                        <span class="eyebrow">Live Snapshot</span>
+                        <span class="eyebrow">At a Glance</span>
                         <div class="quick">
-                            <div class="mini">Roster Size<strong id="count">0</strong></div>
-                            <div class="mini">Search<strong id="search-state">All</strong></div>
-                            <div class="mini">Display IDs<strong>Reset cleanly</strong></div>
-                            <div class="mini">Actions<strong>Refresh or delete</strong></div>
+                            <div class="mini">Characters<strong id="count">0</strong></div>
+                            <div class="mini">View<strong id="search-state">All</strong></div>
+                            <div class="mini">Roster Slots<strong>Close gaps</strong></div>
+                            <div class="mini">Controls<strong>Refresh or remove</strong></div>
                         </div>
                     </aside>
                 </section>
@@ -92,14 +92,14 @@
                     <div class="toolbar">
                         <div>
                             <span class="eyebrow">Saved Characters</span>
-                            <h2>Your party at a glance</h2>
+                            <h2>Browse the party</h2>
                         </div>
                         <div class="toolbar-main">
                             <input id="roster-search" type="text" placeholder="Search by name, species, class, background, notes, or language">
-                            <button class="btn-soft" id="refresh" type="button">Refresh roster</button>
+                            <button class="btn-soft" id="refresh" type="button">Refresh</button>
                         </div>
                     </div>
-                    <p class="tiny">The visible roster numbers are recalculated from the current list each time the page refreshes, so deleting a character closes the gap instead of leaving you with roster slots like 54, 55, and 56.</p>
+                    <p class="tiny">Roster numbers are recalculated from the current list each time the page refreshes, so deleting a character closes the gap instead of leaving old slot numbers behind.</p>
                     <div class="notice" id="roster-notice"></div>
                     <div class="grid" id="characters"></div>
                 </section>
@@ -167,6 +167,8 @@
                         character.ideals,
                         character.bonds,
                         character.flaws,
+                        ...(Array.isArray(character.skill_proficiencies) ? character.skill_proficiencies : []),
+                        ...(Array.isArray(character.skill_expertise) ? character.skill_expertise : []),
                         ...(Array.isArray(character.languages) ? character.languages : []),
                     ]
                         .filter(Boolean)
@@ -185,7 +187,7 @@
                 if (! characters.length) {
                     charsEl.innerHTML = allCharacters.length
                         ? `<div class="empty card"><span class="eyebrow">No matches</span><h3>Nothing fits that search yet.</h3><p>Try a broader search term or clear the filter to see the whole party again.</p></div>`
-                        : `<div class="empty card"><span class="eyebrow">No party yet</span><h3>Your roster is empty.</h3><p>Create the first character from the configurator or wizard and it will appear here automatically.</p></div>`;
+                        : `<div class="empty card"><span class="eyebrow">No party yet</span><h3>Your roster is empty.</h3><p>Create the first character from the builder or wizard and it will appear here automatically.</p></div>`;
                     return;
                 }
 
@@ -200,6 +202,8 @@
                                     <h3>${escapeHtml(character.name)}</h3>
                                     <div class="meta">${escapeHtml(character.species || 'Unknown species')} / ${escapeHtml(character.class)} / ${escapeHtml(character.subclass || 'No subclass')} / ${escapeHtml(character.background || 'Unknown background')} / Level ${escapeHtml(character.level)}</div>
                                     ${[character.alignment, character.origin_feat].filter(Boolean).length ? `<div class="meta">${[character.alignment, character.origin_feat].filter(Boolean).map((value) => escapeHtml(value)).join(' / ')}</div>` : ''}
+                                    ${Array.isArray(character.skill_proficiencies) && character.skill_proficiencies.length ? `<div class="meta">Skills: ${character.skill_proficiencies.map((value) => escapeHtml(value)).join(', ')}</div>` : ''}
+                                    ${Array.isArray(character.skill_expertise) && character.skill_expertise.length ? `<div class="meta">Expertise: ${character.skill_expertise.map((value) => escapeHtml(value)).join(', ')}</div>` : ''}
                                     ${Array.isArray(character.languages) && character.languages.length ? `<div class="meta">Languages: ${character.languages.map((value) => escapeHtml(value)).join(', ')}</div>` : ''}
                                     ${character.personality_traits ? `<div class="meta">Trait: ${escapeHtml(character.personality_traits)}</div>` : ''}
                                     ${character.ideals ? `<div class="meta">Ideal: ${escapeHtml(character.ideals)}</div>` : ''}
@@ -240,7 +244,7 @@
                     filterCharacters();
                 } catch {
                     notice(rosterNotice, 'The roster could not be loaded right now.', 'error');
-                    countEl.textContent = '—';
+                    countEl.textContent = '--';
                 }
             }
 

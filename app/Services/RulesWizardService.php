@@ -3,11 +3,18 @@
 namespace App\Services;
 
 use App\Models\Character;
+use App\Support\CharacterDataValidator;
+use App\Support\RulesWizardStateSanitizer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class RulesWizardService
 {
+    public function __construct(
+        private readonly CharacterDataValidator $characterDataValidator,
+        private readonly RulesWizardStateSanitizer $wizardStateSanitizer,
+    ) {}
+
     private const STAT_FIELDS = [
         'strength',
         'dexterity',
@@ -22,6 +29,7 @@ class RulesWizardService
         'species',
         'class',
         'subclass',
+        'skill_proficiencies',
         'background',
         'origin_feat',
         'languages',
@@ -38,6 +46,8 @@ class RulesWizardService
         'class',
         'level',
         'subclass',
+        'skill_proficiencies',
+        'skill_expertise',
         'background',
         'species',
         'origin_feat',
@@ -64,6 +74,7 @@ class RulesWizardService
     ];
 
     private const OPTIONAL_FIELDS = [
+        'skill_expertise',
         'alignment',
         'personality_traits',
         'ideals',
@@ -83,6 +94,8 @@ class RulesWizardService
         'species' => 'Species',
         'class' => 'Class',
         'subclass' => 'Subclass',
+        'skill_proficiencies' => 'Skill Proficiencies',
+        'skill_expertise' => 'Skill Expertise',
         'background' => 'Background',
         'alignment' => 'Alignment',
         'origin_feat' => 'Origin Feat',
@@ -335,6 +348,14 @@ class RulesWizardService
             return $this->handleFieldInput($state, 'origin_feat', trim($matches[1]));
         }
 
+        if (preg_match('/^(?:set|choose|add)\s+(?:skill(?: |_)?proficiencies|skills?)\s+(?:to\s+)?(.+)$/i', $message, $matches) === 1) {
+            return $this->handleFieldInput($state, 'skill_proficiencies', trim($matches[1]));
+        }
+
+        if (preg_match('/^(?:set|choose|add)\s+(?:skill(?: |_)?expertise|expertise)\s+(?:to\s+)?(.+)$/i', $message, $matches) === 1) {
+            return $this->handleFieldInput($state, 'skill_expertise', trim($matches[1]));
+        }
+
         if (preg_match('/^(?:set|choose)\s+languages?\s+(?:to\s+)?(.+)$/i', $message, $matches) === 1) {
             return $this->handleFieldInput($state, 'languages', trim($matches[1]));
         }
@@ -373,7 +394,7 @@ class RulesWizardService
 
         return $this->response(
             $state,
-            "I did not recognize that command. Try `new character`, `show summary`, `show status`, `roll initiative`, `short rest`, `long rest`, `show monster goblin`, or `help`.",
+            'I did not recognize that command. Try `new character`, `show summary`, `show status`, `roll initiative`, `short rest`, `long rest`, `show monster goblin`, or `help`.',
             $this->defaultQuickActions($state),
         );
     }
@@ -387,14 +408,14 @@ class RulesWizardService
         if ($this->hasCharacterData($state['character'])) {
             return $this->response(
                 $state,
-                "The rules wizard is ready. Ask for `show summary`, `show status`, `what did I gain`, `show next`, `level up`, `show spells`, `help me roleplay`, `show appearance help`, `roll initiative`, `short rest`, `long rest`, or `save character`.",
+                'The rules wizard is ready. Ask for `show summary`, `show status`, `what did I gain`, `show next`, `level up`, `show spells`, `help me roleplay`, `show appearance help`, `roll initiative`, `short rest`, `long rest`, or `save character`.',
                 $this->defaultQuickActions($state),
             );
         }
 
         return $this->response(
             $state,
-            "Welcome to the rules wizard. I am a deterministic D&D 2024 guide, not AI generation. I can build a character step by step, explain each choice in plain language, load a saved character, track dungeon-state math, calculate level gains, and show spell access from your local rules data.",
+            'Welcome to the rules wizard. I am a deterministic D&D 2024 guide, not AI generation. I can build a character step by step, explain each choice in plain language, load a saved character, track dungeon-state math, calculate level gains, and show spell access from your local rules data.',
             ['new character', 'list characters', 'load latest', 'help'],
         );
     }
@@ -406,7 +427,7 @@ class RulesWizardService
 
         return $this->response(
             $state,
-            "Starting a new character draft. We will follow the 2024 handbook flow as closely as this app can: Step 1 class, Step 2 origin, Step 3 ability scores, Step 4 alignment, Step 5 the extra sheet details. Core sheet mechanics cannot be skipped. Roleplay, appearance, and notes can.\n\n".$this->guidedFieldHeading('class')."\n".$this->fieldPrompt('class', $state),
+            "Starting a new character draft. We will follow the handbook flow as closely as this app can: Step 1 class and class-side training, Step 2 origin, Step 3 ability scores, Step 4 alignment, Step 5 the extra sheet details. Core sheet mechanics cannot be skipped. Expertise, roleplay, appearance, and notes can.\n\n".$this->guidedFieldHeading('class')."\n".$this->fieldPrompt('class', $state),
             $this->quickActionsForField('class', $state),
         );
     }
@@ -421,7 +442,7 @@ class RulesWizardService
         if ($characters->isEmpty()) {
             return $this->response(
                 $state,
-                "Your roster is empty right now. Start with `new character` and I will guide the build.",
+                'Your roster is empty right now. Start with `new character` and I will guide the build.',
                 ['new character', 'help'],
             );
         }
@@ -550,10 +571,11 @@ class RulesWizardService
 
         switch ($field) {
             case 'name':
-                if ($value === '') {
+                $normalized = $this->normalizedTextField($field, $value);
+                if ($normalized === null) {
                     return ['ok' => false, 'state' => $state, 'message' => 'The character still needs a name.'];
                 }
-                $character['name'] = Str::limit($value, 255, '');
+                $character['name'] = $normalized;
                 $message = "Name set to {$character['name']}.";
                 break;
 
@@ -584,10 +606,44 @@ class RulesWizardService
                 $subclasses = config("dnd.class_details.{$character['class']}.subclasses", []);
                 $match = $this->matchOption($value, $subclasses);
                 if ($match === null) {
-                    return ['ok' => false, 'state' => $state, 'message' => "That subclass is not valid for {$character['class']}."]; 
+                    return ['ok' => false, 'state' => $state, 'message' => "That subclass is not valid for {$character['class']}."];
                 }
                 $character['subclass'] = $match;
                 $message = "Subclass set to {$match}.\nThis is your specialization inside {$character['class']}, so many later features will point back to this choice.";
+                break;
+
+            case 'skill_proficiencies':
+                $matches = $this->parseSkillList($value);
+
+                if ($matches === []) {
+                    return ['ok' => false, 'state' => $state, 'message' => 'I could not match any of those skills from the local rules list.'];
+                }
+
+                $character['skill_proficiencies'] = $matches;
+                $character['skill_expertise'] = array_values(array_intersect(
+                    is_array($character['skill_expertise'] ?? null) ? $character['skill_expertise'] : [],
+                    $character['skill_proficiencies'],
+                ));
+
+                $message = 'Skill proficiencies set to '.implode(', ', $character['skill_proficiencies']).".\n".$this->skillProficiencyGuidance($character);
+                break;
+
+            case 'skill_expertise':
+                $matches = $this->parseSkillList($value);
+
+                if ($matches === []) {
+                    return ['ok' => false, 'state' => $state, 'message' => 'I could not match any expertise skills from the local rules list.'];
+                }
+
+                $proficiencies = is_array($character['skill_proficiencies'] ?? null) ? $character['skill_proficiencies'] : [];
+                foreach ($matches as $match) {
+                    if (! in_array($match, $proficiencies, true)) {
+                        return ['ok' => false, 'state' => $state, 'message' => "Expertise only works on skills the character already has proficiency in. Add {$match} to skill proficiencies first."];
+                    }
+                }
+
+                $character['skill_expertise'] = $matches;
+                $message = 'Skill expertise set to '.implode(', ', $character['skill_expertise']).".\nExpertise doubles the proficiency bonus on those skill checks.";
                 break;
 
             case 'background':
@@ -639,11 +695,12 @@ class RulesWizardService
             case 'ideals':
             case 'bonds':
             case 'flaws':
-                if ($value === '') {
+                $normalized = $this->normalizedTextField($field, $value);
+                if ($normalized === null) {
                     return ['ok' => false, 'state' => $state, 'message' => self::FIELD_LABELS[$field].' cannot be empty once you choose to set it.'];
                 }
 
-                $character[$field] = Str::limit($value, 1000, '');
+                $character[$field] = $normalized;
                 $message = self::FIELD_LABELS[$field]." set.\n".$this->roleplayFieldGuidance($field, $character);
                 break;
 
@@ -653,20 +710,22 @@ class RulesWizardService
             case 'eyes':
             case 'hair':
             case 'skin':
-                if ($value === '') {
+                $normalized = $this->normalizedTextField($field, $value);
+                if ($normalized === null) {
                     return ['ok' => false, 'state' => $state, 'message' => self::FIELD_LABELS[$field].' cannot be empty once you choose to set it.'];
                 }
 
-                $character[$field] = Str::limit($value, 255, '');
+                $character[$field] = $normalized;
                 $message = self::FIELD_LABELS[$field]." set to {$character[$field]}.\n".$this->appearanceFieldGuidance($field, $character);
                 break;
 
             case 'notes':
-                if ($value === '') {
+                $normalized = $this->normalizedTextField($field, $value);
+                if ($normalized === null) {
                     return ['ok' => false, 'state' => $state, 'message' => 'Notes cannot be empty once you choose to set them.'];
                 }
 
-                $character['notes'] = Str::limit($value, 2000, '');
+                $character['notes'] = $normalized;
                 $message = "Notes set.\nUse notes for campaign reminders, secrets, goals, or anything the sheet should remember.";
                 break;
 
@@ -694,7 +753,7 @@ class RulesWizardService
                 break;
         }
 
-        $state['character'] = $this->markAsDraft($character);
+        $state['character'] = $this->markAsDraft($this->normalizeCharacterDraft($character));
 
         return [
             'ok' => true,
@@ -763,6 +822,14 @@ class RulesWizardService
 
         if (($snapshot['languages'] ?? []) !== []) {
             $lines[] = 'Languages: '.implode(', ', $snapshot['languages']);
+        }
+
+        if (($snapshot['skill_proficiencies'] ?? []) !== []) {
+            $lines[] = 'Skill Proficiencies: '.implode(', ', $snapshot['skill_proficiencies']);
+        }
+
+        if (($snapshot['skill_expertise'] ?? []) !== []) {
+            $lines[] = 'Skill Expertise: '.implode(', ', $snapshot['skill_expertise']);
         }
 
         if (($snapshot['roleplay'] ?? []) !== []) {
@@ -1383,29 +1450,39 @@ class RulesWizardService
 
         $modifier = $this->abilityModifier((int) $state['character'][$abilityField]);
         $pb = $state['character']['level'] ? $this->proficiencyBonus((int) $state['character']['level']) : 0;
-        $trainingBonus = match ($training) {
+        $selectedExpertise = is_array($state['character']['skill_expertise'] ?? null)
+            && in_array($skillName, $state['character']['skill_expertise'], true);
+        $selectedProficiency = $selectedExpertise
+            || (is_array($state['character']['skill_proficiencies'] ?? null)
+                && in_array($skillName, $state['character']['skill_proficiencies'], true));
+        $effectiveTraining = $training ?? ($selectedExpertise ? 'expertise' : ($selectedProficiency ? 'proficient' : null));
+        $trainingBonus = match ($effectiveTraining) {
             'proficient' => $pb,
             'expertise' => $pb * 2,
             default => 0,
         };
 
         $result = $this->rollD20($modifier + $trainingBonus);
-        $trainingLabel = match ($training) {
+        $trainingLabel = match ($effectiveTraining) {
             'proficient' => 'with proficiency',
             'expertise' => 'with expertise',
             default => 'without added proficiency',
         };
+        $trainingSource = $training === null
+            ? ($effectiveTraining === null ? 'No saved training was applied.' : 'Using the saved sheet training.')
+            : 'Using the training override from the command.';
 
         return $this->response(
             $state,
             sprintf(
-                '%s check: %d (%d %s %d) %s.',
+                '%s check: %d (%d %s %d) %s. %s',
                 $skillName,
                 $result['total'],
                 $result['roll'],
                 ($modifier + $trainingBonus) >= 0 ? '+' : '-',
                 abs($modifier + $trainingBonus),
                 $trainingLabel,
+                $trainingSource,
             ),
             $this->defaultQuickActions($state),
         );
@@ -1660,7 +1737,7 @@ class RulesWizardService
         if (! $this->hasCharacterData($state['character'])) {
             return $this->response(
                 $state,
-                "Appearance can stay light. Pick a few anchors like age, height, eyes, hair, and one memorable feature. Start with `new character`, and I can help once the build exists.",
+                'Appearance can stay light. Pick a few anchors like age, height, eyes, hair, and one memorable feature. Start with `new character`, and I can help once the build exists.',
                 ['new character', 'help'],
             );
         }
@@ -1757,46 +1834,13 @@ class RulesWizardService
 
     private function saveCharacter(array $state): array
     {
-        $missing = $this->missingFields($state['character']);
-
-        if ($missing !== []) {
-            return $this->response(
-                $state,
-                'The draft is not ready to save yet. Missing: '.implode(', ', array_map(fn (string $field): string => self::FIELD_LABELS[$field], $missing)),
-                $this->defaultQuickActions($state),
-            );
-        }
-
-        $character = Character::create([
-            'name' => $state['character']['name'],
-            'species' => $state['character']['species'],
-            'class' => $state['character']['class'],
-            'subclass' => $state['character']['subclass'],
-            'background' => $state['character']['background'],
-            'alignment' => $state['character']['alignment'],
-            'origin_feat' => $state['character']['origin_feat'],
-            'languages' => $state['character']['languages'],
-            'personality_traits' => $state['character']['personality_traits'],
-            'ideals' => $state['character']['ideals'],
-            'bonds' => $state['character']['bonds'],
-            'flaws' => $state['character']['flaws'],
-            'age' => $state['character']['age'],
-            'height' => $state['character']['height'],
-            'weight' => $state['character']['weight'],
-            'eyes' => $state['character']['eyes'],
-            'hair' => $state['character']['hair'],
-            'skin' => $state['character']['skin'],
-            'level' => $state['character']['level'],
-            'strength' => $state['character']['strength'],
-            'dexterity' => $state['character']['dexterity'],
-            'constitution' => $state['character']['constitution'],
-            'intelligence' => $state['character']['intelligence'],
-            'wisdom' => $state['character']['wisdom'],
-            'charisma' => $state['character']['charisma'],
-            'notes' => $state['character']['notes'],
-        ]);
+        $character = Character::create(
+            $this->characterDataValidator->validateForSave($state['character']),
+        );
 
         $state['character'] = $this->characterToState($character);
+        $state['pending_field'] = null;
+        $state['skipped_optional_fields'] = [];
 
         return $this->response(
             $state,
@@ -1845,10 +1889,7 @@ class RulesWizardService
 
     private function response(array $state, string $reply, array $quickActions): array
     {
-        $state['dungeon'] = $this->syncDungeonState(
-            $state['character'],
-            $state['dungeon'] ?? $this->blankDungeon(),
-        );
+        $state = $this->normalizeState($state);
 
         return [
             'reply' => $reply,
@@ -1891,6 +1932,8 @@ class RulesWizardService
                 $character['origin_feat'] ?? null,
             ])),
             'languages' => is_array($character['languages'] ?? null) ? $character['languages'] : [],
+            'skill_proficiencies' => is_array($character['skill_proficiencies'] ?? null) ? $character['skill_proficiencies'] : [],
+            'skill_expertise' => is_array($character['skill_expertise'] ?? null) ? $character['skill_expertise'] : [],
             'roleplay' => array_values(array_filter([
                 $character['personality_traits'] ? 'Trait: '.$character['personality_traits'] : null,
                 $character['ideals'] ? 'Ideal: '.$character['ideals'] : null,
@@ -2143,7 +2186,7 @@ class RulesWizardService
     private function guidedFieldHeading(string $field): string
     {
         return match ($field) {
-            'class', 'level', 'subclass' => 'Step 1: Choose a Class',
+            'class', 'level', 'subclass', 'skill_proficiencies', 'skill_expertise' => 'Step 1: Choose a Class',
             'background', 'species', 'origin_feat', 'languages' => 'Step 2: Determine Origin',
             'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma' => 'Step 3: Determine Ability Scores',
             'alignment' => 'Step 4: Choose an Alignment',
@@ -2174,6 +2217,8 @@ class RulesWizardService
             'species' => "Choose a species for {$name}.\nThis is still the origin step. Each option bubble includes a short summary so you can compare them there.",
             'class' => "Choose a class for {$name}.\nThis is the first handbook step. Each option bubble includes the class summary and main ability focus.",
             'subclass' => "Choose a subclass for {$name}.\nThis finishes the class step by locking in the specialization that shapes later features.",
+            'skill_proficiencies' => "Choose the skills {$name} is proficient in.\nList one or more skills separated by commas. ".$this->skillProficiencyPrompt($state['character']),
+            'skill_expertise' => "Choose any skills that have expertise for {$name}.\nOnly list skills the sheet already marks as proficient. If none apply yet, type `skip`.",
             'background' => "Choose a background for {$name}.\nThis begins the origin step and helps explain who the character was before adventuring.",
             'level' => "What level are we building? Enter a number from 1 to 20.\nThis is part of the class step. Level 1 is the easiest place to learn. Level 3 is where many classes feel more complete.",
             'alignment' => "Choose an alignment for {$name}.\nThis is the handbook's fourth step. Each option bubble includes the short alignment summary, and I will help with the roleplay side afterward.",
@@ -2183,7 +2228,7 @@ class RulesWizardService
             'ideals' => "Add an ideal for {$name}.\n".config('dnd.roleplay_field_help.ideals'),
             'bonds' => "Add a bond for {$name}.\n".config('dnd.roleplay_field_help.bonds'),
             'flaws' => "Add a flaw for {$name}.\n".config('dnd.roleplay_field_help.flaws'),
-            'age', 'height', 'weight', 'eyes', 'hair', 'skin' => "Add ".Str::lower(self::FIELD_LABELS[$field])." for {$name}.\n".(config("dnd.appearance_field_help.{$field}") ?: 'A short descriptive note is enough.'),
+            'age', 'height', 'weight', 'eyes', 'hair', 'skin' => 'Add '.Str::lower(self::FIELD_LABELS[$field])." for {$name}.\n".(config("dnd.appearance_field_help.{$field}") ?: 'A short descriptive note is enough.'),
             'notes' => "Add notes for {$name}.\nThis is the last optional wizard step. Use it for campaign reminders, secrets, goals, gear notes, or anything else you want the sheet to remember.",
             default => 'Set '.self::FIELD_LABELS[$field]." from 3 to 18, or type `roll stats` to fill all six scores at once.\nThis is part of the handbook ability-score step.\n".$this->abilityPromptHelp($field),
         };
@@ -2209,6 +2254,43 @@ class RulesWizardService
     private function backgroundGuidance(string $background): string
     {
         return config("dnd.background_details.{$background}.summary") ?: 'Background mainly supports story identity and life before adventuring.';
+    }
+
+    private function skillProficiencyGuidance(array $character): string
+    {
+        $guidance = $this->skillProficiencyPrompt($character);
+        $expertise = is_array($character['skill_expertise'] ?? null) && $character['skill_expertise'] !== []
+            ? ' Expertise already marked on '.implode(', ', $character['skill_expertise']).'.'
+            : '';
+
+        return trim($guidance.$expertise);
+    }
+
+    private function skillProficiencyPrompt(array $character): string
+    {
+        $class = $character['class'] ?? null;
+        $choiceCount = $this->classSkillChoiceCount($class);
+        $options = $this->classSkillOptions($class);
+
+        if ($class && $choiceCount !== null && $options !== []) {
+            $displayOptions = count($options) > 8
+                ? implode(', ', array_slice($options, 0, 8)).', and more'
+                : implode(', ', $options);
+
+            return sprintf(
+                '%s usually starts with %d skill choice%s from: %s. I do not hard-lock table variations, but this is the local class reference.',
+                $class,
+                $choiceCount,
+                $choiceCount === 1 ? '' : 's',
+                $displayOptions,
+            );
+        }
+
+        if ($class) {
+            return "{$class} skill training is tracked here. Pick the skills the sheet should treat as proficient.";
+        }
+
+        return 'Pick the skills the sheet should treat as proficient.';
     }
 
     private function alignmentGuidance(string $alignment): string
@@ -2353,6 +2435,8 @@ class RulesWizardService
             'species' => config('dnd.species', []),
             'class' => config('dnd.classes', []),
             'subclass' => config("dnd.class_details.{$state['character']['class']}.subclasses", []),
+            'skill_proficiencies' => $this->skillProficiencyQuickActions($state['character']),
+            'skill_expertise' => $this->skillExpertiseQuickActions($state['character']),
             'background' => config('dnd.backgrounds', []),
             'alignment' => config('dnd.alignments', []),
             'origin_feat' => config('dnd.origin_feats', []),
@@ -2403,14 +2487,16 @@ class RulesWizardService
         return implode("\n", [
             'Wizard commands:',
             '- You do not need to memorize everything. Use the quick buttons when they appear.',
-            '- new character follows the handbook flow: class, origin, ability scores, alignment, then details',
-            '- core sheet mechanics cannot be skipped; roleplay, appearance, and notes can',
+            '- new character follows the handbook flow: class and class-side training, origin, ability scores, alignment, then details',
+            '- core sheet mechanics cannot be skipped; expertise, roleplay, appearance, and notes can',
             '- new character',
             '- list characters',
             '- load character 1',
             '- load latest',
             '- set class wizard',
             '- set level 5',
+            '- set skills perception, survival',
+            '- set expertise stealth',
             '- roll stats',
             '- show summary',
             '- show status',
@@ -2428,6 +2514,7 @@ class RulesWizardService
             '- short rest 2 / long rest / use slot 3 / cast fireball',
             '- concentrate bless / drop concentration',
             '- show monster goblin',
+            '- class-side training: set skills perception, survival / set expertise stealth',
             '- core origin details: set origin feat alert / set languages common, elvish',
             '- optional roleplay setup: set alignment lawful good',
             '- optional roleplay details: set personality traits curious but blunt / set ideals freedom / set bonds my sister / set flaws reckless',
@@ -2435,6 +2522,96 @@ class RulesWizardService
             '- optional notes: set notes owes the thieves guild a favor',
             '- save character',
         ]);
+    }
+
+    private function parseSkillList(string $value): array
+    {
+        $matches = array_values(array_filter(array_map(
+            function (string $entry): ?string {
+                $match = $this->matchOption($entry, config('dnd.skills', []));
+
+                return $match ?: null;
+            },
+            preg_split('/[,|\n\r]+/', $value) ?: [],
+        )));
+
+        return array_values(array_unique($matches));
+    }
+
+    private function classSkillChoiceCount(?string $class): ?int
+    {
+        $guidance = is_string($class) ? config("dnd_progressions.classes.{$class}.traits.skill_proficiencies") : null;
+
+        if (! is_string($guidance) || preg_match('/choose(?: any)?\s+(\d+)/i', $guidance, $matches) !== 1) {
+            return null;
+        }
+
+        return (int) $matches[1];
+    }
+
+    private function classSkillOptions(?string $class): array
+    {
+        $allSkills = config('dnd.skills', []);
+        $guidance = is_string($class) ? config("dnd_progressions.classes.{$class}.traits.skill_proficiencies") : null;
+
+        if (! is_string($guidance) || $guidance === '') {
+            return $allSkills;
+        }
+
+        if (Str::contains(Str::lower($guidance), 'choose any')) {
+            return $allSkills;
+        }
+
+        $matches = array_values(array_filter($allSkills, static function (string $skill) use ($guidance): bool {
+            return Str::contains($guidance, $skill);
+        }));
+
+        return $matches !== [] ? $matches : $allSkills;
+    }
+
+    private function skillProficiencyQuickActions(array $character): array
+    {
+        $options = $this->classSkillOptions($character['class'] ?? null);
+        $count = $this->classSkillChoiceCount($character['class'] ?? null) ?? min(2, max(1, count($options)));
+
+        if ($options === []) {
+            return [];
+        }
+
+        $combinations = [];
+        $slices = [
+            array_slice($options, 0, $count),
+            array_slice($options, max(0, intdiv(count($options), 2) - intdiv($count, 2)), $count),
+            array_slice(array_reverse($options), 0, $count),
+        ];
+
+        foreach ($slices as $slice) {
+            if ($slice !== []) {
+                $combinations[] = implode(', ', $slice);
+            }
+        }
+
+        return array_values(array_unique($combinations));
+    }
+
+    private function skillExpertiseQuickActions(array $character): array
+    {
+        $proficiencies = array_values(array_filter(
+            is_array($character['skill_proficiencies'] ?? null) ? $character['skill_proficiencies'] : [],
+            static fn ($entry): bool => is_string($entry) && $entry !== '',
+        ));
+
+        if ($proficiencies === []) {
+            return [];
+        }
+
+        $actions = [
+            $proficiencies[0],
+            isset($proficiencies[1]) ? implode(', ', array_slice($proficiencies, 0, 2)) : null,
+            count($proficiencies) > 2 ? implode(', ', array_slice($proficiencies, -2)) : null,
+        ];
+
+        return array_values(array_unique(array_filter($actions)));
     }
 
     private function matchOption(string $input, array $options): ?string
@@ -2490,6 +2667,7 @@ class RulesWizardService
 
         return null;
     }
+
     private function fieldHasValue(mixed $value): bool
     {
         if (is_array($value)) {
@@ -2510,29 +2688,17 @@ class RulesWizardService
 
     private function normalizeState(array $state): array
     {
-        $character = $this->blankCharacter();
+        $sanitized = $this->wizardStateSanitizer->sanitize($state);
+        $character = array_replace($this->blankCharacter(), $sanitized['character']);
+        $character['id'] = $this->normalizeCharacterId($state['character']['id'] ?? null);
 
-        foreach ($character as $key => $value) {
-            if (array_key_exists($key, $state['character'] ?? [])) {
-                $character[$key] = $state['character'][$key];
-            }
-        }
-
-        $dungeon = $this->blankDungeon();
-        foreach ($dungeon as $key => $value) {
-            if (array_key_exists($key, $state['dungeon'] ?? [])) {
-                $dungeon[$key] = $state['dungeon'][$key];
-            }
-        }
+        $dungeon = array_replace($this->blankDungeon(), $sanitized['dungeon']);
 
         $dungeon = $this->syncDungeonState($character, $dungeon);
 
         return [
-            'pending_field' => isset($state['pending_field']) && is_string($state['pending_field']) ? $state['pending_field'] : null,
-            'skipped_optional_fields' => array_values(array_filter(
-                is_array($state['skipped_optional_fields'] ?? null) ? $state['skipped_optional_fields'] : [],
-                static fn ($value): bool => is_string($value) && in_array($value, self::OPTIONAL_FIELDS, true),
-            )),
+            'pending_field' => $sanitized['pending_field'],
+            'skipped_optional_fields' => $sanitized['skipped_optional_fields'],
             'character' => $character,
             'dungeon' => $dungeon,
         ];
@@ -2546,6 +2712,8 @@ class RulesWizardService
             'species' => null,
             'class' => null,
             'subclass' => null,
+            'skill_proficiencies' => null,
+            'skill_expertise' => null,
             'background' => null,
             'alignment' => null,
             'origin_feat' => null,
@@ -2661,6 +2829,8 @@ class RulesWizardService
             'species' => $character->species,
             'class' => $character->class,
             'subclass' => $character->subclass,
+            'skill_proficiencies' => $character->skill_proficiencies,
+            'skill_expertise' => $character->skill_expertise,
             'background' => $character->background,
             'alignment' => $character->alignment,
             'origin_feat' => $character->origin_feat,
@@ -2700,12 +2870,52 @@ class RulesWizardService
                 continue;
             }
 
-            if ($value !== null && $value !== '') {
+            if ($this->fieldHasValue($value)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private function normalizeCharacterDraft(array $character): array
+    {
+        $normalized = array_replace(
+            $this->blankCharacter(),
+            $this->characterDataValidator->normalizeDraft($character),
+        );
+
+        $normalized['id'] = $this->normalizeCharacterId($character['id'] ?? null);
+
+        return $normalized;
+    }
+
+    private function normalizeCharacterId(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_int($value)) {
+            return $value > 0 ? $value : null;
+        }
+
+        if (is_string($value) && preg_match('/^\d+$/', $value) === 1) {
+            $id = (int) $value;
+
+            return $id > 0 ? $id : null;
+        }
+
+        return null;
+    }
+
+    private function normalizedTextField(string $field, string $value): ?string
+    {
+        $normalized = $this->characterDataValidator->normalizeDraft([
+            $field => $value,
+        ]);
+
+        return $normalized[$field] ?? null;
     }
 
     private function normalizeAbilityField(string $input): ?string
@@ -2862,6 +3072,7 @@ class RulesWizardService
                     $total += $sign * $roll;
                     $parts[] = sprintf('%s(%d,%d=>%d)', $mode === 'advantage' ? 'adv' : 'dis', $first, $second, $roll);
                     $advUsed = true;
+
                     continue;
                 }
 

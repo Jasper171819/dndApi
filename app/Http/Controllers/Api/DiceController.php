@@ -3,18 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RollDiceRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class DiceController extends Controller
 {
-    public function roll(Request $request): JsonResponse
+    public function roll(RollDiceRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'expression' => ['required', 'string', 'max:50'],
-            'mode' => ['nullable', 'string', 'in:advantage,disadvantage'],
-        ]);
+        $validated = $request->validated();
 
         $parsed = $this->parseDiceExpression($validated['expression']);
 
@@ -140,6 +137,7 @@ class DiceController extends Controller
                     $total += $sign * $roll;
                     $parts[] = sprintf('%s(%d,%d=>%d)', $mode === 'advantage' ? 'adv' : 'dis', $first, $second, $roll);
                     $advUsed = true;
+
                     continue;
                 }
 

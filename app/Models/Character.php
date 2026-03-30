@@ -15,6 +15,8 @@ class Character extends Model
         'alignment',
         'origin_feat',
         'languages',
+        'skill_proficiencies',
+        'skill_expertise',
         'personality_traits',
         'ideals',
         'bonds',
@@ -37,5 +39,7 @@ class Character extends Model
 
     protected $casts = [
         'languages' => 'array',
+        'skill_proficiencies' => 'array',
+        'skill_expertise' => 'array',
     ];
 }

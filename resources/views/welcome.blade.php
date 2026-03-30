@@ -12,6 +12,7 @@
             body::after{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.18))}
             button,input,textarea,select{font:inherit} a{text-decoration:none;color:inherit}
             .wrap{position:relative;z-index:1;width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:1rem 0 4rem}
+            .workspace{display:grid;grid-template-columns:240px minmax(0,1fr);gap:1rem;align-items:start}
             .topbar,.card,.panel,.char,.stat,.notice,.mini{border:1px solid var(--line);border-radius:24px;background:rgba(34,25,21,.9);box-shadow:0 20px 50px rgba(0,0,0,.28)}
             .topbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.2rem;margin-top:1rem;border-radius:999px;background:rgba(19,15,13,.84);backdrop-filter:blur(10px)}
             .brand{display:flex;align-items:center;gap:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
@@ -34,6 +35,12 @@
             .mini{padding:1rem;border-radius:18px;background:var(--soft)}
             .mini strong{display:block;margin-top:.35rem;font-size:1.15rem;color:var(--text)}
             section{margin-top:1.4rem}
+            .preview-rail{position:sticky;top:6.5rem;align-self:start;margin-top:2rem}
+            .preview-panel p{margin:.45rem 0 0}
+            .preview-stats{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:1rem}
+            .preview-stat{padding:.85rem .75rem}
+            .preview-stat .value{font-size:1.35rem}
+            .preview-mod{display:block;margin-top:.25rem;font-size:.84rem;color:var(--accent2);letter-spacing:.08em}
             .head{display:flex;justify-content:space-between;align-items:end;gap:1rem;margin-bottom:1rem}
             .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
             .char{padding:1rem;display:grid;gap:.9rem;background:rgba(255,255,255,.03)}
@@ -55,12 +62,14 @@
             textarea{min-height:7rem;resize:vertical}
             input:focus,textarea:focus,select:focus{border-color:#9e754f}
             .check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}
+            .skill-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem}
             .check-chip{display:block;color:inherit;font-size:inherit}
             .check-chip-input{position:absolute;opacity:0;pointer-events:none}
             .check-chip-label{display:block;padding:.9rem 1rem;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;transition:.18s ease}
             .check-chip:hover .check-chip-label{border-color:#8b623f;transform:translateY(-1px)}
             .check-chip-input:focus-visible + .check-chip-label{outline:2px solid rgba(239,186,112,.6);outline-offset:2px}
             .check-chip-input:checked + .check-chip-label{border-color:#476b3f;background:linear-gradient(135deg,rgba(43,76,49,.94),rgba(70,108,64,.95));color:#f4fff1;box-shadow:0 10px 24px rgba(28,52,34,.32)}
+            .check-chip-input:disabled + .check-chip-label{opacity:.48;cursor:not-allowed;transform:none;box-shadow:none;filter:saturate(.45)}
             .notice{display:none;padding:1rem 1.1rem;margin-bottom:1rem;border-radius:18px}
             .notice.show{display:block}.notice.error{color:#ffd9d9;border-color:#7b4a4a;background:rgba(123,74,74,.18)}.notice.success{color:#d7f0dc;border-color:#4d7556;background:rgba(77,117,86,.18)}
             .empty{padding:2rem;text-align:center}
@@ -88,8 +97,9 @@
             .wizard-summary-card h3{margin-bottom:.45rem}
             .wizard-summary-card ul{margin:.6rem 0 0;padding-left:1rem;color:var(--muted)}
             .wizard-summary-card li{margin:.25rem 0}
-            .hover-help{padding:.95rem 1rem;border-radius:18px;border:1px solid rgba(139,98,63,.7);background:rgba(255,255,255,.04);color:var(--muted)}
-            .hover-help strong{display:block;margin-bottom:.35rem;color:var(--accent2);font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
+            .hover-tooltip{position:fixed;top:0;left:0;z-index:40;width:min(320px,calc(100vw - 1rem));padding:.95rem 1rem;border-radius:18px;border:1px solid rgba(139,98,63,.78);background:rgba(28,20,16,.96);box-shadow:0 24px 60px rgba(0,0,0,.4);color:var(--muted);backdrop-filter:blur(10px);pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity .12s ease,transform .12s ease}
+            .hover-tooltip.show{opacity:1;transform:translateY(0)}
+            .hover-tooltip strong{display:block;margin-bottom:.35rem;color:var(--accent2);font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
             .summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
             .library-toolbar{display:grid;grid-template-columns:280px 1fr;gap:1rem;margin-bottom:1rem}
             .library-stage{padding:1rem;border-radius:24px;border:1px solid rgba(78,55,42,.72);background:linear-gradient(180deg,rgba(58,41,32,.34),rgba(34,25,21,.18));box-shadow:inset 0 1px 0 rgba(255,255,255,.03);backdrop-filter:blur(2px);overflow:hidden}
@@ -109,10 +119,10 @@
             #dice{order:3}
             #wizard{order:4}
             #library{order:5}
-            @media (max-width:980px){.hero,.grid,.library-grid,.library-toolbar,.summary-grid,.quick{grid-template-columns:1fr}.topbar{position:static;border-radius:28px;align-items:stretch}.nav{justify-content:center}}
-            @media (max-width:720px){.section-grid,.stats,.quick,.check-grid{grid-template-columns:1fr}.topbar{border-radius:26px;padding:1rem}.brand{justify-content:center}.nav a{flex:1 1 calc(50% - .6rem);text-align:center}.head{flex-direction:column;align-items:start}}
+            @media (max-width:980px){.workspace,.hero,.grid,.library-grid,.library-toolbar,.summary-grid,.quick{grid-template-columns:1fr}.topbar{position:static;border-radius:28px;align-items:stretch}.nav{justify-content:center}.preview-rail{position:static;margin-top:0}}
+            @media (max-width:720px){.section-grid,.stats,.quick,.check-grid,.skill-grid{grid-template-columns:1fr}.topbar{border-radius:26px;padding:1rem}.brand{justify-content:center}.nav a{flex:1 1 calc(50% - .6rem);text-align:center}.head{flex-direction:column;align-items:start}}
             @media (max-width:720px){.dice-buttons,.dice-form{grid-template-columns:1fr}}
-            @media (max-width:640px){.wrap{width:min(100% - 1rem,100%)}.topbar,.card,.panel{padding:1.05rem}h1{max-width:100%}.library-results{column-width:auto;columns:1}}
+            @media (max-width:640px){.wrap{width:min(100% - 1rem,100%)}.topbar,.card,.panel{padding:1.05rem}h1{max-width:100%}.library-results{column-width:auto;columns:1}.hover-tooltip{width:min(280px,calc(100vw - 1rem))}}
         </style>
     </head>
     <body>
@@ -129,7 +139,24 @@
                 </nav>
             </header>
 
-            <main id="top">
+            <div class="workspace">
+                <aside class="preview-rail">
+                    <section class="panel preview-panel">
+                        <span class="eyebrow">Ability Preview</span>
+                        <h2>Scores and modifiers</h2>
+                        <p class="tiny">Keep the six abilities in view while you build. Hover a score here or in Step 3 to see the save bonus, related skills, and any saved proficiency or expertise tied to that ability.</p>
+                        <div class="stats preview-stats" id="preview">
+                            <div class="stat preview-stat" tabindex="0" data-preview-field="strength"><span class="label">STR</span><span class="value">--</span><span class="preview-mod">Mod --</span></div>
+                            <div class="stat preview-stat" tabindex="0" data-preview-field="dexterity"><span class="label">DEX</span><span class="value">--</span><span class="preview-mod">Mod --</span></div>
+                            <div class="stat preview-stat" tabindex="0" data-preview-field="constitution"><span class="label">CON</span><span class="value">--</span><span class="preview-mod">Mod --</span></div>
+                            <div class="stat preview-stat" tabindex="0" data-preview-field="intelligence"><span class="label">INT</span><span class="value">--</span><span class="preview-mod">Mod --</span></div>
+                            <div class="stat preview-stat" tabindex="0" data-preview-field="wisdom"><span class="label">WIS</span><span class="value">--</span><span class="preview-mod">Mod --</span></div>
+                            <div class="stat preview-stat" tabindex="0" data-preview-field="charisma"><span class="label">CHA</span><span class="value">--</span><span class="preview-mod">Mod --</span></div>
+                        </div>
+                    </section>
+                </aside>
+
+                <main id="top">
                 <section class="hero">
                     <article class="card">
                         <span class="eyebrow">Character Builder</span>
@@ -171,13 +198,9 @@
                         <div class="notice" id="wizard-notice"></div>
                         <div class="wizard-log" id="wizard-log"></div>
                         <div class="wizard-actions" id="wizard-actions"></div>
-                        <div class="hover-help" id="wizard-action-help" hidden>
-                            <strong>Option Details</strong>
-                            <span id="wizard-action-help-text">Hover a wizard option to see what it means.</span>
-                        </div>
 
                         <form class="wizard-form" id="wizard-form">
-                            <input id="wizard-input" type="text" placeholder="Type a command like new character, roll d20+5, show summary, or level up">
+                            <input id="wizard-input" type="text" maxlength="500" placeholder="Type a command like new character, roll d20+5, show summary, or level up">
                             <button class="btn" type="submit">Send</button>
                         </form>
                     </div>
@@ -185,17 +208,6 @@
                     <div class="panel">
                         <span class="eyebrow">Wizard Support</span>
                         <div class="rule-block">
-                            <h3>Ability Preview</h3>
-                            <div class="stats" id="preview">
-                                <div class="stat"><span class="label">STR</span><span class="value">-</span></div>
-                                <div class="stat"><span class="label">DEX</span><span class="value">-</span></div>
-                                <div class="stat"><span class="label">CON</span><span class="value">-</span></div>
-                                <div class="stat"><span class="label">INT</span><span class="value">-</span></div>
-                                <div class="stat"><span class="label">WIS</span><span class="value">-</span></div>
-                                <div class="stat"><span class="label">CHA</span><span class="value">-</span></div>
-                            </div>
-                        </div>
-                        <div class="rule-block" style="margin-top:1rem">
                             <h3>Wizard Snapshot</h3>
                             <div class="stack" id="wizard-summary">
                                 <div class="wizard-summary-card">
@@ -261,7 +273,7 @@
                                     <div class="section-head">
                                         <span class="section-kicker">Step 1</span>
                                         <h3>Choose a class</h3>
-                                        <p>Class is the biggest gameplay choice. It sets your role, your main tactics, and what kinds of scores matter most. Everything in this step is required.</p>
+                                        <p>Class is the biggest gameplay choice. It sets your role, your main tactics, and the skill training the sheet should track from the class side. Everything in this step is required except expertise.</p>
                                     </div>
                                     <div class="section-grid">
                                         <label>
@@ -283,10 +295,30 @@
                                                 <option value="">Choose a class first</option>
                                             </select>
                                         </label>
-                                    </div>
-                                    <div class="hover-help" id="step1-choice-help" hidden>
-                                        <strong>Step 1 Details</strong>
-                                        <span>Hover class and subclass choices to preview them here.</span>
+                                        <label class="full">
+                                            <span>Skill Proficiencies</span>
+                                            <div class="skill-grid" id="skill-proficiencies">
+                                                @foreach (config('dnd.skills', []) as $skill)
+                                                    <label class="check-chip">
+                                                        <input class="check-chip-input" type="checkbox" name="skill_proficiencies[]" value="{{ $skill }}">
+                                                        <span class="check-chip-label">{{ $skill }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                            <span class="tiny" id="class-skill-note">Choose at least one skill the sheet should treat as proficient. The class note here will narrow the usual starting choices once you pick a class.</span>
+                                        </label>
+                                        <label class="full">
+                                            <span>Skill Expertise</span>
+                                            <div class="skill-grid" id="skill-expertise">
+                                                @foreach (config('dnd.skills', []) as $skill)
+                                                    <label class="check-chip">
+                                                        <input class="check-chip-input" type="checkbox" name="skill_expertise[]" value="{{ $skill }}">
+                                                        <span class="check-chip-label">{{ $skill }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                            <span class="tiny" id="expertise-note">Only mark expertise on skills that already have proficiency. If the build does not get expertise yet, leave this empty.</span>
+                                        </label>
                                     </div>
                                 </div>
 
@@ -299,7 +331,7 @@
                                     <div class="section-grid">
                                         <label>
                                             <span>Name</span>
-                                            <input id="name" name="name" required placeholder="Rin, Mara, Toren...">
+                                            <input id="name" name="name" required maxlength="255" placeholder="Rin, Mara, Toren...">
                                             <span class="tiny" id="name-placeholder-note">Name ideas can shift with species, but any name is valid.</span>
                                         </label>
                                         <label>
@@ -342,10 +374,6 @@
                                             <span class="tiny">Pick at least one language. This is part of the core character sheet.</span>
                                         </label>
                                     </div>
-                                    <div class="hover-help" id="step2-choice-help" hidden>
-                                        <strong>Step 2 Details</strong>
-                                        <span>Hover origin choices to preview them here.</span>
-                                    </div>
                                 </div>
 
                                 <div class="form-section">
@@ -384,10 +412,6 @@
                                             </select>
                                         </label>
                                     </div>
-                                    <div class="hover-help" id="step4-choice-help" hidden>
-                                        <strong>Step 4 Details</strong>
-                                        <span>Hover the alignment field to preview the current choice here.</span>
-                                    </div>
                                 </div>
 
                                 <div class="form-section">
@@ -399,33 +423,33 @@
                                     <div class="section-grid">
                                         <label class="full">
                                             <span>Personality Traits</span>
-                                            <textarea id="personality_traits" name="personality_traits" placeholder="Short first-impression notes like calm, curious, dry humor..."></textarea>
+                                            <textarea id="personality_traits" name="personality_traits" maxlength="1000" placeholder="Short first-impression notes like calm, curious, dry humor..."></textarea>
                                             <span class="tiny">{{ config('dnd.roleplay_field_help.personality_traits') }}</span>
                                         </label>
                                         <label class="full">
                                             <span>Ideals</span>
-                                            <textarea id="ideals" name="ideals" placeholder="What principle matters most to this character?"></textarea>
+                                            <textarea id="ideals" name="ideals" maxlength="1000" placeholder="What principle matters most to this character?"></textarea>
                                             <span class="tiny">{{ config('dnd.roleplay_field_help.ideals') }}</span>
                                         </label>
                                         <label class="full">
                                             <span>Bonds</span>
-                                            <textarea id="bonds" name="bonds" placeholder="Who or what matters enough to change their decisions?"></textarea>
+                                            <textarea id="bonds" name="bonds" maxlength="1000" placeholder="Who or what matters enough to change their decisions?"></textarea>
                                             <span class="tiny">{{ config('dnd.roleplay_field_help.bonds') }}</span>
                                         </label>
                                         <label class="full">
                                             <span>Flaws</span>
-                                            <textarea id="flaws" name="flaws" placeholder="What weakness or habit tends to cause trouble?"></textarea>
+                                            <textarea id="flaws" name="flaws" maxlength="1000" placeholder="What weakness or habit tends to cause trouble?"></textarea>
                                             <span class="tiny">{{ config('dnd.roleplay_field_help.flaws') }}</span>
                                         </label>
                                         <div class="full tiny" id="roleplay-placeholder-note">Roleplay prompts adapt to alignment, class, and background. They are examples, not limits.</div>
-                                        <label><span>Age</span><input id="age" name="age" placeholder="23 or 120"></label>
-                                        <label><span>Height</span><input id="height" name="height" placeholder="173 cm or 5ft 8in"></label>
-                                        <label><span>Weight</span><input id="weight" name="weight" placeholder="72 kg or 160 lb"></label>
-                                        <label><span>Eyes</span><input id="eyes" name="eyes" placeholder="Gray, green, amber..."></label>
-                                        <label><span>Hair</span><input id="hair" name="hair" placeholder="Black braid, copper curls..."></label>
-                                        <label><span>Skin</span><input id="skin" name="skin" placeholder="Olive, freckled, scarred..."></label>
+                                        <label><span>Age</span><input id="age" name="age" maxlength="255" placeholder="23 or 120"></label>
+                                        <label><span>Height</span><input id="height" name="height" maxlength="255" placeholder="173 cm or 5ft 8in"></label>
+                                        <label><span>Weight</span><input id="weight" name="weight" maxlength="255" placeholder="72 kg or 160 lb"></label>
+                                        <label><span>Eyes</span><input id="eyes" name="eyes" maxlength="255" placeholder="Gray, green, amber..."></label>
+                                        <label><span>Hair</span><input id="hair" name="hair" maxlength="255" placeholder="Black braid, copper curls..."></label>
+                                        <label><span>Skin</span><input id="skin" name="skin" maxlength="255" placeholder="Olive, freckled, scarred..."></label>
                                         <div class="full tiny" id="appearance-placeholder-note">Appearance examples shift with species. They are lore-style examples, not hard limits.</div>
-                                        <label class="full"><span>Notes</span><textarea id="notes" name="notes" placeholder="Campaign notes, hooks, gear, personality..."></textarea></label>
+                                        <label class="full"><span>Notes</span><textarea id="notes" name="notes" maxlength="2000" placeholder="Campaign notes, hooks, gear, personality..."></textarea></label>
                                     </div>
                                 </div>
                             </div>
@@ -451,6 +475,11 @@
                                 <p id="selected-class-summary">Class notes appear here once you make a choice.</p>
                                 <p id="selected-class-focus" class="tiny">Primary focus and playstyle notes will appear here.</p>
                                 <ul id="selected-subclasses"></ul>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-skills-title">Skill training</h3>
+                                <p id="selected-skills-summary">Choose the skills the sheet should treat as proficient, then add expertise only where something on the sheet grants it.</p>
+                                <ul id="selected-skills-list"></ul>
                             </div>
                             <div class="rule-block">
                                 <h3 id="selected-background-title">Choose a background</h3>
@@ -518,7 +547,7 @@
                             <button class="btn-soft" id="dice-roll-stats" type="button">Roll Stats</button>
                         </div>
                         <form class="dice-form" id="dice-form">
-                            <input id="dice-expression" type="text" placeholder="Custom roll like 2d6+3, d20, or 4d8-1">
+                            <input id="dice-expression" type="text" maxlength="50" placeholder="Custom roll like 2d6+3, d20, or 4d8-1">
                             <select id="dice-mode">
                                 <option value="">Normal</option>
                                 <option value="advantage">Advantage</option>
@@ -568,16 +597,30 @@
                         <div class="library-results" id="compendium-results"></div>
                     </div>
                 </section>
-            </main>
+                </main>
+            </div>
+        </div>
+        <div class="hover-tooltip" id="hover-tooltip" hidden>
+            <strong>Option Details</strong>
+            <span>Hover a choice to see what it means.</span>
         </div>
 
         @php
+            $classSheetDetails = [];
+            foreach (config('dnd_progressions.classes', []) as $className => $details) {
+                $classSheetDetails[$className] = [
+                    'saving_throw_proficiencies' => data_get($details, 'traits.saving_throw_proficiencies'),
+                    'skill_proficiencies' => data_get($details, 'traits.skill_proficiencies'),
+                ];
+            }
+
             $pageData = [
                 'configurator' => [
                     'class_details' => config('dnd.class_details'),
                     'species_details' => config('dnd.species_details'),
                     'background_details' => config('dnd.background_details'),
                     'ability_details' => config('dnd.ability_details'),
+                    'skill_details' => config('dnd.skill_details'),
                     'alignment_details' => config('dnd.alignment_details'),
                     'alignment_roleplay' => config('dnd.alignment_roleplay'),
                     'roleplay_field_help' => config('dnd.roleplay_field_help'),
@@ -586,6 +629,7 @@
                     'appearance_field_help' => config('dnd.appearance_field_help'),
                     'form_placeholder_profiles' => config('dnd.form_placeholder_profiles'),
                     'ability_appearance_cues' => config('dnd.ability_appearance_cues'),
+                    'class_sheet_details' => $classSheetDetails,
                 ],
                 'compendium' => config('dnd.compendium'),
                 'compendium_sections' => array_values(config('dnd.compendium_sections')),
@@ -604,8 +648,7 @@
             const diceNotice = document.getElementById('dice-notice');
             const compendiumNotice = document.getElementById('compendium-notice');
             const previewEl = document.getElementById('preview');
-            const wizardActionHelp = document.getElementById('wizard-action-help');
-            const wizardActionHelpText = document.getElementById('wizard-action-help-text');
+            const hoverTooltip = document.getElementById('hover-tooltip');
             const form = document.getElementById('character-form');
             const wizardForm = document.getElementById('wizard-form');
             const wizardInput = document.getElementById('wizard-input');
@@ -631,6 +674,8 @@
             const alignmentSelect = document.getElementById('alignment');
             const originFeatSelect = document.getElementById('origin_feat');
             const languageInputs = Array.from(document.querySelectorAll('input[name="languages[]"]'));
+            const skillProficiencyInputs = Array.from(document.querySelectorAll('input[name="skill_proficiencies[]"]'));
+            const skillExpertiseInputs = Array.from(document.querySelectorAll('input[name="skill_expertise[]"]'));
             const personalityTraitsInput = document.getElementById('personality_traits');
             const idealsInput = document.getElementById('ideals');
             const bondsInput = document.getElementById('bonds');
@@ -643,11 +688,10 @@
             const skinInput = document.getElementById('skin');
             const notesInput = document.getElementById('notes');
             const namePlaceholderNote = document.getElementById('name-placeholder-note');
+            const classSkillNote = document.getElementById('class-skill-note');
+            const expertiseNote = document.getElementById('expertise-note');
             const roleplayPlaceholderNote = document.getElementById('roleplay-placeholder-note');
             const appearancePlaceholderNote = document.getElementById('appearance-placeholder-note');
-            const step1ChoiceHelp = document.getElementById('step1-choice-help');
-            const step2ChoiceHelp = document.getElementById('step2-choice-help');
-            const step4ChoiceHelp = document.getElementById('step4-choice-help');
             const compendiumSectionSelect = document.getElementById('compendium-section');
             const compendiumSearchInput = document.getElementById('compendium-search');
             const compendiumTitle = document.getElementById('compendium-title');
@@ -656,6 +700,8 @@
             const statFields = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
             const optionalTextFields = ['alignment', 'personality_traits', 'ideals', 'bonds', 'flaws', 'age', 'height', 'weight', 'eyes', 'hair', 'skin', 'notes'];
             let wizardState = {};
+            let wizardPreviewStats = null;
+            let currentHoverAnchor = null;
 
             function notice(el, message, type) {
                 el.textContent = message;
@@ -667,18 +713,77 @@
                 el.className = 'notice';
             }
 
-            function showHoverHelp(box, title, text) {
-                if (! box || ! text) {
-                    if (box) box.hidden = true;
+            function firstErrorMessage(payload, fallback) {
+                if (! payload || typeof payload !== 'object') {
+                    return fallback;
+                }
+
+                if (typeof payload.message === 'string' && payload.message.trim()) {
+                    return payload.message;
+                }
+
+                if (payload.errors && typeof payload.errors === 'object') {
+                    for (const value of Object.values(payload.errors)) {
+                        if (Array.isArray(value) && typeof value[0] === 'string' && value[0].trim()) {
+                            return value[0];
+                        }
+
+                        if (typeof value === 'string' && value.trim()) {
+                            return value;
+                        }
+                    }
+                }
+
+                return fallback;
+            }
+
+            function positionHoverTooltip(anchor) {
+                if (! hoverTooltip || ! anchor) return;
+
+                const rect = anchor.getBoundingClientRect();
+                const tooltipRect = hoverTooltip.getBoundingClientRect();
+                const gap = 14;
+                let left = rect.right + gap;
+                let top = rect.top + ((rect.height - tooltipRect.height) / 2);
+
+                if (left + tooltipRect.width > window.innerWidth - 10) {
+                    left = rect.left - tooltipRect.width - gap;
+                }
+
+                if (left < 10) {
+                    left = Math.max(10, window.innerWidth - tooltipRect.width - 10);
+                }
+
+                if (top + tooltipRect.height > window.innerHeight - 10) {
+                    top = window.innerHeight - tooltipRect.height - 10;
+                }
+
+                if (top < 10) {
+                    top = 10;
+                }
+
+                hoverTooltip.style.left = `${left}px`;
+                hoverTooltip.style.top = `${top}px`;
+            }
+
+            function showHoverHelp(anchor, title, text) {
+                if (! hoverTooltip || ! anchor || ! text) {
+                    hideHoverHelp();
                     return;
                 }
 
-                box.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(text)}</span>`;
-                box.hidden = false;
+                currentHoverAnchor = anchor;
+                hoverTooltip.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(text)}</span>`;
+                hoverTooltip.hidden = false;
+                positionHoverTooltip(anchor);
+                hoverTooltip.classList.add('show');
             }
 
-            function hideHoverHelp(box) {
-                if (box) box.hidden = true;
+            function hideHoverHelp() {
+                currentHoverAnchor = null;
+                if (! hoverTooltip) return;
+                hoverTooltip.classList.remove('show');
+                hoverTooltip.hidden = true;
             }
 
             function escapeHtml(value) {
@@ -690,10 +795,176 @@
                     .replaceAll("'", '&#39;');
             }
 
+            function normalizeStatScore(value) {
+                const score = Number(value);
+                return Number.isFinite(score) && score > 0 ? score : null;
+            }
+
+            function currentFormPreviewStats() {
+                const stats = Object.fromEntries(statFields.map((field) => [field, normalizeStatScore(document.getElementById(field).value)]));
+                return Object.values(stats).some((value) => value !== null) ? stats : null;
+            }
+
+            function selectedSkillProficiencies() {
+                const formValues = skillProficiencyInputs.filter((input) => input.checked).map((input) => input.value);
+
+                if (formValues.length) return formValues;
+
+                return Array.isArray(wizardState?.character?.skill_proficiencies)
+                    ? wizardState.character.skill_proficiencies
+                    : [];
+            }
+
+            function selectedSkillExpertise() {
+                const formValues = skillExpertiseInputs.filter((input) => input.checked).map((input) => input.value);
+
+                if (formValues.length) return formValues;
+
+                return Array.isArray(wizardState?.character?.skill_expertise)
+                    ? wizardState.character.skill_expertise
+                    : [];
+            }
+
+            function snapshotPreviewStats(snapshot) {
+                if (! Array.isArray(snapshot?.stats)) return null;
+
+                const stats = {};
+                snapshot.stats.forEach((stat) => {
+                    const field = statFields.find((entry) => abilityFieldLabel(entry) === stat.label);
+                    if (field) stats[field] = normalizeStatScore(stat.score);
+                });
+
+                return Object.keys(stats).length ? stats : null;
+            }
+
+            function proficiencyBonusForLevel(level) {
+                const numericLevel = Number(level);
+                return Number.isFinite(numericLevel) && numericLevel > 0 ? Math.ceil(numericLevel / 4) + 1 : null;
+            }
+
+            function classSkillChoiceCount(classValue) {
+                const guidance = configurator.class_sheet_details?.[classValue]?.skill_proficiencies || '';
+                const match = guidance.match(/choose(?: any)?\s+(\d+)/i);
+                return match ? Number(match[1]) : null;
+            }
+
+            function classSkillOptions(classValue) {
+                const allSkills = Object.keys(configurator.skill_details || {});
+                const guidance = configurator.class_sheet_details?.[classValue]?.skill_proficiencies || '';
+
+                if (! classValue || ! guidance) return allSkills;
+                if (/choose any/i.test(guidance)) return allSkills;
+
+                const matches = allSkills.filter((skill) => guidance.includes(skill));
+                return matches.length ? matches : allSkills;
+            }
+
+            function syncSkillTrainingNotes() {
+                const classValue = classSelect.value;
+                const classGuidance = configurator.class_sheet_details?.[classValue]?.skill_proficiencies || '';
+                const selectedProficiencies = skillProficiencyInputs.filter((input) => input.checked).map((input) => input.value);
+                const choiceCount = classSkillChoiceCount(classValue);
+                const options = classSkillOptions(classValue);
+                const allowed = new Set(selectedProficiencies);
+
+                skillExpertiseInputs.forEach((input) => {
+                    const shouldDisable = ! allowed.has(input.value);
+                    input.disabled = shouldDisable;
+                    if (shouldDisable) input.checked = false;
+                    const baseDescription = formChoiceDescription('skill', input.value) || 'Skill reference note.';
+                    input.title = `${baseDescription} Expertise doubles the proficiency bonus on this skill.`;
+                });
+
+                const selectedExpertise = skillExpertiseInputs.filter((input) => input.checked).map((input) => input.value);
+
+                if (classSkillNote) {
+                    if (classValue && classGuidance) {
+                        classSkillNote.textContent = `${classValue}: ${classGuidance}. ${selectedProficiencies.length ? `Selected now: ${selectedProficiencies.join(', ')}.` : 'Pick the skills the sheet should track as proficient.'}`;
+                    } else {
+                        classSkillNote.textContent = 'Choose at least one skill the sheet should treat as proficient. The class note here will narrow the usual starting choices once you pick a class.';
+                    }
+                }
+
+                if (expertiseNote) {
+                    expertiseNote.textContent = selectedExpertise.length
+                        ? `Expertise currently marked on: ${selectedExpertise.join(', ')}. Expertise doubles the proficiency bonus on those checks.`
+                        : `Only mark expertise on skills that already have proficiency. ${classValue && choiceCount ? `${classValue} usually starts with ${choiceCount} class skill choice${choiceCount === 1 ? '' : 's'} from this step.` : 'If the build does not get expertise yet, leave this empty.'}`;
+                }
+
+                return { choiceCount, options };
+            }
+
+            function abilityRelatedSkills(field) {
+                const label = abilityFieldLabel(field);
+
+                return Object.entries(configurator.skill_details || {})
+                    .filter(([, detail]) => detail?.ability === label)
+                    .map(([name]) => name);
+            }
+
+            function abilityHoverDescription(field) {
+                const label = abilityFieldLabel(field);
+                const previewStats = currentFormPreviewStats() || wizardPreviewStats || {};
+                const score = normalizeStatScore(previewStats[field]);
+                const modifier = score === null ? null : abilityModifier(score);
+                const classValue = classSelect.value || wizardState?.character?.class || '';
+                const classDetail = configurator.class_details?.[classValue] || null;
+                const sheetDetail = configurator.class_sheet_details?.[classValue] || null;
+                const saveProficiencies = String(sheetDetail?.saving_throw_proficiencies || '');
+                const hasSaveProficiency = Boolean(classValue && saveProficiencies.includes(label));
+                const levelValue = Number(levelInput.value) || Number(wizardState?.character?.level) || null;
+                const proficiencyBonus = proficiencyBonusForLevel(levelValue);
+                const saveModifier = modifier === null ? null : modifier + (hasSaveProficiency && proficiencyBonus ? proficiencyBonus : 0);
+                const relatedSkills = abilityRelatedSkills(field);
+                const selectedProficientSkills = selectedSkillProficiencies().filter((skill) => relatedSkills.includes(skill));
+                const selectedExpertiseSkills = selectedSkillExpertise().filter((skill) => relatedSkills.includes(skill));
+                const selectedNormalSkills = selectedProficientSkills.filter((skill) => ! selectedExpertiseSkills.includes(skill));
+                const isClassFocus = Array.isArray(classDetail?.primary_focus) && classDetail.primary_focus.includes(label);
+
+                return [
+                    score === null ? 'No score is set yet.' : `Score ${score} gives a ${formatModifier(modifier)} modifier.`,
+                    hasSaveProficiency && saveModifier !== null
+                        ? `${label} saves are proficient for ${classValue}, so the current save is ${formatModifier(saveModifier)}.`
+                        : (saveModifier !== null ? `${label} saves are not proficient right now, so the current save is ${formatModifier(saveModifier)}.` : ''),
+                    relatedSkills.length ? `Related skills: ${relatedSkills.join(', ')}.` : 'No standard skills key off this ability.',
+                    selectedNormalSkills.length ? `Selected skill proficiency here: ${selectedNormalSkills.join(', ')}.` : '',
+                    selectedExpertiseSkills.length ? `Selected expertise here: ${selectedExpertiseSkills.join(', ')}.` : '',
+                    isClassFocus ? `${label} is one of ${classValue}'s main abilities.` : '',
+                    relatedSkills.length && ! selectedNormalSkills.length && ! selectedExpertiseSkills.length ? 'No saved skill training on this ability yet.' : '',
+                ].filter(Boolean).join(' ');
+            }
+
+            function syncAbilityPreview() {
+                renderPreview(currentFormPreviewStats() || wizardPreviewStats);
+            }
+
             function renderPreview(stats) {
-                const labels = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
-                const values = stats ? [stats.strength, stats.dexterity, stats.constitution, stats.intelligence, stats.wisdom, stats.charisma] : ['-', '-', '-', '-', '-', '-'];
-                previewEl.innerHTML = labels.map((label, index) => `<div class="stat"><span class="label">${label}</span><span class="value">${values[index]}</span></div>`).join('');
+                const shortLabels = {
+                    strength: 'STR',
+                    dexterity: 'DEX',
+                    constitution: 'CON',
+                    intelligence: 'INT',
+                    wisdom: 'WIS',
+                    charisma: 'CHA',
+                };
+
+                previewEl.innerHTML = statFields.map((field) => {
+                    const score = normalizeStatScore(stats?.[field]);
+                    const modifierText = score === null ? '--' : formatModifier(abilityModifier(score));
+                    const scoreText = score === null ? '--' : String(score);
+                    const description = abilityHoverDescription(field);
+
+                    const input = document.getElementById(field);
+                    if (input) input.title = description;
+
+                    return `
+                        <div class="stat preview-stat" tabindex="0" data-preview-field="${field}" title="${escapeHtml(description)}">
+                            <span class="label">${shortLabels[field]}</span>
+                            <span class="value">${scoreText}</span>
+                            <span class="preview-mod">Mod ${modifierText}</span>
+                        </div>
+                    `;
+                }).join('');
             }
 
             function abilityFieldLabel(field) {
@@ -859,7 +1130,7 @@
             function renderDiceStatsResult(stats, { populateForm = false } = {}) {
                 if (populateForm) {
                     statFields.forEach((field) => document.getElementById(field).value = stats[field]);
-                    renderPreview(stats);
+                    syncAbilityPreview();
                 }
 
                 const summary = statFields
@@ -971,6 +1242,15 @@
                     return configurator.language_details?.[value] || '';
                 }
 
+                if (field === 'skill') {
+                    const detail = configurator.skill_details?.[value];
+                    return detail
+                        ? [detail.summary, detail.ability ? `Ability: ${detail.ability}.` : '']
+                            .filter(Boolean)
+                            .join(' ')
+                        : '';
+                }
+
                 return '';
             }
 
@@ -978,7 +1258,7 @@
                 wizardActions.innerHTML = '';
                 const richActions = actions.some((action) => wizardActionDescription(action));
                 wizardActions.classList.toggle('rich', richActions);
-                hideHoverHelp(wizardActionHelp);
+                hideHoverHelp();
 
                 actions.slice(0, 12).forEach((action) => {
                     const button = document.createElement('button');
@@ -989,10 +1269,10 @@
                     button.textContent = action;
                     button.title = description || '';
                     if (description) {
-                        button.addEventListener('mouseenter', () => showHoverHelp(wizardActionHelp, action, description));
-                        button.addEventListener('focus', () => showHoverHelp(wizardActionHelp, action, description));
-                        button.addEventListener('mouseleave', () => hideHoverHelp(wizardActionHelp));
-                        button.addEventListener('blur', () => hideHoverHelp(wizardActionHelp));
+                        button.addEventListener('mouseenter', () => showHoverHelp(button, action, description));
+                        button.addEventListener('focus', () => showHoverHelp(button, action, description));
+                        button.addEventListener('mouseleave', hideHoverHelp);
+                        button.addEventListener('blur', hideHoverHelp);
                     }
                     wizardActions.appendChild(button);
                 });
@@ -1003,24 +1283,44 @@
                 control.title = description || '';
             }
 
-            function wireChoiceHelp(control, field, box, titlePrefix) {
+            function wireChoiceHelp(control, field, titlePrefix) {
                 const show = () => {
                     const value = control.value;
                     const description = formChoiceDescription(field, value);
                     syncSelectTitle(control, field);
                     if (! value || ! description) {
-                        hideHoverHelp(box);
+                        hideHoverHelp();
                         return;
                     }
 
-                    showHoverHelp(box, `${titlePrefix}: ${value}`, description);
+                    showHoverHelp(control, `${titlePrefix}: ${value}`, description);
                 };
 
                 control.addEventListener('mouseenter', show);
                 control.addEventListener('focus', show);
                 control.addEventListener('change', show);
-                control.addEventListener('mouseleave', () => hideHoverHelp(box));
-                control.addEventListener('blur', () => hideHoverHelp(box));
+                control.addEventListener('mouseleave', hideHoverHelp);
+                control.addEventListener('blur', hideHoverHelp);
+            }
+
+            function wireAbilityHelp(field) {
+                const input = document.getElementById(field);
+                if (! input) return;
+
+                const show = () => {
+                    const description = abilityHoverDescription(field);
+                    input.title = description;
+                    showHoverHelp(input, abilityFieldLabel(field), description);
+                };
+
+                input.addEventListener('mouseenter', show);
+                input.addEventListener('focus', show);
+                input.addEventListener('input', () => {
+                    input.title = abilityHoverDescription(field);
+                    if (currentHoverAnchor === input) show();
+                });
+                input.addEventListener('mouseleave', hideHoverHelp);
+                input.addEventListener('blur', hideHoverHelp);
             }
 
             function filterTryAsking() {
@@ -1038,6 +1338,8 @@
 
             function renderWizardSummary(snapshot) {
                 if (! snapshot || ! snapshot.identity) {
+                    wizardPreviewStats = null;
+                    syncAbilityPreview();
                     wizardSummary.innerHTML = `
                         <div class="wizard-summary-card">
                             <h3>No active character</h3>
@@ -1046,6 +1348,9 @@
                     `;
                     return;
                 }
+
+                wizardPreviewStats = snapshotPreviewStats(snapshot);
+                syncAbilityPreview();
 
                 const stats = (snapshot.stats || []).map((stat) => `
                     <li>${escapeHtml(stat.label)}: ${stat.score ?? '-'}${stat.modifier ? ` (${escapeHtml(stat.modifier)})` : ''}</li>
@@ -1056,6 +1361,8 @@
                 const missing = (snapshot.missing_fields || []).map((field) => `<li>${escapeHtml(field)}</li>`).join('');
                 const characterDetails = (snapshot.character_details || []).join(' / ');
                 const languages = (snapshot.languages || []).join(', ');
+                const skillProficiencies = (snapshot.skill_proficiencies || []).join(', ');
+                const skillExpertise = (snapshot.skill_expertise || []).join(', ');
                 const roleplay = (snapshot.roleplay || []).map((entry) => `<li>${escapeHtml(entry)}</li>`).join('');
                 const appearance = (snapshot.appearance || []).map((entry) => `<li>${escapeHtml(entry)}</li>`).join('');
                 const notes = snapshot.notes ? escapeHtml(snapshot.notes) : '';
@@ -1072,6 +1379,8 @@
                         <p>${snapshot.estimated_hit_points !== null ? `Estimated HP ${snapshot.estimated_hit_points}` : 'Estimated HP pending'}</p>
                         <p>${snapshot.spellcasting_summary ? escapeHtml(snapshot.spellcasting_summary) : 'No spellcasting summary yet'}</p>
                         <p>${characterDetails ? escapeHtml(characterDetails) : 'Core identity details like class, species, background, and origin feat are not set yet.'}</p>
+                        <p>${skillProficiencies ? `Skills: ${escapeHtml(skillProficiencies)}` : 'Skill proficiencies are not set yet.'}</p>
+                        <p>${skillExpertise ? `Expertise: ${escapeHtml(skillExpertise)}` : 'No expertise is marked on the sheet yet.'}</p>
                         <p>${languages ? `Languages: ${escapeHtml(languages)}` : 'Languages are not set yet.'}</p>
                         <p>${notes ? `Notes: ${notes}` : 'Notes are not set yet.'}</p>
                     </div>
@@ -1219,6 +1528,8 @@
 
             function renderSelectionReference() {
                 updateAdaptivePlaceholders();
+                const { choiceCount: classSkillChoiceTotal, options: classSkillOptionsList } = syncSkillTrainingNotes();
+                syncAbilityPreview();
 
                 const nameValue = nameInput.value.trim();
                 const classValue = classSelect.value;
@@ -1228,6 +1539,8 @@
                 const alignmentValue = alignmentSelect.value;
                 const originFeatValue = originFeatSelect.value;
                 const languageValues = languageInputs.filter((input) => input.checked).map((input) => input.value);
+                const skillProficiencyValues = skillProficiencyInputs.filter((input) => input.checked).map((input) => input.value);
+                const skillExpertiseValues = skillExpertiseInputs.filter((input) => input.checked).map((input) => input.value);
                 const levelValue = levelInput.value.trim();
                 const personalityTraitsValue = personalityTraitsInput.value.trim();
                 const idealsValue = idealsInput.value.trim();
@@ -1267,6 +1580,7 @@
                     classValue ? `Class ready: ${classValue}` : 'Class still needed',
                     levelValue ? `Level ready: ${levelValue}` : 'Level still needed',
                     subclassValue ? `Subclass ready: ${subclassValue}` : 'Subclass still needed',
+                    skillProficiencyValues.length ? `Skill training ready: ${skillProficiencyValues.join(', ')}` : 'Skill training still needed',
                     nameValue ? `Name ready: ${nameValue}` : 'Name still needed',
                     backgroundValue ? `Background ready: ${backgroundValue}` : 'Background still needed',
                     speciesValue ? `Species ready: ${speciesValue}` : 'Species still needed',
@@ -1279,6 +1593,7 @@
                     ! classValue ? 'class' : '',
                     ! levelValue ? 'level' : '',
                     ! subclassValue ? 'subclass' : '',
+                    ! skillProficiencyValues.length ? 'skill training' : '',
                     ! nameValue ? 'name' : '',
                     ! backgroundValue ? 'background' : '',
                     ! speciesValue ? 'species' : '',
@@ -1294,7 +1609,7 @@
                     ? `Still to choose: ${missingCore.join(', ')}.`
                     : 'Core sheet is complete. You can still add alignment, roleplay, appearance, and notes.';
                 document.getElementById('selected-build-focus').textContent = focusAbilities.length
-                    ? `Step focus: class first, origin next, then scores. ${classValue} usually leans on ${focusAbilities.join(', ')}.${levelValue ? ` Level ${levelValue} is selected.` : ''}`
+                    ? `Step focus: class and skill training first, origin next, then scores. ${classValue} usually leans on ${focusAbilities.join(', ')}.${levelValue ? ` Level ${levelValue} is selected.` : ''}`
                     : `${levelValue ? `Level ${levelValue} is selected.` : 'Pick a class and level to see focus guidance.'}`;
                 document.getElementById('selected-build-checklist').innerHTML = coreChecklist.map((entry) => `<li>${escapeHtml(entry)}</li>`).join('');
 
@@ -1324,11 +1639,24 @@
                     : 'Choose a class';
                 document.getElementById('selected-class-summary').textContent = classDetail?.summary || 'Class notes appear here once you make a choice.';
                 document.getElementById('selected-class-focus').textContent = Array.isArray(classDetail?.primary_focus) && classDetail.primary_focus.length
-                    ? `Primary focus: ${classDetail.primary_focus.join(', ')}${subclassValue ? ` | Selected subclass: ${subclassValue}` : ''}`
+                    ? `Primary focus: ${classDetail.primary_focus.join(', ')}${subclassValue ? ` | Selected subclass: ${subclassValue}` : ''}${classSkillChoiceTotal ? ` | Typical skill choices: ${classSkillChoiceTotal}` : ''}`
                     : 'Primary focus and playstyle notes will appear here.';
                 document.getElementById('selected-subclasses').innerHTML = (classDetail?.subclasses || []).length
                     ? (classDetail.subclasses || []).map((subclass) => `<li>${escapeHtml(subclass)}${subclassValue === subclass ? ' <span class="tiny">(selected)</span>' : ''}</li>`).join('')
                     : '<li>Subclass options will appear after you choose a class.</li>';
+
+                document.getElementById('selected-skills-title').textContent = skillProficiencyValues.length
+                    ? `Skill training (${skillProficiencyValues.length})`
+                    : 'Skill training';
+                document.getElementById('selected-skills-summary').textContent = classValue && classSkillOptionsList.length
+                    ? `${classValue} usually points you toward ${classSkillOptionsList.length > 8 ? `${classSkillOptionsList.slice(0, 8).join(', ')}, and more` : classSkillOptionsList.join(', ')}.${skillExpertiseValues.length ? ` Expertise marked on ${skillExpertiseValues.join(', ')}.` : ' Expertise stays optional unless something on the sheet grants it.'}`
+                    : 'Choose the skills the sheet should treat as proficient, then add expertise only where something on the sheet grants it.';
+                document.getElementById('selected-skills-list').innerHTML = skillProficiencyValues.length
+                    ? [
+                        `<li><strong>Proficient:</strong> ${escapeHtml(skillProficiencyValues.join(', '))}</li>`,
+                        skillExpertiseValues.length ? `<li><strong>Expertise:</strong> ${escapeHtml(skillExpertiseValues.join(', '))}</li>` : '<li><strong>Expertise:</strong> none marked on the sheet yet.</li>',
+                    ].join('')
+                    : '<li>Choose at least one skill proficiency so the sheet can calculate trained checks and show them on ability hover.</li>';
 
                 document.getElementById('selected-species-title').textContent = speciesValue || 'Choose a species';
                 document.getElementById('selected-species-summary').textContent = speciesDetail?.summary || 'Species notes appear here once you make a choice.';
@@ -1439,6 +1767,26 @@
                 return selection.length ? selection : randomUniqueChoices(allLanguages, 1);
             }
 
+            function randomSkillProficiencies(classValue) {
+                const options = classSkillOptions(classValue);
+                const choiceCount = classSkillChoiceCount(classValue) || 2;
+                return randomUniqueChoices(options, Math.min(options.length, Math.max(1, choiceCount)));
+            }
+
+            function randomSkillExpertise(classValue, levelValue, proficiencies) {
+                if (! Array.isArray(proficiencies) || ! proficiencies.length) return [];
+
+                if (classValue === 'Rogue') {
+                    return randomUniqueChoices(proficiencies, Math.min(proficiencies.length, 2));
+                }
+
+                if (classValue === 'Bard' && Number(levelValue) >= 2) {
+                    return randomUniqueChoices(proficiencies, 2);
+                }
+
+                return [];
+            }
+
             function randomCharacterName(species) {
                 const speciesProfile = configurator.form_placeholder_profiles?.species?.[species] || {};
                 return randomFromSuggestion(speciesProfile.name, `${species} Wanderer`);
@@ -1473,9 +1821,11 @@
                 const originFeatValue = randomChoice(originFeatOptions);
                 const subclassValue = randomChoice(configurator.class_details?.[classValue]?.subclasses || []);
                 const languagesValue = randomLanguagesSelection();
+                const skillProficiencyValues = randomSkillProficiencies(classValue);
                 const roleplayProfile = configurator.alignment_roleplay?.[alignmentValue] || {};
                 const appearance = randomAppearanceProfile(speciesValue);
                 const levelValue = randomInt(1, 20);
+                const skillExpertiseValues = randomSkillExpertise(classValue, levelValue, skillProficiencyValues);
                 const generatedStats = Object.fromEntries(statFields.map((field) => [field, localAbilityScore()]));
                 const nameValue = randomCharacterName(speciesValue);
                 const backgroundTheme = configurator.background_details?.[backgroundValue]?.theme || 'adventuring trouble';
@@ -1495,6 +1845,13 @@
 
                 languageInputs.forEach((input) => {
                     input.checked = languagesValue.includes(input.value);
+                });
+                skillProficiencyInputs.forEach((input) => {
+                    input.checked = skillProficiencyValues.includes(input.value);
+                });
+                syncSkillTrainingNotes();
+                skillExpertiseInputs.forEach((input) => {
+                    input.checked = skillExpertiseValues.includes(input.value);
                 });
 
                 renderDiceStatsResult(generatedStats, { populateForm: true });
@@ -1569,7 +1926,6 @@
             function resetForm() {
                 form.reset();
                 document.getElementById('level').value = 1;
-                renderPreview(null);
                 populateSubclassOptions('');
                 renderSelectionReference();
                 clearNotice(formNotice);
@@ -1585,10 +1941,14 @@
             function payload() {
                 const data = Object.fromEntries(new FormData(form).entries());
                 delete data['languages[]'];
+                delete data['skill_proficiencies[]'];
+                delete data['skill_expertise[]'];
                 optionalTextFields.forEach((field) => {
                     data[field] = typeof data[field] === 'string' && data[field].trim() ? data[field].trim() : null;
                 });
                 data.languages = languageInputs.filter((input) => input.checked).map((input) => input.value);
+                data.skill_proficiencies = skillProficiencyInputs.filter((input) => input.checked).map((input) => input.value);
+                data.skill_expertise = skillExpertiseInputs.filter((input) => input.checked).map((input) => input.value);
                 data.level = Number(data.level);
                 statFields.forEach((field) => data[field] = Number(data[field]));
                 return data;
@@ -1603,6 +1963,11 @@
                     return;
                 }
 
+                if (! skillProficiencyInputs.some((input) => input.checked)) {
+                    notice(formNotice, 'Choose at least one skill proficiency before saving the character.', 'error');
+                    return;
+                }
+
                 try {
                     const response = await fetch('/api/characters', {
                         method: 'POST',
@@ -1612,8 +1977,7 @@
 
                     const data = await response.json();
                     if (! response.ok) {
-                        const message = data.errors ? Object.values(data.errors)[0][0] : 'The character could not be saved.';
-                        throw new Error(message);
+                        throw new Error(firstErrorMessage(data, 'The character could not be saved.'));
                     }
 
                     notice(formNotice, 'Character saved successfully.', 'success');
@@ -1652,8 +2016,7 @@
 
                     const data = await response.json();
                     if (! response.ok) {
-                        const message = data.errors ? Object.values(data.errors)[0][0] : 'The rules wizard could not respond.';
-                        throw new Error(message);
+                        throw new Error(firstErrorMessage(data, 'The rules wizard could not respond.'));
                     }
 
                     wizardState = data.state ?? {};
@@ -1702,12 +2065,31 @@
                 if (! button) return;
                 rollDiceExpression(button.dataset.diceExpression, button.dataset.diceMode || '');
             });
-            wireChoiceHelp(classSelect, 'class', step1ChoiceHelp, 'Class');
-            wireChoiceHelp(subclassSelect, 'subclass', step1ChoiceHelp, 'Subclass');
-            wireChoiceHelp(backgroundSelect, 'background', step2ChoiceHelp, 'Background');
-            wireChoiceHelp(speciesSelect, 'species', step2ChoiceHelp, 'Species');
-            wireChoiceHelp(originFeatSelect, 'origin_feat', step2ChoiceHelp, 'Origin Feat');
-            wireChoiceHelp(alignmentSelect, 'alignment', step4ChoiceHelp, 'Alignment');
+            wireChoiceHelp(classSelect, 'class', 'Class');
+            wireChoiceHelp(subclassSelect, 'subclass', 'Subclass');
+            wireChoiceHelp(backgroundSelect, 'background', 'Background');
+            wireChoiceHelp(speciesSelect, 'species', 'Species');
+            wireChoiceHelp(originFeatSelect, 'origin_feat', 'Origin Feat');
+            wireChoiceHelp(alignmentSelect, 'alignment', 'Alignment');
+            statFields.forEach(wireAbilityHelp);
+
+            previewEl.addEventListener('mouseover', (event) => {
+                const card = event.target.closest('[data-preview-field]');
+                if (! card || card.contains(event.relatedTarget)) return;
+                const field = card.dataset.previewField;
+                showHoverHelp(card, abilityFieldLabel(field), abilityHoverDescription(field));
+            });
+            previewEl.addEventListener('mouseout', (event) => {
+                const card = event.target.closest('[data-preview-field]');
+                if (card && ! card.contains(event.relatedTarget)) hideHoverHelp();
+            });
+            previewEl.addEventListener('focusin', (event) => {
+                const card = event.target.closest('[data-preview-field]');
+                if (! card) return;
+                const field = card.dataset.previewField;
+                showHoverHelp(card, abilityFieldLabel(field), abilityHoverDescription(field));
+            });
+            previewEl.addEventListener('focusout', hideHoverHelp);
 
             nameInput.addEventListener('input', renderSelectionReference);
             classSelect.addEventListener('change', () => {
@@ -1724,14 +2106,45 @@
                 const chip = input.closest('.check-chip');
                 const show = () => {
                     const description = formChoiceDescription('language', input.value);
-                    showHoverHelp(step2ChoiceHelp, `Language: ${input.value}`, description || 'Language reference note.');
+                    showHoverHelp(chip || input, `Language: ${input.value}`, description || 'Language reference note.');
                 };
 
                 chip?.addEventListener('mouseenter', show);
-                chip?.addEventListener('mouseleave', () => hideHoverHelp(step2ChoiceHelp));
+                chip?.addEventListener('mouseleave', hideHoverHelp);
                 chip?.addEventListener('focusin', show);
-                chip?.addEventListener('focusout', () => hideHoverHelp(step2ChoiceHelp));
+                chip?.addEventListener('focusout', hideHoverHelp);
                 input.title = formChoiceDescription('language', input.value) || '';
+            });
+            skillProficiencyInputs.forEach((input) => {
+                const chip = input.closest('.check-chip');
+                const show = () => {
+                    const description = formChoiceDescription('skill', input.value);
+                    showHoverHelp(chip || input, `Skill: ${input.value}`, description || 'Skill reference note.');
+                };
+
+                input.addEventListener('change', () => {
+                    syncSkillTrainingNotes();
+                    renderSelectionReference();
+                });
+                chip?.addEventListener('mouseenter', show);
+                chip?.addEventListener('mouseleave', hideHoverHelp);
+                chip?.addEventListener('focusin', show);
+                chip?.addEventListener('focusout', hideHoverHelp);
+                input.title = formChoiceDescription('skill', input.value) || '';
+            });
+            skillExpertiseInputs.forEach((input) => {
+                const chip = input.closest('.check-chip');
+                const show = () => {
+                    const description = `${formChoiceDescription('skill', input.value) || 'Skill reference note.'} Expertise doubles the proficiency bonus on this skill.`;
+                    showHoverHelp(chip || input, `Expertise: ${input.value}`, description);
+                };
+
+                input.addEventListener('change', renderSelectionReference);
+                chip?.addEventListener('mouseenter', show);
+                chip?.addEventListener('mouseleave', hideHoverHelp);
+                chip?.addEventListener('focusin', show);
+                chip?.addEventListener('focusout', hideHoverHelp);
+                input.title = `${formChoiceDescription('skill', input.value) || 'Skill reference note.'} Expertise doubles the proficiency bonus on this skill.`;
             });
             levelInput.addEventListener('input', renderSelectionReference);
             [personalityTraitsInput, idealsInput, bondsInput, flawsInput, ageInput, heightInput, weightInput, eyesInput, hairInput, skinInput].forEach((input) => {
@@ -1748,6 +2161,12 @@
             wizardDiceButtons.forEach((button) => {
                 button.addEventListener('click', () => sendWizardMessage(button.dataset.wizardCommand));
             });
+            window.addEventListener('resize', () => {
+                if (currentHoverAnchor) positionHoverTooltip(currentHoverAnchor);
+            });
+            window.addEventListener('scroll', () => {
+                if (currentHoverAnchor) positionHoverTooltip(currentHoverAnchor);
+            }, true);
 
             populateSubclassOptions('');
             filterTryAsking();

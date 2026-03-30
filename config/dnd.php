@@ -359,9 +359,9 @@ $equipmentCategories = [
     'Pack' => 'Bundled gear designed for common adventuring roles.',
 ];
 
-$roleplay = require __DIR__ . '/dnd_roleplay.php';
-$spells = require __DIR__ . '/dnd_spells.php';
-$monsters = require __DIR__ . '/dnd_monsters.php';
+$roleplay = require __DIR__.'/dnd_roleplay.php';
+$spells = require __DIR__.'/dnd_spells.php';
+$monsters = require __DIR__.'/dnd_monsters.php';
 
 $sectionBuilder = static function (string $key, string $title, array $items): array {
     return [
