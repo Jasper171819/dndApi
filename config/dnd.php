@@ -1,4 +1,6 @@
 <?php
+// Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
+// Clear explanation: This file is one of the custom parts that make this app work.
 
 $classes = [
     'Barbarian' => [
@@ -239,6 +241,45 @@ $alignments = [
     'Chaotic Evil' => 'Acts with destructive selfishness and rejects restraint or order.',
 ];
 
+$advancementMethods = [
+    'Experience Points' => [
+        'summary' => 'Leveling happens when earned XP crosses the next threshold from encounters, quests, and other awards.',
+        'play_note' => 'Track XP totals after sessions or major encounters so the table can see how close the next level is.',
+        'level_up_note' => 'This assumes the next XP threshold has been reached and counted.',
+        'roleplay_cue' => 'Growth feels tied to hard-earned risk, lessons learned in play, and victories that had a real cost.',
+    ],
+    'Milestone' => [
+        'summary' => 'Leveling happens when the DM calls for it at a major turning point in the campaign.',
+        'play_note' => 'This keeps bookkeeping light and ties level gains to important story beats.',
+        'level_up_note' => 'This assumes the DM has awarded a milestone after a major turning point.',
+        'roleplay_cue' => 'Growth feels tied to major turning points, promises kept, and moments that change the shape of the story.',
+    ],
+    'Story Goal' => [
+        'summary' => 'Leveling happens when the party or character completes an agreed story objective.',
+        'play_note' => 'This works well when the table wants clear narrative goals instead of encounter-by-encounter math.',
+        'level_up_note' => 'This assumes the agreed story objective or character arc beat has been completed.',
+        'roleplay_cue' => 'Growth feels tied to purpose, oaths, unfinished business, and the goals that keep the character moving.',
+    ],
+    'Session-based' => [
+        'summary' => 'Leveling happens on a table schedule, often after a set number of sessions or chapters.',
+        'play_note' => 'This keeps pacing predictable and rewards steady attendance and campaign momentum.',
+        'level_up_note' => 'This assumes the group has reached the next scheduled level-up point.',
+        'roleplay_cue' => 'Growth feels steady and rhythmic, like the character is gradually sharpening through repeated field experience.',
+    ],
+    'Downtime Training' => [
+        'summary' => 'Leveling happens when the character has enough training time, study, or practice between adventures.',
+        'play_note' => 'This fits campaigns where travel, study, and off-screen preparation matter as much as the danger in the field.',
+        'level_up_note' => 'This assumes the character has finished the needed training, study, or recovery period.',
+        'roleplay_cue' => 'Growth feels deliberate, earned through repetition, mentors, and quiet work between the dangerous parts.',
+    ],
+    'Custom / Homebrew' => [
+        'summary' => 'Leveling follows a table-specific method agreed with the DM.',
+        'play_note' => 'Use the notes field or homebrew page to record the exact house rule if the table uses something unusual.',
+        'level_up_note' => 'This assumes the table-specific advancement trigger has been met.',
+        'roleplay_cue' => 'Growth follows the table’s own rhythm, so the character may think about progress in a way unique to that world.',
+    ],
+];
+
 $skills = [
     'Acrobatics' => ['ability' => 'Dexterity', 'summary' => 'Balance, tumbling, escapes, and agile movement.'],
     'Animal Handling' => ['ability' => 'Wisdom', 'summary' => 'Calming, directing, or reading beasts.'],
@@ -311,6 +352,18 @@ $languages = [
     'Primordial' => 'A broad elemental language linked to the raw forces of creation.',
     'Sylvan' => 'A musical tongue associated with fey crossings and wild magic.',
     'Undercommon' => 'A subterranean trade language used beneath the surface world.',
+];
+
+$officialRules = [
+    'baseline_advancement_methods' => ['Experience Points', 'Milestone'],
+    'evil_alignments' => ['Lawful Evil', 'Neutral Evil', 'Chaotic Evil'],
+    'standard_languages' => ['Common', 'Draconic', 'Dwarvish', 'Elvish', 'Giant', 'Gnomish', 'Goblin', 'Halfling', 'Orc'],
+    'rare_languages' => ['Abyssal', 'Celestial', 'Deep Speech', 'Infernal', 'Primordial', 'Sylvan', 'Undercommon'],
+    'background_package_warning' => 'Official 2024 backgrounds are fixed packages with set ability-score options, an Origin feat, two skill proficiencies, one tool proficiency, and starting equipment. This builder keeps those pieces flexible, so double-check the printed background package if you want to stay strictly official.',
+    'skill_package_warning' => 'This sheet combines class and background skills into one list, so it cannot fully prove that the starting skill package matches the printed 2024 build.',
+    'tool_equipment_warning' => 'Tool proficiencies and starting equipment still need to be tracked separately, because this character sheet does not store them as structured character data yet.',
+    'language_warning' => 'Base 2024 character creation normally starts with Common plus two Standard Languages. If this setup came from a feature, feat, or DM ruling, you can ignore this warning.',
+    'evil_alignment_warning' => '2024 rules do not assume player characters are evil and say evil alignments should be cleared with the DM first.',
 ];
 
 $magicSchools = [
@@ -400,6 +453,7 @@ $compendium = [
     'conditions' => $sectionBuilder('conditions', 'Conditions', $namedSectionItems($conditions)),
     'damage_types' => $sectionBuilder('damage_types', 'Damage Types', $namedSectionItems($damageTypes)),
     'alignments' => $sectionBuilder('alignments', 'Alignments', $namedSectionItems($alignments)),
+    'advancement_methods' => $sectionBuilder('advancement_methods', 'Advancement Methods', $namedSectionItems($advancementMethods)),
     'languages' => $sectionBuilder('languages', 'Languages', $namedSectionItems($languages)),
     'magic_schools' => $sectionBuilder('magic_schools', 'Magic Schools', $namedSectionItems($magicSchools)),
     'spells' => $sectionBuilder('spells', 'Spells', $spells),
@@ -421,6 +475,7 @@ return [
     'conditions' => array_keys($conditions),
     'damage_types' => array_keys($damageTypes),
     'alignments' => array_keys($alignments),
+    'advancement_methods' => array_keys($advancementMethods),
     'languages' => array_keys($languages),
     'magic_schools' => array_keys($magicSchools),
     'weapon_properties' => array_keys($weaponProperties),
@@ -432,13 +487,16 @@ return [
     'origin_feat_details' => $originFeats,
     'ability_details' => $abilities,
     'alignment_details' => $alignments,
+    'advancement_method_details' => $advancementMethods,
     'skill_details' => $skills,
     'condition_details' => $conditions,
     'damage_type_details' => $damageTypes,
     'language_details' => $languages,
+    'official_rules' => $officialRules,
     'alignment_roleplay' => $roleplay['alignment_profiles'],
     'alignment_axis_traits' => $roleplay['alignment_axis_traits'],
     'roleplay_field_help' => $roleplay['roleplay_field_help'],
+    'roleplay_reference' => $roleplay['roleplay_reference'],
     'appearance_field_help' => $roleplay['appearance_field_help'],
     'form_placeholder_profiles' => $roleplay['form_placeholder_profiles'],
     'ability_appearance_cues' => $roleplay['ability_appearance_cues'],

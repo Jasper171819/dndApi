@@ -1,3 +1,5 @@
+# Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
+# Clear explanation: This file is one of the custom parts that make this app work.
 #!/usr/bin/env python3
 """Build a local monster compendium from the official 2024 Basic Rules page.
 
@@ -32,6 +34,8 @@ SECTION_LABELS = {
 }
 
 
+# Developer context: Fetch Html performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def fetch_html(url: str) -> str:
     request = Request(url, headers={"User-Agent": USER_AGENT})
 
@@ -39,6 +43,8 @@ def fetch_html(url: str) -> str:
         return response.read().decode("utf-8", "ignore")
 
 
+# Developer context: Clean Html performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def clean_html(text: str) -> str:
     text = unescape(text)
     text = (
@@ -59,6 +65,8 @@ def clean_html(text: str) -> str:
     return text
 
 
+# Developer context: Extract Stat Blocks performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def extract_stat_blocks(html: str) -> list[str]:
     blocks: list[str] = []
     marker = '<div class="stat-block"'
@@ -95,11 +103,15 @@ def extract_stat_blocks(html: str) -> list[str]:
     return blocks
 
 
+# Developer context: First Match performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def first_match(pattern: str, text: str) -> str:
     match = re.search(pattern, text, re.S)
     return clean_html(match.group(1)) if match else ""
 
 
+# Developer context: Parse Label Paragraphs performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_label_paragraphs(block: str) -> dict[str, str]:
     labels: dict[str, str] = {}
 
@@ -117,6 +129,8 @@ def parse_label_paragraphs(block: str) -> dict[str, str]:
     return labels
 
 
+# Developer context: Extract Section Names performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def extract_section_names(block: str) -> dict[str, list[str]]:
     matches = list(re.finditer(r'<p class="monster-header"[^>]*>(.*?)</p>', block, re.S))
     sections = {value: [] for value in SECTION_LABELS.values()}
@@ -146,6 +160,8 @@ def extract_section_names(block: str) -> dict[str, list[str]]:
     return sections
 
 
+# Developer context: Parse Abilities performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_abilities(block: str) -> dict[str, int]:
     abilities: dict[str, int] = {}
 
@@ -159,6 +175,8 @@ def parse_abilities(block: str) -> dict[str, int]:
     return abilities
 
 
+# Developer context: Parse Type Line performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_type_line(type_line: str) -> tuple[str, str, str]:
     if not type_line:
         return "", "", ""
@@ -170,6 +188,8 @@ def parse_type_line(type_line: str) -> tuple[str, str, str]:
     return size.strip(), creature_type.strip(), alignment
 
 
+# Developer context: Parse Cr Details performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_cr_details(value: str) -> tuple[str, str, str]:
     cr = ""
     xp = ""
@@ -190,6 +210,8 @@ def parse_cr_details(value: str) -> tuple[str, str, str]:
     return cr, xp, proficiency_bonus
 
 
+# Developer context: Build Summary performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def build_summary(monster: dict[str, Any]) -> str:
     bits = []
 
@@ -225,6 +247,8 @@ def build_summary(monster: dict[str, Any]) -> str:
     return ". ".join(bit.rstrip(".") for bit in bits if bit) + "."
 
 
+# Developer context: Parse Monster performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_monster(block: str) -> dict[str, Any]:
     name_match = re.search(
         r'<a class="tooltip-hover monster-tooltip" href="([^"]+)"[^>]*>([^<]+)</a>',
@@ -284,6 +308,8 @@ def parse_monster(block: str) -> dict[str, Any]:
     return monster
 
 
+# Developer context: To Php performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def to_php(value: Any, indent: int = 0) -> str:
     padding = " " * indent
     next_padding = " " * (indent + 4)
@@ -321,6 +347,8 @@ def to_php(value: Any, indent: int = 0) -> str:
     return f"'{escaped}'"
 
 
+# Developer context: Write Output performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def write_output(monsters: list[dict[str, Any]]) -> None:
     header = (
         "<?php\n\n"
@@ -331,6 +359,8 @@ def write_output(monsters: list[dict[str, Any]]) -> None:
     OUTPUT_PATH.write_text(header + to_php(monsters, 0) + ";\n", encoding="utf-8")
 
 
+# Developer context: Main performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def main() -> int:
     html = fetch_html(SOURCE_URL)
     deduped: dict[str, dict[str, Any]] = {}

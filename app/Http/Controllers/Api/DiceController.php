@@ -1,28 +1,42 @@
 <?php
+// Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
+// Clear explanation: This file is one of the custom parts that make this app work.
 
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RollDiceRequest;
+use App\Support\DiceRoller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 
 class DiceController extends Controller
 {
+    // Developer context: Construct handles one focused step in this file's workflow; keep its inputs and return shape aligned with nearby callers.
+    // Clear explanation: This part does one specific job for the feature this file powers.
+    public function __construct(
+        private readonly DiceRoller $diceRoller,
+    ) {}
+
+    // Developer context: Roll handles one focused step in this file's workflow; keep its inputs and return shape aligned with nearby callers.
+    // Clear explanation: This part does one specific job for the feature this file powers.
     public function roll(RollDiceRequest $request): JsonResponse
     {
+        // Developer context: This assignment stores a working value that the next lines reuse.
+        // Clear explanation: This line saves a piece of information so the next steps can keep using it.
         $validated = $request->validated();
+        $result = $this->diceRoller->rollExpression($validated['expression'], $validated['mode'] ?? null);
 
-        $parsed = $this->parseDiceExpression($validated['expression']);
-
-        if ($parsed === null) {
+        // Developer context: This branch checks a rule before the workflow continues down one path.
+        // Clear explanation: This line asks whether a condition is true so the code can choose the right path.
+        if ($result === null) {
             return response()->json([
                 'message' => 'The dice expression could not be parsed.',
             ], 422);
         }
 
-        $result = $this->evaluateDiceExpression($parsed, $validated['mode'] ?? null);
-
+        // Developer context: This return hands the finished value or response back to the caller.
+        // Clear explanation: This line sends the result back so the rest of the app can use it.
         return response()->json([
             'expression' => Str::of($validated['expression'])->lower()->squish()->toString(),
             'mode' => $validated['mode'] ?? null,
@@ -31,136 +45,26 @@ class DiceController extends Controller
         ]);
     }
 
+    // Developer context: Rollstats handles one focused step in this file's workflow; keep its inputs and return shape aligned with nearby callers.
+    // Clear explanation: This part does one specific job for the feature this file powers.
     public function rollStats(): JsonResponse
     {
+        // Developer context: This assignment stores a working value that the next lines reuse.
+        // Clear explanation: This line saves a piece of information so the next steps can keep using it.
         $details = [];
         foreach (['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as $field) {
-            $details[$field] = $this->rollAbilityScoreDetail();
+            // Developer context: This assignment stores a working value that the next lines reuse.
+            // Clear explanation: This line saves a piece of information so the next steps can keep using it.
+            $details[$field] = $this->diceRoller->rollAbilityScoreDetail();
         }
 
+        // Developer context: This assignment stores a working value that the next lines reuse.
+        // Clear explanation: This line saves a piece of information so the next steps can keep using it.
         $stats = array_map(static fn (array $detail): int => $detail['total'], $details);
         $stats['details'] = $details;
 
+        // Developer context: This return hands the finished value or response back to the caller.
+        // Clear explanation: This line sends the result back so the rest of the app can use it.
         return response()->json($stats);
-    }
-
-    private function rollAbilityScore(): int
-    {
-        return $this->rollAbilityScoreDetail()['total'];
-    }
-
-    private function rollAbilityScoreDetail(): array
-    {
-        $rolls = [
-            random_int(1, 6),
-            random_int(1, 6),
-            random_int(1, 6),
-            random_int(1, 6),
-        ];
-
-        $sortedRolls = $rolls;
-        sort($sortedRolls);
-        $dropped = array_shift($sortedRolls);
-
-        return [
-            'rolls' => $rolls,
-            'kept' => array_values($sortedRolls),
-            'dropped' => $dropped,
-            'total' => array_sum($sortedRolls),
-        ];
-    }
-
-    private function parseDiceExpression(string $expression): ?array
-    {
-        $normalized = preg_replace('/\s+/', '', $expression);
-
-        if (! is_string($normalized) || $normalized === '') {
-            return null;
-        }
-
-        if ($normalized[0] !== '+' && $normalized[0] !== '-') {
-            $normalized = '+'.$normalized;
-        }
-
-        preg_match_all('/([+-])((?:\d*)d\d+|\d+)/i', $normalized, $matches, PREG_SET_ORDER);
-
-        if ($matches === []) {
-            return null;
-        }
-
-        $terms = [];
-        $rebuilt = '';
-
-        foreach ($matches as $match) {
-            $terms[] = [
-                'sign' => $match[1],
-                'token' => Str::of($match[2])->lower()->toString(),
-            ];
-            $rebuilt .= $match[1].$match[2];
-        }
-
-        return $rebuilt === $normalized ? $terms : null;
-    }
-
-    private function evaluateDiceExpression(array $terms, ?string $mode = null): array
-    {
-        $total = 0;
-        $parts = [];
-        $advUsed = false;
-        $advantageEligible = $mode !== null
-            && count(array_filter($terms, static function (array $term): bool {
-                return preg_match('/^(\d*)d(\d+)$/', $term['token']) === 1
-                    && (((int) preg_replace('/d.*/', '', $term['token'])) ?: 1) === 1
-                    && (int) substr(strrchr($term['token'], 'd'), 1) === 20;
-            })) === 1
-            && count(array_filter($terms, static function (array $term): bool {
-                return preg_match('/^(\d*)d(\d+)$/', $term['token']) === 1
-                    && ! preg_match('/^(\d*)d20$/', $term['token']);
-            })) === 0;
-
-        foreach ($terms as $index => $term) {
-            $sign = $term['sign'] === '-' ? -1 : 1;
-            $token = $term['token'];
-
-            if (preg_match('/^(\d*)d(\d+)$/', $token, $matches) === 1) {
-                $count = $matches[1] === '' ? 1 : (int) $matches[1];
-                $sides = (int) $matches[2];
-
-                if ($count < 1 || $sides < 2) {
-                    return ['total' => 0, 'detail' => 'Invalid dice term'];
-                }
-
-                if (! $advUsed && $advantageEligible && $count === 1 && $sides === 20) {
-                    $first = random_int(1, 20);
-                    $second = random_int(1, 20);
-                    $roll = $mode === 'advantage' ? max($first, $second) : min($first, $second);
-                    $total += $sign * $roll;
-                    $parts[] = sprintf('%s(%d,%d=>%d)', $mode === 'advantage' ? 'adv' : 'dis', $first, $second, $roll);
-                    $advUsed = true;
-
-                    continue;
-                }
-
-                $rolls = [];
-                for ($i = 0; $i < $count; $i++) {
-                    $rolls[] = random_int(1, $sides);
-                }
-
-                $value = array_sum($rolls);
-                $total += $sign * $value;
-                $prefix = $sign < 0 ? '-' : ($index === 0 ? '' : '+');
-                $parts[] = "{$prefix}{$token}[".implode(',', $rolls).']';
-            } else {
-                $value = (int) $token;
-                $total += $sign * $value;
-                $prefix = $sign < 0 ? '-' : ($index === 0 ? '' : '+');
-                $parts[] = "{$prefix}{$value}";
-            }
-        }
-
-        return [
-            'total' => $total,
-            'detail' => implode(' ', $parts),
-        ];
     }
 }

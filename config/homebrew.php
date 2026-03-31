@@ -1,4 +1,6 @@
 <?php
+// Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
+// Clear explanation: This file is one of the custom parts that make this app work.
 
 return [
     'official_note' => 'The builder, wizard, and rules library stay tied to the verified official catalog. Homebrew entries live separately here so custom material never quietly replaces the rules-first options.',

@@ -1,3 +1,5 @@
+{{-- Developer context: This Blade template renders the main builder page; PHP prepares the config and compendium payloads, and the browser-side script below drives the interactive builder, wizard, dice tray, autosave, and library UI. --}}
+{{-- Clear explanation: This file is the main page people use to build characters, talk to the wizard, roll dice, and browse the rules library. --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -6,13 +8,13 @@
         <title>Adventurer's Ledger</title>
         <style>
             :root{--bg:#130f0d;--panel:#221915;--soft:#31231d;--line:#4e372a;--text:#f7ead8;--muted:#d8bea0;--accent:#d58345;--accent2:#efba70}
-            *{box-sizing:border-box} html{scroll-behavior:smooth}
+            *{box-sizing:border-box} html{scroll-behavior:smooth;scroll-padding-top:7.5rem}
             body{position:relative;min-height:100vh;margin:0;font-family:"Trebuchet MS","Segoe UI",sans-serif;color:var(--text);background:#100c0b;overflow-x:hidden}
             body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(circle at top left,rgba(213,131,69,.22),transparent 25%),linear-gradient(160deg,#100c0b,#1b1411 50%,#0e0b0a)}
             body::after{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.18))}
             button,input,textarea,select{font:inherit} a{text-decoration:none;color:inherit}
-            .wrap{position:relative;z-index:1;width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:1rem 0 4rem}
-            .workspace{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:1rem;align-items:start}
+            .wrap{position:relative;z-index:1;width:min(1320px,calc(100% - 2rem));margin:0 auto;padding:1rem 0 4rem}
+            .workspace{display:grid;grid-template-columns:minmax(165px,190px) minmax(0,1fr) minmax(215px,240px);gap:1rem;align-items:start}
             .topbar,.card,.panel,.char,.stat,.notice,.mini{border:1px solid var(--line);border-radius:24px;background:rgba(34,25,21,.9);box-shadow:0 20px 50px rgba(0,0,0,.28)}
             .topbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.2rem;margin-top:1rem;border-radius:999px;background:rgba(19,15,13,.84);backdrop-filter:blur(10px)}
             .brand{display:flex;align-items:center;gap:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
@@ -20,9 +22,15 @@
             .nav{display:flex;flex-wrap:wrap;gap:.6rem}
             .nav a,.btn,.btn-soft{padding:.8rem 1rem;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);cursor:pointer;transition:.18s ease}
             .btn:hover,.btn-soft:hover,.nav a:hover{transform:translateY(-1px);border-color:#8b623f;color:var(--text)}
+            .nav a.active{border-color:#8b623f;color:var(--text);background:rgba(255,255,255,.08)}
             .btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#29180f;font-weight:700}
-            main#top{display:grid;gap:1.4rem;grid-column:1;grid-row:1}
+            main#top{display:grid;gap:1.4rem;grid-column:2;grid-row:1}
             main#top > section{margin-top:0}
+            .page-rail{position:sticky;top:6.5rem;align-self:start;margin-top:2rem;grid-column:1;grid-row:1}
+            .page-rail-card{padding:1rem}
+            .page-rail-links{display:grid;gap:.6rem;margin-top:.8rem}
+            .page-rail-links a{display:block;padding:.75rem .9rem;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);transition:.18s ease}
+            .page-rail-links a:hover{transform:translateY(-1px);border-color:#8b623f;color:var(--text)}
             .hero{display:grid;grid-template-columns:1fr;align-items:start;gap:1rem;padding:2rem 0 .4rem;order:1}
             .card,.panel{padding:1.5rem}
             .eyebrow{display:inline-block;margin-bottom:.8rem;color:var(--accent2);font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
@@ -35,7 +43,7 @@
             .mini{padding:1rem;border-radius:18px;background:var(--soft)}
             .mini strong{display:block;margin-top:.35rem;font-size:1.15rem;color:var(--text)}
             section{margin-top:1.4rem}
-            .preview-rail{position:sticky;top:6.5rem;align-self:start;margin-top:2rem;grid-column:2;grid-row:1}
+            .preview-rail{position:sticky;top:6.5rem;align-self:start;margin-top:2rem;grid-column:3;grid-row:1}
             .preview-panel p{margin:.45rem 0 0}
             .preview-stats{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:1rem}
             .preview-stat{padding:.85rem .75rem}
@@ -115,11 +123,13 @@
             .entry-list{margin:.75rem 0 0;padding-left:1rem;color:var(--muted)}
             .entry-list li{margin:.3rem 0}
             .tiny{font-size:.92rem;color:rgba(247,234,216,.65)}
-            #forge{order:2}
-            #dice{order:3}
-            #wizard{order:4}
-            #library{order:5}
-            @media (max-width:980px){.workspace,.hero,.grid,.library-grid,.library-toolbar,.summary-grid,.quick{grid-template-columns:1fr}.topbar{position:static;border-radius:28px;align-items:stretch}.nav{justify-content:center}.preview-rail{position:static;margin-top:0;grid-column:auto;grid-row:auto}}
+            #snapshot{order:2}
+            #forge{order:3}
+            #dice{order:4}
+            #wizard{order:5}
+            #library{order:6}
+            @media (max-width:1120px){.workspace{grid-template-columns:160px minmax(0,1fr) 205px}}
+            @media (max-width:920px){.workspace,.hero,.grid,.library-grid,.library-toolbar,.summary-grid,.quick{grid-template-columns:1fr}.topbar{position:static;border-radius:28px;align-items:stretch}.nav{justify-content:center}.page-rail,.preview-rail{position:static;margin-top:0;grid-column:auto;grid-row:auto}.page-rail-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
             @media (max-width:720px){.section-grid,.stats,.quick,.check-grid,.skill-grid{grid-template-columns:1fr}.topbar{border-radius:26px;padding:1rem}.brand{justify-content:center}.nav a{flex:1 1 calc(50% - .6rem);text-align:center}.head{flex-direction:column;align-items:start}}
             @media (max-width:720px){.dice-buttons,.dice-form{grid-template-columns:1fr}}
             @media (max-width:640px){.wrap{width:min(100% - 1rem,100%)}.topbar,.card,.panel{padding:1.05rem}h1{max-width:100%}.library-results{column-width:auto;columns:1}.hover-tooltip{width:min(280px,calc(100vw - 1rem))}}
@@ -128,19 +138,36 @@
     <body>
         <div class="wrap">
             <header class="topbar">
-                <a class="brand" href="#top"><span class="mark">D20</span><span>Adventurer's Ledger</span></a>
+                <a class="brand" href="{{ route('home') }}"><span class="mark">D20</span><span>Adventurer's Ledger</span></a>
                 <nav class="nav">
-                    <a href="#forge">Builder</a>
-                    <a href="#dice">Dice</a>
-                    <a href="#wizard">Wizard</a>
-                    <a href="{{ route('roster') }}">Roster</a>
-                    <a href="{{ route('homebrew') }}">Homebrew</a>
-                    <a href="#library">Library</a>
-                    <a href="/api/compendium">Rules API</a>
+                    <a class="{{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Builder</a>
+                    <a class="{{ request()->routeIs('dm') ? 'active' : '' }}" href="{{ route('dm') }}">DM</a>
+                    <a class="{{ request()->routeIs('roster') ? 'active' : '' }}" href="{{ route('roster') }}">Roster</a>
+                    <a class="{{ request()->routeIs('homebrew') ? 'active' : '' }}" href="{{ route('homebrew') }}">Homebrew</a>
+                    <a href="{{ url('/api') }}">API</a>
                 </nav>
             </header>
 
             <div class="workspace">
+                {{-- Developer context: This rail keeps page-local navigation separate from the main content flow. --}}
+                {{-- Clear explanation: This side block is the quick menu for jumping around the page. --}}
+                <aside class="page-rail">
+                    <section class="panel page-rail-card">
+                        <span class="eyebrow">On This Page</span>
+                        <nav class="page-rail-links">
+                            <a href="#overview">Overview</a>
+                            <a href="#snapshot">Snapshot</a>
+                            <a href="#forge">Builder</a>
+                            <a href="#build-guide">Build Guide</a>
+                            <a href="#dice">Dice</a>
+                            <a href="#wizard">Wizard</a>
+                            <a href="#library">Library</a>
+                        </nav>
+                    </section>
+                </aside>
+
+                {{-- Developer context: This rail keeps the live ability summary visible without mixing it into the main builder stack. --}}
+                {{-- Clear explanation: This side block keeps the ability tracker on screen while someone builds. --}}
                 <aside class="preview-rail">
                     <section class="panel preview-panel">
                         <span class="eyebrow">Ability Tracker</span>
@@ -158,21 +185,28 @@
                 </aside>
 
                 <main id="top">
-                <section class="hero">
+                {{-- Developer context: This overview section introduces the page and points people toward the main feature paths. --}}
+                {{-- Clear explanation: This block is the page introduction and the fastest way into the builder. --}}
+                <section class="hero" id="overview">
                     <article class="card">
                         <span class="eyebrow">Character Builder</span>
                         <h1>Build a character and keep the whole sheet in one place.</h1>
                         <p>Create a full character sheet, roll stats, save your roster, and browse the rules without bouncing between tools.</p>
                         <p class="tiny">The builder, wizard, and library stay on the verified official catalog. Custom material now lives on the separate Homebrew page.</p>
+                        <p class="tiny">Drafts on this page now autosave locally in this browser, so a reload or connection drop does not have to wipe your in-progress work.</p>
+                        <div class="notice" id="draft-notice"></div>
                         <div class="hero-actions">
                             <a class="btn" href="#forge">Open builder</a>
+                            <a class="btn-soft" href="{{ route('dm') }}">Open DM desk</a>
                             <a class="btn-soft" href="{{ route('roster') }}">Open roster</a>
                             <a class="btn-soft" href="{{ route('homebrew') }}">Homebrew workshop</a>
                         </div>
                     </article>
                 </section>
 
-                <section class="panel">
+                {{-- Developer context: This snapshot section surfaces the most useful status numbers without forcing a full page scan. --}}
+                {{-- Clear explanation: This block shows the quick status overview for the current page. --}}
+                <section class="panel" id="snapshot">
                     <div class="head">
                         <div>
                             <span class="eyebrow">Live Snapshot</span>
@@ -188,6 +222,8 @@
                     </div>
                 </section>
 
+                {{-- Developer context: This section keeps the wizard chat, helper actions, and summary grouped as one workflow. --}}
+                {{-- Clear explanation: This block is the guided chat area that walks through the character and rules. --}}
                 <section class="stack" id="wizard">
                     <div class="panel">
                         <div class="head">
@@ -263,6 +299,8 @@
                     </div>
                 </section>
 
+                {{-- Developer context: This section contains the full structured builder form and the supporting guide that mirrors it. --}}
+                {{-- Clear explanation: This block is the main character builder form. --}}
                 <section class="stack" id="forge">
                     <div class="panel">
                         <span class="eyebrow">Character Builder</span>
@@ -276,7 +314,7 @@
                                     <div class="section-head">
                                         <span class="section-kicker">Step 1</span>
                                         <h3>Choose a class</h3>
-                                        <p>Class is the biggest gameplay choice. It sets your role, your main tactics, and the skill training the sheet should track from the class side. Everything in this step is required except expertise.</p>
+                                        <p>Class is the biggest gameplay choice. This step also sets level, table pacing for leveling, and the class-side training the sheet should track. Everything in this step is required except expertise.</p>
                                     </div>
                                     <div class="section-grid">
                                         <label>
@@ -291,6 +329,16 @@
                                         <label>
                                             <span>Level</span>
                                             <input id="level" name="level" type="number" min="1" value="1" required>
+                                        </label>
+                                        <label class="full">
+                                            <span>Advancement Method</span>
+                                            <select id="advancement_method" name="advancement_method" required>
+                                                <option value="">Choose how the table handles level-ups</option>
+                                                @foreach (config('dnd.advancement_methods', []) as $advancementMethod)
+                                                    <option value="{{ $advancementMethod }}">{{ $advancementMethod }}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="tiny">This sets the table’s pacing rule for leveling, so the wizard can frame progression and roleplay with the right context.</span>
                                         </label>
                                         <label class="full">
                                             <span>Subclass</span>
@@ -435,6 +483,11 @@
                                             <span class="tiny">{{ config('dnd.roleplay_field_help.ideals') }}</span>
                                         </label>
                                         <label class="full">
+                                            <span>Goals</span>
+                                            <textarea id="goals" name="goals" maxlength="1000" placeholder="What does this character want to achieve, protect, prove, or uncover next?"></textarea>
+                                            <span class="tiny">{{ config('dnd.roleplay_field_help.goals') }}</span>
+                                        </label>
+                                        <label class="full">
                                             <span>Bonds</span>
                                             <textarea id="bonds" name="bonds" maxlength="1000" placeholder="Who or what matters enough to change their decisions?"></textarea>
                                             <span class="tiny">{{ config('dnd.roleplay_field_help.bonds') }}</span>
@@ -464,14 +517,19 @@
                         </form>
                     </div>
 
-                    <div class="panel">
+                    <div class="panel" id="build-guide">
                         <span class="eyebrow">Build Guide</span>
                         <div class="summary-grid">
                             <div class="rule-block">
                                 <h3 id="selected-build-title">Start the build</h3>
-                                <p id="selected-build-summary">Work top to bottom: class, origin, ability scores, alignment, then the rest of the sheet.</p>
+                                <p id="selected-build-summary">Work top to bottom: class, level and pacing, origin, ability scores, alignment, then the rest of the sheet.</p>
                                 <p id="selected-build-focus" class="tiny">This panel updates live so you can see what is already covered and what still needs attention.</p>
                                 <ul id="selected-build-checklist"></ul>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-official-title">Official 2024 check</h3>
+                                <p id="selected-official-summary">Warnings appear here when the current sheet moves away from the official 2024 default.</p>
+                                <ul id="selected-official-list"><li>No official-rules warnings right now.</li></ul>
                             </div>
                             <div class="rule-block">
                                 <h3 id="selected-class-title">Choose a class</h3>
@@ -513,8 +571,13 @@
                             </div>
                             <div class="rule-block">
                                 <h3 id="selected-roleplay-title">Beginner roleplay help</h3>
-                                <p id="selected-roleplay-summary">Pick one alignment and a few short personality anchors. You do not need to write a novel.</p>
+                                <p id="selected-roleplay-summary">Keep this light: one short line each for trait, ideal, goal, bond, and flaw is enough for most tables.</p>
                                 <ul id="selected-roleplay-list"></ul>
+                            </div>
+                            <div class="rule-block">
+                                <h3 id="selected-roleplay-notes-title">Table roleplay notes</h3>
+                                <p id="selected-roleplay-notes-summary">The broader pacing and social-scene reminders live here so the starter stays short.</p>
+                                <ul id="selected-roleplay-notes-list"></ul>
                             </div>
                             <div class="rule-block">
                                 <h3 id="selected-appearance-title">Appearance help</h3>
@@ -525,6 +588,8 @@
                     </div>
                 </section>
 
+                {{-- Developer context: This section keeps the standalone dice tools separate from character editing and wizard flow. --}}
+                {{-- Clear explanation: This block is the dice area for quick rolls and ability-score rolling. --}}
                 <section class="stack" id="dice">
                     <div class="panel">
                         <div class="head">
@@ -572,6 +637,8 @@
                     </div>
                 </section>
 
+                {{-- Developer context: This section exposes the local rules library without mixing compendium browsing into the build form. --}}
+                {{-- Clear explanation: This block is the rules library for browsing reference material. --}}
                 <section class="panel" id="library">
                     <div class="head">
                         <div>
@@ -626,9 +693,13 @@
                     'skill_details' => config('dnd.skill_details'),
                     'alignment_details' => config('dnd.alignment_details'),
                     'alignment_roleplay' => config('dnd.alignment_roleplay'),
+                    'advancement_methods' => config('dnd.advancement_methods'),
+                    'advancement_method_details' => config('dnd.advancement_method_details'),
                     'roleplay_field_help' => config('dnd.roleplay_field_help'),
+                    'roleplay_reference' => config('dnd.roleplay_reference'),
                     'origin_feat_details' => config('dnd.origin_feat_details'),
                     'language_details' => config('dnd.language_details'),
+                    'official_rules' => config('dnd.official_rules'),
                     'appearance_field_help' => config('dnd.appearance_field_help'),
                     'form_placeholder_profiles' => config('dnd.form_placeholder_profiles'),
                     'ability_appearance_cues' => config('dnd.ability_appearance_cues'),
@@ -638,14 +709,19 @@
                 'compendium_sections' => array_values(config('dnd.compendium_sections')),
             ];
         @endphp
+        {{-- Developer context: This JSON payload passes trusted PHP-side configuration into the page script without extra requests. --}}
+        {{-- Clear explanation: This hidden data block gives the page the information it needs to start up. --}}
         <script id="page-data" type="application/json">{!! json_encode($pageData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
         <script>
+            // Developer context: This boot block captures the server-provided data and the DOM references the page reuses everywhere else.
+            // Clear explanation: These lines load the page data and connect the script to the visible parts of the page.
             const pageData = JSON.parse(document.getElementById('page-data').textContent);
             const configurator = pageData.configurator;
             const compendium = pageData.compendium;
             const compendiumSections = pageData.compendium_sections;
             const countEl = document.getElementById('count');
             const rollEl = document.getElementById('latest-roll');
+            const draftNotice = document.getElementById('draft-notice');
             const formNotice = document.getElementById('form-notice');
             const wizardNotice = document.getElementById('wizard-notice');
             const diceNotice = document.getElementById('dice-notice');
@@ -670,6 +746,7 @@
             const wizardDiceButtons = document.querySelectorAll('[data-wizard-command]');
             const nameInput = document.getElementById('name');
             const levelInput = document.getElementById('level');
+            const advancementMethodSelect = document.getElementById('advancement_method');
             const classSelect = document.getElementById('class');
             const subclassSelect = document.getElementById('subclass');
             const speciesSelect = document.getElementById('species');
@@ -681,6 +758,7 @@
             const skillExpertiseInputs = Array.from(document.querySelectorAll('input[name="skill_expertise[]"]'));
             const personalityTraitsInput = document.getElementById('personality_traits');
             const idealsInput = document.getElementById('ideals');
+            const goalsInput = document.getElementById('goals');
             const bondsInput = document.getElementById('bonds');
             const flawsInput = document.getElementById('flaws');
             const ageInput = document.getElementById('age');
@@ -695,27 +773,350 @@
             const expertiseNote = document.getElementById('expertise-note');
             const roleplayPlaceholderNote = document.getElementById('roleplay-placeholder-note');
             const appearancePlaceholderNote = document.getElementById('appearance-placeholder-note');
+            const selectedOfficialTitle = document.getElementById('selected-official-title');
+            const selectedOfficialSummary = document.getElementById('selected-official-summary');
+            const selectedOfficialList = document.getElementById('selected-official-list');
             const compendiumSectionSelect = document.getElementById('compendium-section');
             const compendiumSearchInput = document.getElementById('compendium-search');
             const compendiumTitle = document.getElementById('compendium-title');
             const compendiumSummary = document.getElementById('compendium-summary');
             const compendiumResults = document.getElementById('compendium-results');
             const statFields = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
-            const optionalTextFields = ['alignment', 'personality_traits', 'ideals', 'bonds', 'flaws', 'age', 'height', 'weight', 'eyes', 'hair', 'skin', 'notes'];
+            const optionalTextFields = ['alignment', 'personality_traits', 'ideals', 'goals', 'bonds', 'flaws', 'age', 'height', 'weight', 'eyes', 'hair', 'skin', 'notes'];
+            // Developer context: This map centralizes browser draft keys so the autosave features share stable storage names.
+            // Clear explanation: These labels tell the browser where each draft should be saved locally.
+            const localDraftKeys = {
+                builder: 'adventurers-ledger.builder-draft.v1',
+                wizard: 'adventurers-ledger.wizard-draft.v1',
+                dice: 'adventurers-ledger.dice-draft.v1',
+                library: 'adventurers-ledger.library-draft.v1',
+            };
+            // Developer context: These mutable values track the current wizard and dice state between events and redraws.
+            // Clear explanation: These lines remember what is happening on the page right now.
             let wizardState = {};
             let wizardPreviewStats = null;
             let currentHoverAnchor = null;
+            let wizardMessages = [];
+            let lastWizardActions = [];
+            let lastWizardSnapshot = null;
+            let lastDiceCard = null;
+            let localSaveTimer = null;
 
+            // Developer context: Browserstorage updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function browserStorage() {
+                try {
+                    return window.localStorage;
+                } catch {
+                    return null;
+                }
+            }
+
+            // Developer context: Readlocaldraft updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function readLocalDraft(key) {
+                const storage = browserStorage();
+                if (! storage) return null;
+
+                try {
+                    const raw = storage.getItem(key);
+                    return raw ? JSON.parse(raw) : null;
+                } catch {
+                    return null;
+                }
+            }
+
+            // Developer context: Writelocaldraft updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function writeLocalDraft(key, value) {
+                const storage = browserStorage();
+                if (! storage) return;
+
+                try {
+                    storage.setItem(key, JSON.stringify(value));
+                } catch {
+                    // Ignore quota and private-mode write errors so the page stays usable.
+                }
+            }
+
+            // Developer context: Removelocaldraft updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function removeLocalDraft(key) {
+                const storage = browserStorage();
+                if (! storage) return;
+
+                try {
+                    storage.removeItem(key);
+                } catch {
+                    // Ignore private-mode and storage access issues so the page stays usable.
+                }
+            }
+
+            // Developer context: Schedulelocaldraftsave updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function scheduleLocalDraftSave() {
+                clearTimeout(localSaveTimer);
+                localSaveTimer = window.setTimeout(persistLocalDrafts, 250);
+            }
+
+            // Developer context: Clonedraftvalue updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function cloneDraftValue(value, fallback) {
+                try {
+                    return JSON.parse(JSON.stringify(value));
+                } catch {
+                    return fallback;
+                }
+            }
+
+            // Developer context: Builderdraftfromform updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function builderDraftFromForm() {
+                return {
+                    name: nameInput.value,
+                    class: classSelect.value,
+                    subclass: subclassSelect.value,
+                    level: levelInput.value,
+                    advancement_method: advancementMethodSelect.value,
+                    species: speciesSelect.value,
+                    background: backgroundSelect.value,
+                    alignment: alignmentSelect.value,
+                    origin_feat: originFeatSelect.value,
+                    languages: languageInputs.filter((input) => input.checked).map((input) => input.value),
+                    skill_proficiencies: skillProficiencyInputs.filter((input) => input.checked).map((input) => input.value),
+                    skill_expertise: skillExpertiseInputs.filter((input) => input.checked).map((input) => input.value),
+                    strength: document.getElementById('strength').value,
+                    dexterity: document.getElementById('dexterity').value,
+                    constitution: document.getElementById('constitution').value,
+                    intelligence: document.getElementById('intelligence').value,
+                    wisdom: document.getElementById('wisdom').value,
+                    charisma: document.getElementById('charisma').value,
+                    personality_traits: personalityTraitsInput.value,
+                    ideals: idealsInput.value,
+                    goals: goalsInput.value,
+                    bonds: bondsInput.value,
+                    flaws: flawsInput.value,
+                    age: ageInput.value,
+                    height: heightInput.value,
+                    weight: weightInput.value,
+                    eyes: eyesInput.value,
+                    hair: hairInput.value,
+                    skin: skinInput.value,
+                    notes: notesInput.value,
+                };
+            }
+
+            // Developer context: Applybuilderdraft updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function applyBuilderDraft(draft) {
+                if (! draft || typeof draft !== 'object') {
+                    return false;
+                }
+
+                form.reset();
+                nameInput.value = draft.name || '';
+                classSelect.value = draft.class || '';
+                populateSubclassOptions(classSelect.value || '', draft.subclass || '');
+                subclassSelect.value = draft.subclass || '';
+                levelInput.value = draft.level || 1;
+                advancementMethodSelect.value = draft.advancement_method || '';
+                speciesSelect.value = draft.species || '';
+                backgroundSelect.value = draft.background || '';
+                alignmentSelect.value = draft.alignment || '';
+                originFeatSelect.value = draft.origin_feat || '';
+
+                languageInputs.forEach((input) => {
+                    input.checked = Array.isArray(draft.languages) && draft.languages.includes(input.value);
+                });
+                skillProficiencyInputs.forEach((input) => {
+                    input.checked = Array.isArray(draft.skill_proficiencies) && draft.skill_proficiencies.includes(input.value);
+                });
+                skillExpertiseInputs.forEach((input) => {
+                    input.checked = Array.isArray(draft.skill_expertise) && draft.skill_expertise.includes(input.value);
+                });
+
+                statFields.forEach((field) => {
+                    document.getElementById(field).value = draft[field] || '';
+                });
+
+                personalityTraitsInput.value = draft.personality_traits || '';
+                idealsInput.value = draft.ideals || '';
+                goalsInput.value = draft.goals || '';
+                bondsInput.value = draft.bonds || '';
+                flawsInput.value = draft.flaws || '';
+                ageInput.value = draft.age || '';
+                heightInput.value = draft.height || '';
+                weightInput.value = draft.weight || '';
+                eyesInput.value = draft.eyes || '';
+                hairInput.value = draft.hair || '';
+                skinInput.value = draft.skin || '';
+                notesInput.value = draft.notes || '';
+                syncSkillTrainingNotes();
+                clearNotice(formNotice);
+                renderSelectionReference();
+                return true;
+            }
+
+            // Developer context: Haswizarddraft updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function hasWizardDraft(draft) {
+                return Boolean(
+                    draft
+                    && typeof draft === 'object'
+                    && (
+                        (Array.isArray(draft.messages) && draft.messages.length)
+                        || (draft.state && Object.keys(draft.state).length)
+                        || (Array.isArray(draft.actions) && draft.actions.length)
+                        || draft.snapshot
+                        || (typeof draft.input === 'string' && draft.input.trim())
+                    ),
+                );
+            }
+
+            // Developer context: Persistlocaldrafts updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function persistLocalDrafts() {
+                const builderDraft = builderDraftFromForm();
+                writeLocalDraft(localDraftKeys.builder, builderDraft);
+
+                const wizardDraft = {
+                    state: cloneDraftValue(wizardState, {}),
+                    messages: cloneDraftValue(wizardMessages.slice(-40), []),
+                    actions: cloneDraftValue(lastWizardActions, []),
+                    snapshot: cloneDraftValue(lastWizardSnapshot, null),
+                    input: wizardInput.value,
+                };
+
+                if (hasWizardDraft(wizardDraft)) {
+                    writeLocalDraft(localDraftKeys.wizard, wizardDraft);
+                } else {
+                    removeLocalDraft(localDraftKeys.wizard);
+                }
+
+                const diceDraft = {
+                    expression: diceExpressionInput.value,
+                    mode: diceModeSelect.value,
+                    latest_roll: rollEl.textContent,
+                    card: cloneDraftValue(lastDiceCard, null),
+                };
+
+                if (diceDraft.expression || diceDraft.mode || diceDraft.latest_roll !== 'Ready' || diceDraft.card?.title) {
+                    writeLocalDraft(localDraftKeys.dice, diceDraft);
+                } else {
+                    removeLocalDraft(localDraftKeys.dice);
+                }
+
+                const libraryDraft = {
+                    section: compendiumSectionSelect.value,
+                    search: compendiumSearchInput.value,
+                };
+                writeLocalDraft(localDraftKeys.library, libraryDraft);
+            }
+
+            // Developer context: Restorewizarddraft updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function restoreWizardDraft() {
+                const draft = readLocalDraft(localDraftKeys.wizard);
+                if (! hasWizardDraft(draft)) {
+                    wizardInput.value = '';
+                    return false;
+                }
+
+                wizardState = draft.state && typeof draft.state === 'object' ? draft.state : {};
+                wizardMessages = Array.isArray(draft.messages)
+                    ? draft.messages
+                        .filter((entry) => entry && (entry.role === 'user' || entry.role === 'bot'))
+                        .map((entry) => ({
+                            role: entry.role,
+                            text: String(entry.text ?? ''),
+                        }))
+                    : [];
+
+                wizardLog.innerHTML = '';
+                wizardMessages.forEach((entry) => {
+                    const article = document.createElement('article');
+                    article.className = `wizard-message ${entry.role}`;
+                    article.innerHTML = `
+                        <div class="wizard-speaker">${entry.role === 'user' ? 'You' : 'Rules Wizard'}</div>
+                        <p>${escapeHtml(entry.text).replaceAll('\n', '<br>')}</p>
+                    `;
+                    wizardLog.appendChild(article);
+                });
+                wizardLog.scrollTop = wizardLog.scrollHeight;
+
+                wizardInput.value = typeof draft.input === 'string' ? draft.input : '';
+                renderWizardActions(Array.isArray(draft.actions) ? draft.actions : []);
+                renderWizardSummary(draft.snapshot && typeof draft.snapshot === 'object' ? draft.snapshot : null);
+                clearNotice(wizardNotice);
+                return true;
+            }
+
+            // Developer context: Restoredicedraft updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function restoreDiceDraft() {
+                const draft = readLocalDraft(localDraftKeys.dice);
+                if (! draft || typeof draft !== 'object') {
+                    return false;
+                }
+
+                diceExpressionInput.value = draft.expression || '';
+                diceModeSelect.value = draft.mode || '';
+                renderDiceResultCard(
+                    draft.card?.title || 'Ready to roll',
+                    Array.isArray(draft.card?.lines) && draft.card.lines.length
+                        ? draft.card.lines
+                        : ['Pick any die, use a custom expression, or roll full ability scores from here.'],
+                );
+                setLatestRoll(draft.latest_roll || 'Ready');
+                clearNotice(diceNotice);
+                return true;
+            }
+
+            // Developer context: Restorelibrarydraft updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function restoreLibraryDraft() {
+                const draft = readLocalDraft(localDraftKeys.library);
+
+                if (compendiumSections.length) {
+                    const defaultSection = compendiumSections[0]?.key || '';
+                    const requestedSection = typeof draft?.section === 'string' ? draft.section : defaultSection;
+                    compendiumSectionSelect.value = compendium?.[requestedSection] ? requestedSection : defaultSection;
+                }
+
+                compendiumSearchInput.value = typeof draft?.search === 'string' ? draft.search : '';
+                renderCompendium();
+                return Boolean(draft);
+            }
+
+            // Developer context: Notice updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function notice(el, message, type) {
                 el.textContent = message;
                 el.className = `notice show ${type}`;
             }
 
+            // Developer context: Clearnotice updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function clearNotice(el) {
                 el.textContent = '';
                 el.className = 'notice';
             }
 
+            // Developer context: Showdraftrestorenotice updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function showDraftRestoreNotice(parts) {
+                if (! draftNotice || ! Array.isArray(parts) || parts.length === 0) {
+                    return;
+                }
+
+                notice(draftNotice, `Draft restored: ${parts.join(', ')}.`, 'success');
+                window.setTimeout(() => {
+                    clearNotice(draftNotice);
+                }, 5000);
+            }
+
+            // Developer context: Firsterrormessage updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function firstErrorMessage(payload, fallback) {
                 if (! payload || typeof payload !== 'object') {
                     return fallback;
@@ -740,6 +1141,8 @@
                 return fallback;
             }
 
+            // Developer context: Positionhovertooltip updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function positionHoverTooltip(anchor) {
                 if (! hoverTooltip || ! anchor) return;
 
@@ -769,6 +1172,8 @@
                 hoverTooltip.style.top = `${top}px`;
             }
 
+            // Developer context: Showhoverhelp updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function showHoverHelp(anchor, title, text) {
                 if (! hoverTooltip || ! anchor || ! text) {
                     hideHoverHelp();
@@ -782,6 +1187,8 @@
                 hoverTooltip.classList.add('show');
             }
 
+            // Developer context: Hidehoverhelp updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function hideHoverHelp() {
                 currentHoverAnchor = null;
                 if (! hoverTooltip) return;
@@ -789,6 +1196,8 @@
                 hoverTooltip.hidden = true;
             }
 
+            // Developer context: Escapehtml updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function escapeHtml(value) {
                 return String(value ?? '')
                     .replaceAll('&', '&amp;')
@@ -798,16 +1207,22 @@
                     .replaceAll("'", '&#39;');
             }
 
+            // Developer context: Normalizestatscore updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function normalizeStatScore(value) {
                 const score = Number(value);
                 return Number.isFinite(score) && score > 0 ? score : null;
             }
 
+            // Developer context: Currentformpreviewstats updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function currentFormPreviewStats() {
                 const stats = Object.fromEntries(statFields.map((field) => [field, normalizeStatScore(document.getElementById(field).value)]));
                 return Object.values(stats).some((value) => value !== null) ? stats : null;
             }
 
+            // Developer context: Selectedskillproficiencies updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function selectedSkillProficiencies() {
                 const formValues = skillProficiencyInputs.filter((input) => input.checked).map((input) => input.value);
 
@@ -818,6 +1233,8 @@
                     : [];
             }
 
+            // Developer context: Selectedskillexpertise updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function selectedSkillExpertise() {
                 const formValues = skillExpertiseInputs.filter((input) => input.checked).map((input) => input.value);
 
@@ -828,6 +1245,8 @@
                     : [];
             }
 
+            // Developer context: Snapshotpreviewstats updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function snapshotPreviewStats(snapshot) {
                 if (! Array.isArray(snapshot?.stats)) return null;
 
@@ -840,11 +1259,15 @@
                 return Object.keys(stats).length ? stats : null;
             }
 
+            // Developer context: Proficiencybonusforlevel updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function proficiencyBonusForLevel(level) {
                 const numericLevel = Number(level);
                 return Number.isFinite(numericLevel) && numericLevel > 0 ? Math.ceil(numericLevel / 4) + 1 : null;
             }
 
+            // Developer context: Naturaljoin updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function naturalJoin(items) {
                 const values = items.filter(Boolean);
 
@@ -855,6 +1278,8 @@
                 return `${values.slice(0, -1).join(', ')}, and ${values[values.length - 1]}`;
             }
 
+            // Developer context: Trimtooltiptext updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function trimTooltipText(value) {
                 return String(value ?? '')
                     .replace(/\s+/g, ' ')
@@ -862,6 +1287,8 @@
                     .replace(/[.!?]+$/u, '');
             }
 
+            // Developer context: Lowerfirst updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function lowerFirst(value) {
                 const normalized = trimTooltipText(value);
 
@@ -870,6 +1297,8 @@
                 return normalized.charAt(0).toLowerCase() + normalized.slice(1);
             }
 
+            // Developer context: Tooltiptext updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function tooltipText(...parts) {
                 return parts
                     .flat()
@@ -879,6 +1308,8 @@
                     .join(' ');
             }
 
+            // Developer context: Skillexpertisedescription updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function skillExpertiseDescription(skill) {
                 return tooltipText(
                     formChoiceDescription('skill', skill),
@@ -886,12 +1317,16 @@
                 );
             }
 
+            // Developer context: Classskillchoicecount updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function classSkillChoiceCount(classValue) {
                 const guidance = configurator.class_sheet_details?.[classValue]?.skill_proficiencies || '';
                 const match = guidance.match(/choose(?: any)?\s+(\d+)/i);
                 return match ? Number(match[1]) : null;
             }
 
+            // Developer context: Classskilloptions updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function classSkillOptions(classValue) {
                 const allSkills = Object.keys(configurator.skill_details || {});
                 const guidance = configurator.class_sheet_details?.[classValue]?.skill_proficiencies || '';
@@ -903,6 +1338,8 @@
                 return matches.length ? matches : allSkills;
             }
 
+            // Developer context: Syncskilltrainingnotes updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function syncSkillTrainingNotes() {
                 const classValue = classSelect.value;
                 const classGuidance = configurator.class_sheet_details?.[classValue]?.skill_proficiencies || '';
@@ -937,6 +1374,79 @@
                 return { choiceCount, options };
             }
 
+            // Developer context: Officialrulesnaturaljoin updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part turns a short list into easier-to-read text.
+            function officialRulesNaturalJoin(items) {
+                const filtered = items.filter(Boolean);
+
+                if (! filtered.length) return '';
+                if (filtered.length === 1) return filtered[0];
+                if (filtered.length === 2) return `${filtered[0]} and ${filtered[1]}`;
+
+                return `${filtered.slice(0, -1).join(', ')}, and ${filtered.at(-1)}`;
+            }
+
+            // Developer context: Currentofficialruleswarnings updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part builds the non-blocking warnings that explain when the current sheet drifts away from the official 2024 default.
+            function currentOfficialRulesWarnings() {
+                const official = configurator.official_rules || {};
+                const warnings = [];
+                const backgroundValue = backgroundSelect.value;
+                const classValue = classSelect.value;
+                const alignmentValue = alignmentSelect.value;
+                const originFeatValue = originFeatSelect.value;
+                const advancementMethodValue = advancementMethodSelect.value;
+                const languageValues = languageInputs.filter((input) => input.checked).map((input) => input.value);
+                const skillValues = skillProficiencyInputs.filter((input) => input.checked).map((input) => input.value);
+                const rareLanguages = languageValues.filter((language) => (official.rare_languages || []).includes(language));
+                const baselineMethods = official.baseline_advancement_methods || [];
+                const hasAnyStats = statFields.some((field) => normalizeStatScore(document.getElementById(field).value) !== null);
+
+                if (advancementMethodValue && baselineMethods.length && ! baselineMethods.includes(advancementMethodValue)) {
+                    warnings.push(`${advancementMethodValue} is supported here as a table variant, but the official 2024 baseline in this builder is ${officialRulesNaturalJoin(baselineMethods)}.`);
+                }
+
+                if (alignmentValue && (official.evil_alignments || []).includes(alignmentValue) && official.evil_alignment_warning) {
+                    warnings.push(official.evil_alignment_warning);
+                }
+
+                if (languageValues.length) {
+                    const reasons = [];
+
+                    if (! languageValues.includes('Common')) {
+                        reasons.push('Common is missing');
+                    }
+
+                    if (languageValues.length < 3) {
+                        reasons.push(`only ${languageValues.length} language${languageValues.length === 1 ? '' : 's'} ${languageValues.length === 1 ? 'is' : 'are'} selected`);
+                    }
+
+                    if (rareLanguages.length) {
+                        reasons.push(`${officialRulesNaturalJoin(rareLanguages)} ${rareLanguages.length === 1 ? 'is' : 'are'} rare`);
+                    }
+
+                    if (reasons.length && official.language_warning) {
+                        warnings.push(`${reasons[0].charAt(0).toUpperCase()}${reasons[0].slice(1)}${reasons.length > 1 ? `, ${reasons.slice(1).join(', ')}` : ''}. ${official.language_warning}`);
+                    }
+                }
+
+                if (backgroundValue && (originFeatValue || skillValues.length || languageValues.length || hasAnyStats) && official.background_package_warning) {
+                    warnings.push(official.background_package_warning);
+                }
+
+                if (backgroundValue && skillValues.length && official.skill_package_warning) {
+                    warnings.push(official.skill_package_warning);
+                }
+
+                if ((backgroundValue || classValue) && official.tool_equipment_warning) {
+                    warnings.push(official.tool_equipment_warning);
+                }
+
+                return [...new Set(warnings)];
+            }
+
+            // Developer context: Abilityrelatedskills updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function abilityRelatedSkills(field) {
                 const label = abilityFieldLabel(field);
 
@@ -945,6 +1455,8 @@
                     .map(([name]) => name);
             }
 
+            // Developer context: Abilityhoverdescription updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function abilityHoverDescription(field) {
                 const label = abilityFieldLabel(field);
                 const previewStats = currentFormPreviewStats() || wizardPreviewStats || {};
@@ -987,10 +1499,14 @@
                 );
             }
 
+            // Developer context: Syncabilitypreview updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function syncAbilityPreview() {
                 renderPreview(currentFormPreviewStats() || wizardPreviewStats);
             }
 
+            // Developer context: Renderpreview updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function renderPreview(stats) {
                 const shortLabels = {
                     strength: 'STR',
@@ -1020,6 +1536,8 @@
                 }).join('');
             }
 
+            // Developer context: Abilityfieldlabel updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function abilityFieldLabel(field) {
                 const labels = {
                     strength: 'Strength',
@@ -1033,14 +1551,20 @@
                 return labels[field] || field;
             }
 
+            // Developer context: Abilitymodifier updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function abilityModifier(score) {
                 return Math.floor((Number(score) - 10) / 2);
             }
 
+            // Developer context: Formatmodifier updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function formatModifier(modifier) {
                 return modifier >= 0 ? `+${modifier}` : String(modifier);
             }
 
+            // Developer context: Currentappearancecues updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function currentAppearanceCues() {
                 const scores = statFields.map((field) => ({
                     field,
@@ -1068,6 +1592,8 @@
                 return cues;
             }
 
+            // Developer context: Backgrounddrivenbondplaceholder updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function backgroundDrivenBondPlaceholder(backgroundValue, fallback) {
                 const theme = configurator.background_details?.[backgroundValue]?.theme;
 
@@ -1076,6 +1602,8 @@
                 return `A person, place, or promise tied to ${theme.toLowerCase()}...`;
             }
 
+            // Developer context: Classdriventraitplaceholder updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function classDrivenTraitPlaceholder(classValue, fallback) {
                 const suggestions = {
                     Barbarian: 'Blunt, intense, protective, hard to intimidate...',
@@ -1095,6 +1623,8 @@
                 return suggestions[classValue] || fallback;
             }
 
+            // Developer context: Currentstatextremes updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function currentStatExtremes() {
                 const stats = statFields.map((field) => ({
                     field,
@@ -1111,16 +1641,37 @@
                 return { highest, lowest };
             }
 
+            // Developer context: Compactstarter updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function compactStarter(base, extras = []) {
                 return tooltipText(base, ...extras.filter(Boolean).slice(0, 2));
             }
 
+            // Developer context: Advancementroleplaysummary updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
+            function advancementRoleplaySummary(method, cue) {
+                if (! method || ! cue) {
+                    return '';
+                }
+
+                const trimmedCue = cue.trim();
+
+                if (/^growth feels tied to\s+/i.test(trimmedCue)) {
+                    return `${method} ties growth to ${trimmedCue.replace(/^growth feels tied to\s+/i, '')}`;
+                }
+
+                return `${method} means ${lowerFirst(trimmedCue)}`;
+            }
+
+            // Developer context: Combinedroleplaystarterpackage updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function combinedRoleplayStarterPackage() {
                 const classValue = classSelect.value;
                 const speciesValue = speciesSelect.value;
                 const backgroundValue = backgroundSelect.value;
                 const alignmentValue = alignmentSelect.value;
                 const originFeatValue = originFeatSelect.value;
+                const advancementMethodValue = advancementMethodSelect.value;
                 const languageValues = languageInputs.filter((input) => input.checked).map((input) => input.value);
                 const skillValues = skillProficiencyInputs.filter((input) => input.checked).map((input) => input.value);
                 const classDetail = configurator.class_details?.[classValue] || null;
@@ -1129,9 +1680,11 @@
                 const alignmentDetail = configurator.alignment_details?.[alignmentValue] || '';
                 const alignmentRoleplay = configurator.alignment_roleplay?.[alignmentValue] || null;
                 const originFeatDetail = configurator.origin_feat_details?.[originFeatValue] || '';
+                const advancementDetail = configurator.advancement_method_details?.[advancementMethodValue] || null;
                 const focusAbilities = Array.isArray(classDetail?.primary_focus) ? classDetail.primary_focus : [];
                 const speciesTraits = Array.isArray(speciesDetail?.traits) ? speciesDetail.traits.slice(0, 2) : [];
                 const backgroundTheme = backgroundDetail?.theme ? backgroundDetail.theme.toLowerCase() : '';
+                const advancementCue = advancementDetail?.roleplay_cue || '';
                 const speciesTraitText = speciesTraits.length ? naturalJoin(speciesTraits).toLowerCase() : '';
                 const trainedSkillText = skillValues.length ? naturalJoin(skillValues.slice(0, 2)).toLowerCase() : '';
                 const { highest, lowest } = currentStatExtremes();
@@ -1146,6 +1699,7 @@
                     backgroundValue ? `background (${backgroundValue})` : '',
                     classValue ? `class (${classValue})` : '',
                     originFeatValue ? `origin feat (${originFeatValue})` : '',
+                    advancementMethodValue ? `advancement (${advancementMethodValue})` : '',
                     highestLabel ? `${highestLabel.toLowerCase()} as the strongest score` : '',
                 ].filter(Boolean);
 
@@ -1158,12 +1712,14 @@
                         classValue && focusText ? `${classValue} nudges them toward ${focusText} when things get tense` : '',
                         speciesValue && speciesTraitText ? `${speciesValue} leaves a trace in details like ${speciesTraitText}` : '',
                         originFeatValue ? `${originFeatValue} shapes the way they first come across` : '',
+                        advancementRoleplaySummary(advancementMethodValue, advancementCue),
                     ),
                     trait: compactStarter(
                         alignmentRoleplay?.starter_trait || classDrivenTraitPlaceholder(classValue, 'Short first-impression notes like calm, curious, dry humor...'),
                         [
                             classValue && focusText ? `When pressure hits, my ${classValue.toLowerCase()} instincts push me toward ${focusText}` : (classValue ? `My ${classValue.toLowerCase()} training still shows whenever the room gets tense` : ''),
                             backgroundTheme ? `Years shaped by ${backgroundTheme} still show in the way I carry myself` : '',
+                            advancementMethodValue && advancementCue ? `The way I talk about growth is shaped by ${advancementMethodValue.toLowerCase()}: ${advancementCue}` : '',
                             trainedSkillText ? `People quickly notice that I approach problems through ${trainedSkillText}` : '',
                             highestLabel ? `${highestLabel} is usually the first part of me people notice` : '',
                             speciesValue ? (speciesTraitText ? `You can still hear my ${speciesValue.toLowerCase()} roots in the ${speciesTraitText} side of me` : `Being ${speciesValue.toLowerCase()} still shapes how I come across to other people`) : '',
@@ -1175,6 +1731,16 @@
                             classValue ? `Being a ${classValue.toLowerCase()} keeps asking what my gifts are actually for` : '',
                             backgroundTheme ? `To me, ${backgroundTheme} only matters if it means something in the real world` : '',
                             originFeatValue ? `${originFeatValue} feels like something I should use with purpose, not vanity` : '',
+                            advancementMethodValue ? `I measure progress through ${advancementMethodValue.toLowerCase()} rather than chasing empty motion` : '',
+                        ],
+                    ),
+                    goal: compactStarter(
+                        backgroundTheme ? `I want to turn my ${backgroundTheme} past into something that still matters` : 'I want to accomplish something that will still matter after this adventure ends',
+                        [
+                            classValue ? `Part of me wants to prove what a ${classValue.toLowerCase()} can really accomplish` : '',
+                            originFeatValue ? `${originFeatValue} feels like the start of something I am meant to build on` : '',
+                            advancementMethodValue ? `I want my progress to feel earned through ${advancementMethodValue.toLowerCase()}` : '',
+                            highestLabel ? `My strongest ${highestLabel.toLowerCase()} keeps pulling me toward that goal` : '',
                         ],
                     ),
                     bond: compactStarter(
@@ -1184,6 +1750,7 @@
                             languageText ? `Speaking ${languageText} keeps me connected to more than one corner of the world` : '',
                             speciesValue ? `Part of me still feels answerable to what it means to be ${speciesValue.toLowerCase()}` : '',
                             originFeatValue ? `I still remember who first helped me turn ${originFeatValue} into something useful` : '',
+                            advancementMethodValue ? `How I grow now is tied to the table through ${advancementMethodValue.toLowerCase()}` : '',
                         ],
                     ),
                     flaw: compactStarter(
@@ -1195,10 +1762,13 @@
                         ],
                     ),
                     watchOut: alignmentRoleplay?.watch_out || '',
+                    progression: advancementMethodValue && advancementCue ? `${advancementMethodValue}: ${advancementCue}` : '',
                     sources: sourceParts,
                 };
             }
 
+            // Developer context: Updateadaptiveplaceholders updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function updateAdaptivePlaceholders() {
                 const profiles = configurator.form_placeholder_profiles || {};
                 const defaultProfile = profiles.default || {};
@@ -1221,6 +1791,7 @@
 
                 personalityTraitsInput.placeholder = roleplayStarter.trait || classDrivenTraitPlaceholder(classSelect.value, 'Short first-impression notes like calm, curious, dry humor...');
                 idealsInput.placeholder = roleplayStarter.ideal || 'What principle matters most to this character?';
+                goalsInput.placeholder = roleplayStarter.goal || 'What does this character want to achieve, protect, prove, or uncover next?';
                 bondsInput.placeholder = roleplayStarter.bond || backgroundDrivenBondPlaceholder(backgroundSelect.value, 'Who or what matters enough to change their decisions?');
                 flawsInput.placeholder = roleplayStarter.flaw || (classSelect.value ? `A ${classSelect.value.toLowerCase()} habit that sometimes causes trouble...` : 'What weakness or habit tends to cause trouble?');
 
@@ -1228,6 +1799,7 @@
                     classSelect.value ? `${classSelect.value} hooks` : '',
                     backgroundSelect.value ? `${backgroundSelect.value} ties` : '',
                     speciesSelect.value ? `${speciesSelect.value} details` : '',
+                    goalsInput.value.trim() ? 'goal thread' : '',
                     focus.length ? `${focus.join('/')} focus` : '',
                 ].filter(Boolean);
                 notesInput.placeholder = notesBits.length
@@ -1243,7 +1815,7 @@
                 if (roleplayPlaceholderNote) {
                     roleplayPlaceholderNote.textContent = roleplayStarter.sources.length
                         ? `Roleplay starters are blending ${roleplayStarter.sources.join(', ')}. Treat them as prompts, not limits.`
-                        : 'Roleplay starters combine your choices once alignment, species, background, class, and the rest of the sheet begin to come together.';
+                        : 'Roleplay starters combine alignment, goals, social-scene guidance, species, background, class, table pacing, and the rest of the sheet once the build starts to come together.';
                 }
 
                 if (appearancePlaceholderNote) {
@@ -1253,17 +1825,27 @@
                 }
             }
 
+            // Developer context: Setlatestroll updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function setLatestRoll(label) {
                 rollEl.textContent = String(label || 'Ready').slice(0, 28);
             }
 
+            // Developer context: Renderdiceresultcard updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function renderDiceResultCard(title, lines = []) {
+                lastDiceCard = {
+                    title,
+                    lines: Array.isArray(lines) ? [...lines] : [],
+                };
                 diceResult.innerHTML = `
                     <h3>${escapeHtml(title)}</h3>
                     ${lines.map((line) => `<p>${escapeHtml(line)}</p>`).join('')}
                 `;
             }
 
+            // Developer context: Renderdiceexpressionresult updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function renderDiceExpressionResult(data) {
                 const modeLabel = data.mode ? ` (${data.mode})` : '';
                 renderDiceResultCard(
@@ -1271,8 +1853,11 @@
                     [data.detail || 'Roll complete.'],
                 );
                 setLatestRoll(`${data.expression}: ${data.total}`);
+                scheduleLocalDraftSave();
             }
 
+            // Developer context: Renderdicestatsresult updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function renderDiceStatsResult(stats, { populateForm = false } = {}) {
                 if (populateForm) {
                     statFields.forEach((field) => document.getElementById(field).value = stats[field]);
@@ -1285,25 +1870,41 @@
 
                 renderDiceResultCard('Ability Scores Rolled', [summary, 'Rolled as 4d6 and dropped the lowest die for each stat.']);
                 setLatestRoll(summary);
+                scheduleLocalDraftSave();
             }
 
+            // Developer context: Appendwizardmessage updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function appendWizardMessage(role, text) {
+                const entry = {
+                    role,
+                    text: String(text ?? ''),
+                };
+                wizardMessages.push(entry);
                 const article = document.createElement('article');
                 article.className = `wizard-message ${role}`;
                 article.innerHTML = `
                     <div class="wizard-speaker">${role === 'user' ? 'You' : 'Rules Wizard'}</div>
-                    <p>${escapeHtml(text).replaceAll('\n', '<br>')}</p>
+                    <p>${escapeHtml(entry.text).replaceAll('\n', '<br>')}</p>
                 `;
                 wizardLog.appendChild(article);
                 wizardLog.scrollTop = wizardLog.scrollHeight;
+                scheduleLocalDraftSave();
             }
 
+            // Developer context: Wizardactiondescription updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function wizardActionDescription(action) {
                 const pendingField = wizardState?.pending_field;
 
                 if (! pendingField) return '';
                 if (action === 'skip') return 'Leave this optional detail blank for now. You can always come back to it later.';
                 if (action === 'skip all details') return 'Wrap up the core sheet now and come back to the optional details when you are ready.';
+                if (action === 'random that fits') return 'Generate a fitting random suggestion from the choices already locked into the sheet. You can reroll until you like it.';
+                if (action === 'keep this') return 'Accept the current random suggestion and move to the next wizard step.';
+                if (action === 'reroll random') return 'Generate another fitting random suggestion for this same field.';
+                if (action === 'keep these scores') return 'Accept this rolled set of ability scores and continue the wizard.';
+                if (action === 'reroll ability scores') return 'Roll a fresh six-score set. You can keep rerolling until the set feels right.';
 
                 if (pendingField === 'species') {
                     return formChoiceDescription('species', action);
@@ -1332,6 +1933,8 @@
                 return '';
             }
 
+            // Developer context: Formchoicedescription updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function formChoiceDescription(field, value) {
                 if (! value) return '';
 
@@ -1392,6 +1995,16 @@
                         : '';
                 }
 
+                if (field === 'advancement_method') {
+                    const detail = configurator.advancement_method_details?.[value];
+                    return detail
+                        ? tooltipText(
+                            detail.summary || `${value} sets the table pace for level-ups.`,
+                            detail.play_note || '',
+                        )
+                        : '';
+                }
+
                 if (field === 'language') {
                     const detail = configurator.language_details?.[value];
                     return detail
@@ -1412,13 +2025,16 @@
                 return '';
             }
 
+            // Developer context: Renderwizardactions updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function renderWizardActions(actions) {
+                lastWizardActions = Array.isArray(actions) ? [...actions] : [];
                 wizardActions.innerHTML = '';
-                const richActions = actions.some((action) => wizardActionDescription(action));
+                const richActions = lastWizardActions.some((action) => wizardActionDescription(action));
                 wizardActions.classList.toggle('rich', richActions);
                 hideHoverHelp();
 
-                actions.slice(0, 12).forEach((action) => {
+                lastWizardActions.slice(0, 12).forEach((action) => {
                     const button = document.createElement('button');
                     button.type = 'button';
                     button.className = `btn-soft${richActions ? ' wizard-option' : ''}`;
@@ -1434,12 +2050,17 @@
                     }
                     wizardActions.appendChild(button);
                 });
+                scheduleLocalDraftSave();
             }
 
+            // Developer context: Syncselecttitle updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function syncSelectTitle(control) {
                 control.removeAttribute('title');
             }
 
+            // Developer context: Wirechoicehelp updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function wireChoiceHelp(control, field) {
                 const show = () => {
                     const value = control.value;
@@ -1460,6 +2081,8 @@
                 control.addEventListener('blur', hideHoverHelp);
             }
 
+            // Developer context: Wireabilityhelp updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function wireAbilityHelp(field) {
                 const input = document.getElementById(field);
                 if (! input) return;
@@ -1480,6 +2103,8 @@
                 input.addEventListener('blur', hideHoverHelp);
             }
 
+            // Developer context: Filtertryasking updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function filterTryAsking() {
                 const query = tryAskingSearch.value.trim().toLowerCase();
                 let matches = 0;
@@ -1493,7 +2118,13 @@
                 tryAskingEmpty.hidden = matches !== 0;
             }
 
+            // Developer context: Renderwizardsummary updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function renderWizardSummary(snapshot) {
+                lastWizardSnapshot = snapshot && typeof snapshot === 'object'
+                    ? cloneDraftValue(snapshot, null)
+                    : null;
+
                 if (! snapshot || ! snapshot.identity) {
                     wizardPreviewStats = null;
                     syncAbilityPreview();
@@ -1503,6 +2134,7 @@
                             <p>The wizard will show the current sheet, combat state, features, and next-level preview here.</p>
                         </div>
                     `;
+                    scheduleLocalDraftSave();
                     return;
                 }
 
@@ -1523,6 +2155,7 @@
                 const roleplay = (snapshot.roleplay || []).map((entry) => `<li>${escapeHtml(entry)}</li>`).join('');
                 const appearance = (snapshot.appearance || []).map((entry) => `<li>${escapeHtml(entry)}</li>`).join('');
                 const notes = snapshot.notes ? escapeHtml(snapshot.notes) : '';
+                const officialWarnings = (snapshot.official_rules_warnings || []).map((warning) => `<li>${escapeHtml(warning)}</li>`).join('');
                 const conditions = (snapshot.conditions || []).map((condition) => `<li>Condition: ${escapeHtml(condition)}</li>`).join('');
                 const resources = (snapshot.resources || []).map((resource) => `<li>${escapeHtml(resource)}</li>`).join('');
                 const concentration = snapshot.concentration ? `<li>Concentration: ${escapeHtml(snapshot.concentration)}</li>` : '';
@@ -1533,7 +2166,7 @@
                     <div class="wizard-summary-card">
                         <h3>${escapeHtml(snapshot.identity)}</h3>
                         <p>${snapshot.proficiency_bonus ? `Proficiency Bonus ${escapeHtml(snapshot.proficiency_bonus)}` : 'Proficiency Bonus pending'}</p>
-                        <p>${snapshot.estimated_hit_points !== null ? `Estimated HP ${snapshot.estimated_hit_points}` : 'Estimated HP pending'}</p>
+                        <p>${snapshot.hit_point_value !== null ? `${escapeHtml(snapshot.hit_point_label || 'Estimated HP')} ${escapeHtml(String(snapshot.hit_point_value))}` : 'Estimated HP pending'}</p>
                         <p>${snapshot.spellcasting_summary ? escapeHtml(snapshot.spellcasting_summary) : 'No spellcasting summary yet'}</p>
                         <p>${characterDetails ? escapeHtml(characterDetails) : 'Core identity details like class, species, background, and origin feat are not set yet.'}</p>
                         <p>${skillProficiencies ? `Skills: ${escapeHtml(skillProficiencies)}` : 'Skill proficiencies are not set yet.'}</p>
@@ -1546,12 +2179,16 @@
                         <ul>${dungeonStatus}${conditions}${resources}${concentration}${deathTrack}</ul>
                     </div>
                     <div class="wizard-summary-card">
+                        <h3>Official 2024 warnings</h3>
+                        <ul>${officialWarnings || '<li>No official-rules warnings right now.</li>'}</ul>
+                    </div>
+                    <div class="wizard-summary-card">
                         <h3>Stats</h3>
                         <ul>${stats || '<li>No stats set yet.</li>'}</ul>
                     </div>
                     <div class="wizard-summary-card">
                         <h3>Roleplay</h3>
-                        <ul>${roleplay || '<li>No trait, ideal, bond, or flaw set yet.</li>'}</ul>
+                        <ul>${roleplay || '<li>No trait, ideal, goal, bond, or flaw set yet.</li>'}</ul>
                     </div>
                     <div class="wizard-summary-card">
                         <h3>Appearance</h3>
@@ -1570,8 +2207,11 @@
                         <ul>${missing || '<li>Build is complete.</li>'}</ul>
                     </div>
                 `;
+                scheduleLocalDraftSave();
             }
 
+            // Developer context: Rendercompendium updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function renderCompendium() {
                 const sectionKey = compendiumSectionSelect.value;
                 const searchValue = compendiumSearchInput.value.trim().toLowerCase();
@@ -1598,6 +2238,7 @@
 
                 if (! entries.length) {
                     compendiumResults.innerHTML = `<div class="empty library-card"><span class="eyebrow">No matches</span><h3>No entries match that search.</h3><p>Try a broader keyword or switch to another compendium section.</p></div>`;
+                    scheduleLocalDraftSave();
                     return;
                 }
 
@@ -1664,8 +2305,11 @@
                         </article>
                     `;
                 }).join('');
+                scheduleLocalDraftSave();
             }
 
+            // Developer context: Populatesubclassoptions updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function populateSubclassOptions(selectedClass, selectedSubclass = '') {
                 const subclasses = configurator.class_details?.[selectedClass]?.subclasses ?? [];
                 const options = ['<option value="">Choose a subclass</option>'];
@@ -1683,6 +2327,8 @@
                 subclassSelect.innerHTML = options.join('');
             }
 
+            // Developer context: Renderselectionreference updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function renderSelectionReference() {
                 updateAdaptivePlaceholders();
                 const { choiceCount: classSkillChoiceTotal, options: classSkillOptionsList } = syncSkillTrainingNotes();
@@ -1699,8 +2345,10 @@
                 const skillProficiencyValues = skillProficiencyInputs.filter((input) => input.checked).map((input) => input.value);
                 const skillExpertiseValues = skillExpertiseInputs.filter((input) => input.checked).map((input) => input.value);
                 const levelValue = levelInput.value.trim();
+                const advancementMethodValue = advancementMethodSelect.value;
                 const personalityTraitsValue = personalityTraitsInput.value.trim();
                 const idealsValue = idealsInput.value.trim();
+                const goalsValue = goalsInput.value.trim();
                 const bondsValue = bondsInput.value.trim();
                 const flawsValue = flawsInput.value.trim();
                 const appearanceValues = {
@@ -1718,6 +2366,7 @@
                 const alignmentDetail = configurator.alignment_details?.[alignmentValue];
                 const alignmentRoleplay = configurator.alignment_roleplay?.[alignmentValue];
                 const originFeatDetail = configurator.origin_feat_details?.[originFeatValue];
+                const advancementDetail = configurator.advancement_method_details?.[advancementMethodValue];
                 const focusAbilities = Array.isArray(classDetail?.primary_focus) ? classDetail.primary_focus : [];
                 const languageDetails = languageValues.map((language) => ({
                     name: language,
@@ -1725,6 +2374,7 @@
                 }));
                 const appearanceCues = currentAppearanceCues();
                 const roleplayStarter = combinedRoleplayStarterPackage();
+                const officialRulesWarnings = currentOfficialRulesWarnings();
                 const statScores = statFields.map((field) => ({
                     field,
                     label: abilityFieldLabel(field),
@@ -1737,6 +2387,7 @@
                 const coreChecklist = [
                     classValue ? `Class ready: ${classValue}` : 'Class still needed',
                     levelValue ? `Level ready: ${levelValue}` : 'Level still needed',
+                    advancementMethodValue ? `Advancement ready: ${advancementMethodValue}` : 'Advancement method still needed',
                     subclassValue ? `Subclass ready: ${subclassValue}` : 'Subclass still needed',
                     skillProficiencyValues.length ? `Skill training ready: ${skillProficiencyValues.join(', ')}` : 'Skill training still needed',
                     nameValue ? `Name ready: ${nameValue}` : 'Name still needed',
@@ -1750,6 +2401,7 @@
                 const missingCore = [
                     ! classValue ? 'class' : '',
                     ! levelValue ? 'level' : '',
+                    ! advancementMethodValue ? 'advancement method' : '',
                     ! subclassValue ? 'subclass' : '',
                     ! skillProficiencyValues.length ? 'skill training' : '',
                     ! nameValue ? 'name' : '',
@@ -1767,9 +2419,17 @@
                     ? `Still to choose: ${missingCore.join(', ')}.`
                     : 'Core sheet is complete. You can still add alignment, roleplay, appearance, and notes.';
                 document.getElementById('selected-build-focus').textContent = focusAbilities.length
-                    ? `Step focus: class and skill training first, origin next, then scores. ${classValue} usually leans on ${focusAbilities.join(', ')}.${levelValue ? ` Level ${levelValue} is selected.` : ''}`
-                    : `${levelValue ? `Level ${levelValue} is selected.` : 'Pick a class and level to see focus guidance.'}`;
+                    ? `Step focus: class and skill training first, origin next, then scores. ${classValue} usually leans on ${focusAbilities.join(', ')}.${levelValue ? ` Level ${levelValue} is selected.` : ''}${advancementMethodValue ? ` Table pacing: ${advancementMethodValue}.` : ''}`
+                    : `${levelValue ? `Level ${levelValue} is selected.` : 'Pick a class and level to see focus guidance.'}${advancementMethodValue ? ` Table pacing: ${advancementMethodValue}.` : ''}`;
                 document.getElementById('selected-build-checklist').innerHTML = coreChecklist.map((entry) => `<li>${escapeHtml(entry)}</li>`).join('');
+
+                selectedOfficialTitle.textContent = officialRulesWarnings.length ? 'Official 2024 warnings' : 'Official 2024 check';
+                selectedOfficialSummary.textContent = officialRulesWarnings.length
+                    ? 'The current sheet still works here, but these choices need a manual rules check if you want to stay strictly official.'
+                    : 'No official-rules warnings are active right now. The builder is still flexible, but nothing selected here is currently drifting away from the checked 2024 baseline.';
+                selectedOfficialList.innerHTML = officialRulesWarnings.length
+                    ? officialRulesWarnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')
+                    : '<li>No official-rules warnings right now.</li>';
 
                 document.getElementById('selected-stats-title').textContent = statScores.length ? 'Ability score guide' : 'Roll or enter scores';
                 document.getElementById('selected-stats-summary').textContent = statScores.length
@@ -1843,21 +2503,29 @@
                     ? languageDetails.map((language) => `<li><strong>${language.name}</strong>${language.summary ? `: ${language.summary}` : ''}</li>`).join('')
                     : '<li>Your selected language summaries will appear here.</li>';
 
+                const roleplayNotes = [
+                    roleplayStarter.progression ? `<li><strong>Campaign pace:</strong> ${escapeHtml(roleplayStarter.progression)}</li>` : (advancementDetail?.play_note ? `<li><strong>Campaign pace:</strong> ${escapeHtml(advancementDetail.play_note)}</li>` : ''),
+                    ...Object.values(configurator.roleplay_reference || {}).map((entry) => entry?.summary ? `<li><strong>${escapeHtml(entry.title || 'Roleplay rule')}:</strong> ${escapeHtml(entry.summary)}</li>` : ''),
+                ].filter(Boolean);
+
                 document.getElementById('selected-roleplay-title').textContent = roleplayStarter.title || 'Beginner roleplay help';
                 document.getElementById('selected-roleplay-summary').textContent = roleplayStarter.summary
-                    || 'Use the sheet choices to sketch one trait, one ideal, one bond, and one flaw. You do not need a novel.';
+                    || 'Use the sheet choices to sketch one trait, one ideal, one goal, one bond, and one flaw. You do not need a novel.';
                 document.getElementById('selected-roleplay-list').innerHTML = [
-                    roleplayStarter.sources.length ? `<li><strong>Build mix:</strong> ${escapeHtml(roleplayStarter.sources.join(', '))}</li>` : '',
                     roleplayStarter.watchOut ? `<li><strong>Watch out:</strong> ${escapeHtml(roleplayStarter.watchOut)}</li>` : '',
-                    `<li><strong>Starter trait:</strong> ${escapeHtml(roleplayStarter.trait || configurator.roleplay_field_help?.personality_traits || '')}</li>`,
-                    personalityTraitsValue ? `<li><strong>Current trait:</strong> ${escapeHtml(personalityTraitsValue)}</li>` : '',
-                    `<li><strong>Starter ideal:</strong> ${escapeHtml(roleplayStarter.ideal || configurator.roleplay_field_help?.ideals || '')}</li>`,
-                    idealsValue ? `<li><strong>Current ideal:</strong> ${escapeHtml(idealsValue)}</li>` : '',
-                    `<li><strong>Starter bond:</strong> ${escapeHtml(roleplayStarter.bond || configurator.roleplay_field_help?.bonds || '')}</li>`,
-                    bondsValue ? `<li><strong>Current bond:</strong> ${escapeHtml(bondsValue)}</li>` : '',
-                    `<li><strong>Starter flaw:</strong> ${escapeHtml(roleplayStarter.flaw || configurator.roleplay_field_help?.flaws || '')}</li>`,
-                    flawsValue ? `<li><strong>Current flaw:</strong> ${escapeHtml(flawsValue)}</li>` : '',
+                    `<li><strong>Trait:</strong> ${escapeHtml(personalityTraitsValue || roleplayStarter.trait || configurator.roleplay_field_help?.personality_traits || '')}</li>`,
+                    `<li><strong>Ideal:</strong> ${escapeHtml(idealsValue || roleplayStarter.ideal || configurator.roleplay_field_help?.ideals || '')}</li>`,
+                    `<li><strong>Goal:</strong> ${escapeHtml(goalsValue || roleplayStarter.goal || configurator.roleplay_field_help?.goals || '')}</li>`,
+                    `<li><strong>Bond:</strong> ${escapeHtml(bondsValue || roleplayStarter.bond || configurator.roleplay_field_help?.bonds || '')}</li>`,
+                    `<li><strong>Flaw:</strong> ${escapeHtml(flawsValue || roleplayStarter.flaw || configurator.roleplay_field_help?.flaws || '')}</li>`,
                 ].filter(Boolean).join('');
+                document.getElementById('selected-roleplay-notes-title').textContent = 'Table roleplay notes';
+                document.getElementById('selected-roleplay-notes-summary').textContent = roleplayNotes.length
+                    ? 'Campaign pace and social-scene reminders sit here so the starter prompts can stay short.'
+                    : 'Campaign pace and social-scene reminders will appear here once the build gives the page something to work with.';
+                document.getElementById('selected-roleplay-notes-list').innerHTML = roleplayNotes.length
+                    ? roleplayNotes.join('')
+                    : '<li>Pick an advancement method or use the roleplay helper to surface broader table notes.</li>';
 
                 document.getElementById('selected-appearance-title').textContent = (appearanceValues.eyes || appearanceValues.hair || appearanceValues.skin)
                     ? 'Current look'
@@ -1874,6 +2542,7 @@
                 ].join('');
 
                 syncSelectTitle(classSelect);
+                syncSelectTitle(advancementMethodSelect);
                 syncSelectTitle(subclassSelect);
                 syncSelectTitle(backgroundSelect);
                 syncSelectTitle(speciesSelect);
@@ -1881,14 +2550,20 @@
                 syncSelectTitle(alignmentSelect);
             }
 
+            // Developer context: Randomint updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function randomInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             }
 
+            // Developer context: Randomchoice updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function randomChoice(items) {
                 return items.length ? items[randomInt(0, items.length - 1)] : null;
             }
 
+            // Developer context: Randomuniquechoices updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function randomUniqueChoices(items, count) {
                 const pool = [...items];
                 const picks = [];
@@ -1901,6 +2576,8 @@
                 return picks;
             }
 
+            // Developer context: Splitsuggestionpool updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function splitSuggestionPool(value) {
                 return String(value ?? '')
                     .replaceAll('...', '')
@@ -1909,17 +2586,23 @@
                     .filter(Boolean);
             }
 
+            // Developer context: Randomfromsuggestion updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function randomFromSuggestion(value, fallback = '') {
                 const pool = splitSuggestionPool(value);
                 return randomChoice(pool) || fallback;
             }
 
+            // Developer context: Localabilityscore updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function localAbilityScore() {
                 const rolls = Array.from({ length: 4 }, () => randomInt(1, 6)).sort((a, b) => a - b);
                 rolls.shift();
                 return rolls.reduce((total, roll) => total + roll, 0);
             }
 
+            // Developer context: Randomlanguagesselection updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function randomLanguagesSelection() {
                 const allLanguages = Object.keys(configurator.language_details || {});
                 const nonCommon = allLanguages.filter((language) => language !== 'Common');
@@ -1930,12 +2613,16 @@
                 return selection.length ? selection : randomUniqueChoices(allLanguages, 1);
             }
 
+            // Developer context: Randomskillproficiencies updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function randomSkillProficiencies(classValue) {
                 const options = classSkillOptions(classValue);
                 const choiceCount = classSkillChoiceCount(classValue) || 2;
                 return randomUniqueChoices(options, Math.min(options.length, Math.max(1, choiceCount)));
             }
 
+            // Developer context: Randomskillexpertise updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function randomSkillExpertise(classValue, levelValue, proficiencies) {
                 if (! Array.isArray(proficiencies) || ! proficiencies.length) return [];
 
@@ -1950,11 +2637,15 @@
                 return [];
             }
 
+            // Developer context: Randomcharactername updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function randomCharacterName(species) {
                 const speciesProfile = configurator.form_placeholder_profiles?.species?.[species] || {};
                 return randomFromSuggestion(speciesProfile.name, `${species} Wanderer`);
             }
 
+            // Developer context: Randomappearanceprofile updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function randomAppearanceProfile(species) {
                 const defaultProfile = configurator.form_placeholder_profiles?.default || {};
                 const speciesProfile = configurator.form_placeholder_profiles?.species?.[species] || {};
@@ -1970,18 +2661,22 @@
                 };
             }
 
+            // Developer context: Fillrandomcharacter updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function fillRandomCharacter() {
                 const classOptions = Object.keys(configurator.class_details || {});
                 const speciesOptions = Object.keys(configurator.species_details || {});
                 const backgroundOptions = Object.keys(configurator.background_details || {});
                 const alignmentOptions = Object.keys(configurator.alignment_details || {});
                 const originFeatOptions = Object.keys(configurator.origin_feat_details || {});
+                const advancementOptions = configurator.advancement_methods || [];
 
                 const classValue = randomChoice(classOptions);
                 const speciesValue = randomChoice(speciesOptions);
                 const backgroundValue = randomChoice(backgroundOptions);
                 const alignmentValue = randomChoice(alignmentOptions);
                 const originFeatValue = randomChoice(originFeatOptions);
+                const advancementMethodValue = randomChoice(advancementOptions);
                 const subclassValue = randomChoice(configurator.class_details?.[classValue]?.subclasses || []);
                 const languagesValue = randomLanguagesSelection();
                 const skillProficiencyValues = randomSkillProficiencies(classValue);
@@ -2004,6 +2699,7 @@
                 speciesSelect.value = speciesValue || '';
                 originFeatSelect.value = originFeatValue || '';
                 alignmentSelect.value = alignmentValue || '';
+                advancementMethodSelect.value = advancementMethodValue || '';
                 nameInput.value = nameValue || '';
 
                 languageInputs.forEach((input) => {
@@ -2021,6 +2717,7 @@
 
                 personalityTraitsInput.value = roleplayProfile.starter_trait || personalityTraitsInput.placeholder;
                 idealsInput.value = roleplayProfile.starter_ideal || idealsInput.placeholder;
+                goalsInput.value = combinedRoleplayStarterPackage().goal || goalsInput.placeholder;
                 bondsInput.value = roleplayProfile.starter_bond || bondsInput.placeholder;
                 flawsInput.value = roleplayProfile.starter_flaw || flawsInput.placeholder;
                 ageInput.value = appearance.age;
@@ -2029,10 +2726,11 @@
                 eyesInput.value = appearance.eyes;
                 hairInput.value = appearance.hair;
                 skinInput.value = appearance.skin;
-                notesInput.value = `${nameValue} is a level ${levelValue} ${subclassValue} ${classValue} with a ${backgroundValue.toLowerCase()} background. Speaks ${languagesValue.join(', ')}. Ask the DM how their ${backgroundTheme.toLowerCase()} first tied them to the party.`;
+                notesInput.value = `${nameValue} is a level ${levelValue} ${subclassValue} ${classValue} with a ${backgroundValue.toLowerCase()} background. The table uses ${String(advancementMethodValue || 'milestone').toLowerCase()} leveling. Speaks ${languagesValue.join(', ')}. Their current goal is ${String(goalsInput.value || 'still taking shape').toLowerCase()}. Ask the DM how their ${backgroundTheme.toLowerCase()} first tied them to the party.`;
 
                 renderSelectionReference();
                 notice(formNotice, 'Random character generated. Review anything you want, then save the sheet.', 'success');
+                scheduleLocalDraftSave();
             }
 
             async function loadCharacterCount() {
@@ -2086,21 +2784,29 @@
                 }
             }
 
+            // Developer context: Resetform updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function resetForm() {
                 form.reset();
                 document.getElementById('level').value = 1;
                 populateSubclassOptions('');
                 renderSelectionReference();
                 clearNotice(formNotice);
+                scheduleLocalDraftSave();
             }
 
+            // Developer context: Resetdicetray updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function resetDiceTray() {
                 diceForm.reset();
                 renderDiceResultCard('Ready to roll', ['Pick any die, use a custom expression, or roll full ability scores from here.']);
                 clearNotice(diceNotice);
                 setLatestRoll('Ready');
+                scheduleLocalDraftSave();
             }
 
+            // Developer context: Payload updates one piece of browser-side state or UI; keep it in sync with the handlers that call it.
+            // Clear explanation: This part makes one part of the page react or update.
             function payload() {
                 const data = Object.fromEntries(new FormData(form).entries());
                 delete data['languages[]'];
@@ -2145,6 +2851,7 @@
 
                     notice(formNotice, 'Character saved successfully.', 'success');
                     resetForm();
+                    removeLocalDraft(localDraftKeys.builder);
                     await loadCharacterCount();
                 } catch (error) {
                     notice(formNotice, error.message || 'The character could not be saved.', 'error');
@@ -2156,9 +2863,13 @@
 
                 if (reset) {
                     wizardState = {};
+                    wizardMessages = [];
+                    lastWizardActions = [];
+                    lastWizardSnapshot = null;
                     wizardLog.innerHTML = '';
                     renderWizardActions([]);
                     renderWizardSummary(null);
+                    removeLocalDraft(localDraftKeys.wizard);
                 }
 
                 if (message && echoUser) {
@@ -2190,6 +2901,8 @@
                     if (/^(roll|roll initiative|roll death save)/i.test(message || '')) {
                         setLatestRoll((data.reply ?? 'Rolled').split('\n')[0]);
                     }
+
+                    scheduleLocalDraftSave();
                 } catch (error) {
                     notice(wizardNotice, error.message || 'The rules wizard could not respond.', 'error');
                 }
@@ -2208,19 +2921,25 @@
                 sendWizardMessage(button.dataset.tryCommand);
             });
             form.addEventListener('submit', createCharacter);
+            form.addEventListener('input', scheduleLocalDraftSave);
+            form.addEventListener('change', scheduleLocalDraftSave);
             diceForm.addEventListener('submit', (event) => {
                 event.preventDefault();
                 const expression = diceExpressionInput.value.trim();
                 if (! expression) return;
                 rollDiceExpression(expression, diceModeSelect.value);
             });
+            diceForm.addEventListener('input', scheduleLocalDraftSave);
+            diceForm.addEventListener('change', scheduleLocalDraftSave);
             wizardForm.addEventListener('submit', (event) => {
                 event.preventDefault();
                 const message = wizardInput.value.trim();
                 if (! message) return;
                 wizardInput.value = '';
+                scheduleLocalDraftSave();
                 sendWizardMessage(message);
             });
+            wizardInput.addEventListener('input', scheduleLocalDraftSave);
             compendiumSectionSelect.addEventListener('change', renderCompendium);
             compendiumSearchInput.addEventListener('input', renderCompendium);
             diceButtons.addEventListener('click', (event) => {
@@ -2229,6 +2948,7 @@
                 rollDiceExpression(button.dataset.diceExpression, button.dataset.diceMode || '');
             });
             wireChoiceHelp(classSelect, 'class');
+            wireChoiceHelp(advancementMethodSelect, 'advancement_method');
             wireChoiceHelp(subclassSelect, 'subclass');
             wireChoiceHelp(backgroundSelect, 'background');
             wireChoiceHelp(speciesSelect, 'species');
@@ -2259,6 +2979,7 @@
                 populateSubclassOptions(classSelect.value);
                 renderSelectionReference();
             });
+            advancementMethodSelect.addEventListener('change', renderSelectionReference);
             subclassSelect.addEventListener('change', renderSelectionReference);
             speciesSelect.addEventListener('change', renderSelectionReference);
             backgroundSelect.addEventListener('change', renderSelectionReference);
@@ -2310,7 +3031,7 @@
                 input.removeAttribute('title');
             });
             levelInput.addEventListener('input', renderSelectionReference);
-            [personalityTraitsInput, idealsInput, bondsInput, flawsInput, ageInput, heightInput, weightInput, eyesInput, hairInput, skinInput].forEach((input) => {
+            [personalityTraitsInput, idealsInput, goalsInput, bondsInput, flawsInput, ageInput, heightInput, weightInput, eyesInput, hairInput, skinInput].forEach((input) => {
                 input.addEventListener('input', renderSelectionReference);
             });
             statFields.forEach((field) => {
@@ -2330,17 +3051,38 @@
             window.addEventListener('scroll', () => {
                 if (currentHoverAnchor) positionHoverTooltip(currentHoverAnchor);
             }, true);
+            window.addEventListener('beforeunload', persistLocalDrafts);
 
             populateSubclassOptions('');
             filterTryAsking();
-            resetDiceTray();
-            renderSelectionReference();
-            if (compendiumSections.length) {
-                compendiumSectionSelect.value = compendiumSections[0].key;
+            const restoredSections = [];
+            const restoredBuilderDraft = applyBuilderDraft(readLocalDraft(localDraftKeys.builder));
+            if (! restoredBuilderDraft) {
+                renderSelectionReference();
+            } else {
+                restoredSections.push('builder');
             }
-            renderCompendium();
+
+            const restoredDiceDraft = restoreDiceDraft();
+            if (! restoredDiceDraft) {
+                resetDiceTray();
+            } else {
+                restoredSections.push('dice tray');
+            }
+
+            if (restoreLibraryDraft()) {
+                restoredSections.push('library');
+            }
             loadCharacterCount();
-            sendWizardMessage('', { echoUser: false });
+            const restoredWizardDraft = restoreWizardDraft();
+            if (! restoredWizardDraft) {
+                sendWizardMessage('', { echoUser: false });
+            } else {
+                restoredSections.push('wizard');
+            }
+
+            showDraftRestoreNotice(restoredSections);
+            window.setInterval(persistLocalDrafts, 10000);
         </script>
     </body>
 </html>

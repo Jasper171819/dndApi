@@ -1,3 +1,5 @@
+# Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
+# Clear explanation: This file is one of the custom parts that make this app work.
 #!/usr/bin/env python3
 """Build local 2024 class progression data from the official D&D Beyond page."""
 
@@ -31,6 +33,8 @@ CLASS_NAMES = [
 ]
 
 
+# Developer context: Fetch Html performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def fetch_html(url: str) -> str:
     request = Request(url, headers={"User-Agent": USER_AGENT})
 
@@ -38,6 +42,8 @@ def fetch_html(url: str) -> str:
         return response.read().decode("utf-8", "ignore")
 
 
+# Developer context: Clean Html performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def clean_html(text: str) -> str:
     text = unescape(text)
     text = re.sub(r"<[^>]+>", " ", text)
@@ -50,12 +56,16 @@ def clean_html(text: str) -> str:
     return text
 
 
+# Developer context: Slugify performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def slugify(text: str) -> str:
     text = text.lower()
     text = re.sub(r"[^a-z0-9]+", "_", text)
     return text.strip("_")
 
 
+# Developer context: Parse Features performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_features(text: str, class_name: str, subclass_name: str = "Subclass feature") -> list[str]:
     text = text.replace("Subclass feature", subclass_name)
     if text in {"", "-"}:
@@ -63,6 +73,8 @@ def parse_features(text: str, class_name: str, subclass_name: str = "Subclass fe
     return [feature.strip() for feature in text.split(",") if feature.strip()]
 
 
+# Developer context: Find Table performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def find_table(tables: list[str], table_id: str) -> str:
     for table in tables:
         if f'id="{table_id}"' in table:
@@ -71,6 +83,8 @@ def find_table(tables: list[str], table_id: str) -> str:
     raise RuntimeError(f"Could not find table {table_id}")
 
 
+# Developer context: Parse Traits Table performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_traits_table(table_html: str) -> dict[str, str]:
     body_match = re.search(r"<tbody>(.*?)</tbody>", table_html, re.S)
     rows = re.findall(r"<tr>(.*?)</tr>", body_match.group(1), re.S)
@@ -89,6 +103,8 @@ def parse_traits_table(table_html: str) -> dict[str, str]:
     return traits
 
 
+# Developer context: Normalize Header performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def normalize_header(header: str) -> str:
     if header.isdigit():
         return f"slot_{header}"
@@ -102,6 +118,8 @@ def normalize_header(header: str) -> str:
     return mapping.get(header, slugify(header))
 
 
+# Developer context: Parse Feature Table performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_feature_table(table_html: str, class_name: str) -> dict[int, dict[str, Any]]:
     header_rows = re.findall(r"<tr>(.*?)</tr>", re.search(r"<thead>(.*?)</thead>", table_html, re.S).group(1), re.S)
     headers = [clean_html(cell) for cell in re.findall(r"<th[^>]*>(.*?)</th>", header_rows[-1], re.S)]
@@ -141,6 +159,8 @@ def parse_feature_table(table_html: str, class_name: str) -> dict[int, dict[str,
     return levels
 
 
+# Developer context: To Php performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def to_php(value: Any, indent: int = 0) -> str:
     padding = " " * indent
     next_padding = " " * (indent + 4)
@@ -178,6 +198,8 @@ def to_php(value: Any, indent: int = 0) -> str:
     return f"'{escaped}'"
 
 
+# Developer context: Write Output performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def write_output(data: dict[str, Any]) -> None:
     header = (
         "<?php\n\n"
@@ -188,6 +210,8 @@ def write_output(data: dict[str, Any]) -> None:
     OUTPUT_PATH.write_text(header + to_php(data) + ";\n", encoding="utf-8")
 
 
+# Developer context: Main performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def main() -> int:
     html = fetch_html(SOURCE_URL)
     tables = re.findall(r"<table\b.*?</table>", html, re.S)

@@ -1,3 +1,5 @@
+# Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
+# Clear explanation: This file is one of the custom parts that make this app work.
 #!/usr/bin/env python3
 """Build a local 2024 spell compendium from the official D&D Beyond listing.
 
@@ -36,6 +38,8 @@ AOE_LABELS = {
 }
 
 
+# Developer context: Build Url performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def build_url(*, page: int | None = None, class_id: str | None = None) -> str:
     params: list[tuple[str, str]] = [("filter-source-category", SOURCE_CATEGORY_ID)]
 
@@ -48,6 +52,8 @@ def build_url(*, page: int | None = None, class_id: str | None = None) -> str:
     return f"{BASE_ENDPOINT}?{urlencode(params)}"
 
 
+# Developer context: Fetch Html performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def fetch_html(url: str) -> str:
     request = Request(url, headers={"User-Agent": USER_AGENT})
 
@@ -55,6 +61,8 @@ def fetch_html(url: str) -> str:
         return response.read().decode("utf-8", "ignore")
 
 
+# Developer context: Clean Html performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def clean_html(text: str) -> str:
     text = re.sub(
         r'<i class="i-(aoe-[a-z-]+)"></i>',
@@ -71,11 +79,15 @@ def clean_html(text: str) -> str:
     return text
 
 
+# Developer context: Find Page Count performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def find_page_count(html: str) -> int:
     page_numbers = [int(value) for value in re.findall(r"[?&]page=(\d+)", html)]
     return max(page_numbers) if page_numbers else 1
 
 
+# Developer context: Parse Level performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_level(level_label: str) -> int:
     if level_label.lower() == "cantrip":
         return 0
@@ -88,7 +100,11 @@ def parse_level(level_label: str) -> int:
     return int(match.group(1))
 
 
+# Developer context: Build Summary performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def build_summary(spell: dict[str, Any]) -> str:
+    # Developer context: Sentence Value performs one script-level task; keep generated output and source inputs consistent here.
+    # Clear explanation: This part does one helper job when the script rebuilds project data.
     def sentence_value(value: str) -> str:
         return value.rstrip(".")
 
@@ -116,6 +132,8 @@ def build_summary(spell: dict[str, Any]) -> str:
     return ". ".join(bits) + "."
 
 
+# Developer context: Parse Spell Cards performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_spell_cards(html: str) -> list[dict[str, Any]]:
     spells: list[dict[str, Any]] = []
 
@@ -160,6 +178,8 @@ def parse_spell_cards(html: str) -> list[dict[str, Any]]:
     return spells
 
 
+# Developer context: Parse Core Class Filters performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def parse_core_class_filters(html: str) -> list[tuple[str, str]]:
     select_match = re.search(r'<select id="filter-class".*?</select>', html, re.S)
 
@@ -181,6 +201,8 @@ def parse_core_class_filters(html: str) -> list[tuple[str, str]]:
     ]
 
 
+# Developer context: Fetch Spell Index performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def fetch_spell_index(*, class_id: str | None = None) -> list[dict[str, Any]]:
     first_page = fetch_html(build_url(class_id=class_id))
     page_count = find_page_count(first_page)
@@ -193,6 +215,8 @@ def fetch_spell_index(*, class_id: str | None = None) -> list[dict[str, Any]]:
     return spells
 
 
+# Developer context: To Php performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def to_php(value: Any, indent: int = 0) -> str:
     padding = " " * indent
     next_padding = " " * (indent + 4)
@@ -230,6 +254,8 @@ def to_php(value: Any, indent: int = 0) -> str:
     return f"'{escaped}'"
 
 
+# Developer context: Write Output performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def write_output(spells: list[dict[str, Any]]) -> None:
     header = (
         "<?php\n\n"
@@ -240,6 +266,8 @@ def write_output(spells: list[dict[str, Any]]) -> None:
     OUTPUT_PATH.write_text(header + to_php(spells, 0) + ";\n", encoding="utf-8")
 
 
+# Developer context: Main performs one script-level task; keep generated output and source inputs consistent here.
+# Clear explanation: This part does one helper job when the script rebuilds project data.
 def main() -> int:
     spells = fetch_spell_index()
 

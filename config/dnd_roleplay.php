@@ -1,4 +1,6 @@
 <?php
+// Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
+// Clear explanation: This file is one of the custom parts that make this app work.
 
 return [
     'alignment_profiles' => [
@@ -86,8 +88,39 @@ return [
         'alignment' => 'Alignment is a short moral compass, not a prison. It should guide choices, not handcuff them.',
         'personality_traits' => 'Think of this as your first impression. One short sentence is enough.',
         'ideals' => 'This is the principle your character wants to live by, such as freedom, duty, knowledge, or kindness.',
+        'goals' => 'A goal is the next meaningful thing the character wants to achieve, protect, prove, or uncover.',
         'bonds' => 'A bond is a person, place, oath, or cause important enough to shape major decisions.',
         'flaws' => 'Pick a weakness that creates believable trouble without making the character impossible to adventure with.',
+    ],
+    'roleplay_reference' => [
+        'styles' => [
+            'title' => 'Roleplay style',
+            'summary' => 'You can speak as your character or describe what they say and do from the outside. Either approach still counts as roleplay.',
+        ],
+        'checks' => [
+            'title' => 'Checks follow the scene',
+            'summary' => 'Start with the approach first. After that, the DM decides whether a check is needed at all.',
+        ],
+        'influence' => [
+            'title' => 'Influence',
+            'summary' => 'Social scenes often become an Influence attempt, usually using Persuasion, Deception, Intimidation, Performance, or Animal Handling depending on the approach.',
+        ],
+        'attitude' => [
+            'title' => 'NPC attitude',
+            'summary' => 'Many NPCs start Friendly, Indifferent, or Hostile. Friendly creatures are easier to sway, Hostile ones are harder, and a strong approach can change that before the die matters.',
+        ],
+        'motivation' => [
+            'title' => 'Levers to play toward',
+            'summary' => 'Look for what the NPC wants, fears, or cares about. Those hooks often matter more than raw charm.',
+        ],
+        'alignment' => [
+            'title' => 'Alignment',
+            'summary' => 'Alignment can shape personality, goals, and core beliefs, but it is guidance rather than a cage. Evil player characters should be cleared with the DM first.',
+        ],
+        'table' => [
+            'title' => 'Table-safe roleplay',
+            'summary' => '"What would my character do?" should deepen the scene, not justify blowing up the table.',
+        ],
     ],
     'appearance_field_help' => [
         'age' => 'A rough number or life stage is enough, like 19, 42, or 120.',
