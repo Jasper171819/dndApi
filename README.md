@@ -11,6 +11,79 @@ The project combines:
 
 The browser pages call the Laravel API with `fetch(...)`, so the frontend never talks directly to MySQL.
 
+## GitHub ZIP Quickstart
+
+The easiest beginner setup is:
+- Windows
+- XAMPP for MySQL and phpMyAdmin
+- Composer installed separately
+- Laravel started with `php artisan serve`
+
+### 1. Rename the extracted folder
+
+If GitHub extracts a path like `API_Basis-main\dnd-api`, do not keep working from that nested name.
+
+Instead:
+1. move the inner Laravel app folder to a clean location such as `C:\Projects`
+2. rename the final folder to `adventurers-ledger`
+3. open your terminal in that final folder
+
+Recommended final path:
+
+```text
+C:\Projects\adventurers-ledger
+```
+
+Optional XAMPP organization path:
+
+```text
+C:\xampp\htdocs\adventurers-ledger
+```
+
+`htdocs` is optional. It can be convenient for future projects, but this app does not require Apache to serve the Laravel pages because the recommended startup command is `php artisan serve`.
+
+### 2. Follow the setup guide for your OS
+
+- Windows with XAMPP: [docs/setup/windows-xampp.md](./docs/setup/windows-xampp.md)
+- macOS: [docs/setup/macos.md](./docs/setup/macos.md)
+- Ubuntu or Debian: [docs/setup/ubuntu-debian.md](./docs/setup/ubuntu-debian.md)
+- Dutch quickstart: [docs/snelstart-nl.md](./docs/snelstart-nl.md)
+
+### 3. First-time commands
+
+Fastest first-time setup:
+
+```bash
+composer run setup-local
+composer run start-local
+```
+
+If you want a check-only step first:
+
+```bash
+composer install
+composer run doctor
+```
+
+Open the app at:
+
+```text
+http://127.0.0.1:8001
+```
+
+## Local Setup Commands
+
+- `composer run doctor`
+  Checks the project folder, PHP version, `.env`, `APP_KEY`, writable Laravel paths, and the configured database connection.
+- `composer run setup-local`
+  Copies `.env` when needed, installs PHP dependencies, creates an `APP_KEY` when needed, runs the startup checks, and then runs migrations.
+- `composer run start-local`
+  Runs the startup checks and starts the Laravel server on port `8001`.
+
+Important local setup note:
+- the current beginner path does not require `npm install`
+- the pages are Blade-driven, so frontend build tooling is not required for first startup
+
 ## Main Pages
 
 - `/`
@@ -102,37 +175,29 @@ Important backend pieces include:
 - shared input cleanup and validation logic in [app/Support](./app/Support)
 - wizard logic in [app/Services](./app/Services)
 
-## Local Setup
+## Database Structure
 
-1. Install dependencies:
+Users should create only the empty database manually. Laravel migrations build the table structure.
 
-```bash
-composer install
-```
+Framework tables:
+- `users`
+- `cache`
+- `jobs`
 
-2. Create your environment file and configure the database:
+Main app tables:
+- `characters`
+- `homebrew_entries`
+- `dm_records`
 
-```bash
-copy .env.example .env
-```
-
-3. Make sure MySQL has a database named `dnd_api`, then run:
+If the schema changes later, use:
 
 ```bash
 php artisan migrate
 ```
 
-4. Start the app:
-
-```bash
-php artisan serve --port=8001
-```
-
-If `php artisan serve` says it cannot find `artisan`, make sure you are inside the `dnd-api` folder before running the command.
-
 ## Quality and Testing
 
-The project includes feature tests for the page shells and the main API flows.
+The project includes feature and command-oriented tests for the page shells, API flows, and the setup doctor.
 
 Useful commands:
 
@@ -153,8 +218,7 @@ Current smoke coverage includes:
 - DM wizard API
 - DM record CRUD and export flow
 - non-blocking official-rules warnings in the wizard snapshot
-
-Current feature test count: `36`.
+- startup root-guard and doctor command feedback
 
 ## Notes
 
