@@ -1,46 +1,27 @@
 <?php
-// Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
-// Clear explanation: This file is one of the custom parts that make this app work.
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-// Developer context: This return hands the finished value or response back to the caller.
-// Clear explanation: This line sends the result back so the rest of the app can use it.
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    // Developer context: Up handles one focused step in this file's workflow; keep its inputs and return shape aligned with nearby callers.
-    // Clear explanation: This part does one specific job for the feature this file powers.
     public function up(): void
     {
         Schema::create('characters', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('race');
-            $table->string('class');
-            $table->integer('level');
-
-            $table->integer('strength');
-            $table->integer('dexterity');
-            $table->integer('constitution');
-            $table->integer('intelligence');
-            $table->integer('wisdom');
-            $table->integer('charisma');
-
+            $table->string('name', 100);
+            $table->string('species', 50);
+            $table->string('class', 50);
+            $table->string('subclass', 50)->nullable();
+            $table->string('background', 50);
+            $table->string('alignment', 30)->nullable();
+            $table->unsignedTinyInteger('level');
             $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    // Developer context: Down handles one focused step in this file's workflow; keep its inputs and return shape aligned with nearby callers.
-    // Clear explanation: This part does one specific job for the feature this file powers.
     public function down(): void
     {
         Schema::dropIfExists('characters');

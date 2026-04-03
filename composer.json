@@ -35,32 +35,13 @@
         }
     },
     "scripts": {
-        "doctor": [
-            "@php scripts/ensure_project_root.php --needs-vendor",
-            "@php artisan app:doctor --ansi"
-        ],
         "setup": [
-            "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@php artisan key:generate",
-            "@php artisan migrate --force",
-            "npm install",
-            "npm run build"
+            "@composer install",
+            "@php artisan key:generate --ansi",
+            "@php artisan migrate --seed --ansi"
         ],
-        "setup-local": [
-            "Composer\\Config::disableProcessTimeout",
-            "@php scripts/ensure_project_root.php",
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@composer install --no-interaction",
-            "@php scripts/ensure_app_key.php",
-            "@php artisan app:doctor --ansi",
-            "@php artisan migrate --ansi",
-            "@php -r \"echo 'Setup finished. Run composer run start-local and open http://127.0.0.1:8001'.PHP_EOL;\""
-        ],
-        "start-local": [
-            "Composer\\Config::disableProcessTimeout",
-            "@php scripts/ensure_project_root.php --needs-vendor",
-            "@php artisan app:doctor --ansi",
+        "serve": [
             "@php artisan serve --host=127.0.0.1 --port=8001"
         ],
         "dev": [
@@ -68,8 +49,7 @@
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names='server,queue,vite'"
         ],
         "test": [
-            "@php artisan config:clear --ansi",
-            "@php artisan test"
+            "@php artisan test --ansi"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
