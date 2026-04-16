@@ -1,6 +1,4 @@
 <?php
-// Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
-// Clear explanation: This file is one of the custom parts that make this app work.
 
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
@@ -64,6 +62,13 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+            'replace_placeholders' => true,
+        ],
+
+        'api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/api.log'),
+            'level' => env('LOG_API_LEVEL', env('LOG_LEVEL', 'info')),
             'replace_placeholders' => true,
         ],
 

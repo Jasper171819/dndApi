@@ -1,16 +1,50 @@
 <?php
-// Developer context: Laravel reads this route file to map browser page URLs to Blade views instead of JSON controllers.
-// Clear explanation: This file lists the normal pages people open in the browser, like the builder, roster, and homebrew pages.
 
+use App\Models\Character;
 use Illuminate\Support\Facades\Route;
 
-// Developer context: This page route returns the main builder view when the browser opens the site root.
-// Clear explanation: This line makes the homepage open the builder page.
-Route::view('/', 'welcome')->name('home');
-// Developer context: This page route returns the DM dashboard view for encounter running, notes, and quick reference tools.
-// Clear explanation: This line makes the DM page open in the browser.
-Route::view('/dm', 'dm')->name('dm');
-Route::view('/roster', 'roster')->name('roster');
-// Developer context: This page route returns the homebrew workshop view without going through an API controller.
-// Clear explanation: This line makes the homebrew page open in the browser.
-Route::view('/homebrew', 'homebrew')->name('homebrew');
+Route::get('/', function () {
+    return view('welcome', [
+        'initialCharacters' => Character::query()->latest()->get(),
+    ]);
+})->name('home');
+
+Route::get('/api-overzicht', function () {
+    $sampleCharacter = Character::query()->latest()->first();
+
+    $appRoutes = collect(app('router')->getRoutes()->getRoutes())
+        ->reject(function ($route) {
+            $uri = $route->uri();
+
+            return $uri === 'up' || str_starts_with($uri, 'storage/');
+        })
+        ->map(function ($route) use ($sampleCharacter) {
+            $methods = collect($route->methods())
+                ->reject(fn (string $method) => $method === 'HEAD')
+                ->values()
+                ->all();
+
+            $uri = $route->uri() === '/' ? '/' : '/'.ltrim($route->uri(), '/');
+            $examplePath = $uri;
+
+            if ($sampleCharacter !== null) {
+                $examplePath = str_replace('{id}', (string) $sampleCharacter->id, $examplePath);
+            }
+
+            return [
+                'group' => str_starts_with($route->uri(), 'api/') ? 'API' : 'Web',
+                'methods' => $methods,
+                'uri' => $uri,
+                'example_path' => $examplePath,
+                'example_url' => url(ltrim($examplePath, '/')),
+                'can_open' => in_array('GET', $methods, true) && ! str_contains($examplePath, '{'),
+            ];
+        })
+        ->sortBy(fn (array $route) => $route['group'].' '.implode(',', $route['methods']).' '.$route['uri'])
+        ->values();
+
+    return view('api-overzicht', [
+        'appRoutes' => $appRoutes,
+        'sampleCharacter' => $sampleCharacter,
+    ]);
+})->name('api.overview');
