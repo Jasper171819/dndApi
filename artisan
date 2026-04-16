@@ -1,7 +1,5 @@
 #!/usr/bin/env php
 <?php
-// Developer context: CLI entry point for Laravel artisan commands; keep bootstrapping minimal here.
-// Clear explanation: This file starts the app when someone runs a terminal command like migrate or serve.
 
 use Illuminate\Foundation\Application;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -13,12 +11,8 @@ require __DIR__.'/vendor/autoload.php';
 
 // Bootstrap Laravel and handle the command...
 /** @var Application $app */
-// Developer context: This assignment stores a working value that the next lines reuse.
-// Clear explanation: This line saves a piece of information so the next steps can keep using it.
 $app = require_once __DIR__.'/bootstrap/app.php';
 
-// Developer context: This assignment stores a working value that the next lines reuse.
-// Clear explanation: This line saves a piece of information so the next steps can keep using it.
 $status = $app->handleCommand(new ArgvInput);
 
 exit($status);

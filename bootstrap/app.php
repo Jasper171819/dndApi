@@ -1,13 +1,13 @@
 <?php
-// Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
-// Clear explanation: This file is one of the custom parts that make this app work.
 
+use App\Http\Middleware\ApiRequestAuditMiddleware;
+use App\Support\ApiAuditLogger;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-// Developer context: This return hands the finished value or response back to the caller.
-// Clear explanation: This line sends the result back so the rest of the app can use it.
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -15,9 +15,37 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withCommands()
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->api(append: [
+            ApiRequestAuditMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->report(function (Throwable $exception) {
+            /** @var Request|null $request */
+            $request = app()->bound('request') ? app('request') : null;
+
+            if (! $request instanceof Request) {
+                return;
+            }
+
+            if ($request->attributes->get(ApiAuditLogger::EXCEPTION_LOGGED_ATTRIBUTE) === true) {
+                return;
+            }
+
+            app(ApiAuditLogger::class)->begin($request);
+            app(ApiAuditLogger::class)->logException($request, $exception);
+        });
+
+        $exceptions->respond(function (Response $response) {
+            /** @var Request|null $request */
+            $request = app()->bound('request') ? app('request') : null;
+
+            if ($request instanceof Request && $request->attributes->has(ApiAuditLogger::REQUEST_ID_ATTRIBUTE)) {
+                $response->headers->set('X-Request-Id', (string) $request->attributes->get(ApiAuditLogger::REQUEST_ID_ATTRIBUTE));
+            }
+
+            return $response;
+        });
     })->create();

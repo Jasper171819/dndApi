@@ -1,47 +1,50 @@
 <?php
-// Developer context: Project-owned source file; keep its responsibility narrow and consistent with the rest of the app.
-// Clear explanation: This file is one of the custom parts that make this app work.
 
 namespace App\Http\Requests;
 
-use App\Support\CharacterDataValidator;
+use App\Support\PlainTextNormalizer;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreCharacterRequest extends FormRequest
 {
-    // Developer context: Authorize handles one focused step in this file's workflow; keep its inputs and return shape aligned with nearby callers.
-    // Clear explanation: This part does one specific job for the feature this file powers.
     public function authorize(): bool
     {
-        // Developer context: This return hands the finished value or response back to the caller.
-        // Clear explanation: This line sends the result back so the rest of the app can use it.
         return true;
     }
 
-    // Developer context: Prepareforvalidation handles one focused step in this file's workflow; keep its inputs and return shape aligned with nearby callers.
-    // Clear explanation: This part does one specific job for the feature this file powers.
     protected function prepareForValidation(): void
     {
-        $this->replace(
-            app(CharacterDataValidator::class)->normalizeDraft($this->all()),
-        );
+        /** @var PlainTextNormalizer $normalizer */
+        $normalizer = app(PlainTextNormalizer::class);
+
+        $this->merge([
+            'name' => $normalizer->normalize($this->input('name')),
+            'species' => $normalizer->normalize($this->input('species')),
+            'class' => $normalizer->normalize($this->input('class')),
+            'subclass' => $normalizer->normalize($this->input('subclass')),
+            'background' => $normalizer->normalize($this->input('background')),
+            'alignment' => $normalizer->normalize($this->input('alignment')),
+            'notes' => $normalizer->normalize($this->input('notes'), true),
+            'level' => is_numeric($this->input('level')) ? (int) $this->input('level') : $this->input('level'),
+        ]);
     }
 
-    // Developer context: Rules handles one focused step in this file's workflow; keep its inputs and return shape aligned with nearby callers.
-    // Clear explanation: This part does one specific job for the feature this file powers.
     public function rules(): array
     {
-        // Developer context: This return hands the finished value or response back to the caller.
-        // Clear explanation: This line sends the result back so the rest of the app can use it.
-        return app(CharacterDataValidator::class)->rules($this->all());
+        return [
+            'name' => ['required', 'string', 'max:100'],
+            'species' => ['required', 'string', 'max:50'],
+            'class' => ['required', 'string', 'max:50'],
+            'subclass' => ['nullable', 'string', 'max:50'],
+            'background' => ['required', 'string', 'max:50'],
+            'alignment' => ['nullable', 'string', 'max:30'],
+            'level' => ['required', 'integer', 'min:1', 'max:20'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ];
     }
 
-    // Developer context: Characterdata handles one focused step in this file's workflow; keep its inputs and return shape aligned with nearby callers.
-    // Clear explanation: This part does one specific job for the feature this file powers.
     public function characterData(): array
     {
-        // Developer context: This return hands the finished value or response back to the caller.
-        // Clear explanation: This line sends the result back so the rest of the app can use it.
         return $this->validated();
     }
 }
